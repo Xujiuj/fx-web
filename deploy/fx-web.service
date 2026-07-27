@@ -1,0 +1,19 @@
+[Unit]
+Description=Fengxing Zhicheng official website
+After=network.target
+
+[Service]
+Type=simple
+User=fx-web
+Group=fx-web
+WorkingDirectory=/opt/fx/apps/website/current
+Environment=NODE_ENV=production
+Environment=HOSTNAME=127.0.0.1
+Environment=PORT=3010
+EnvironmentFile=-/opt/fx/apps/website/current/.env
+ExecStart=/opt/fx/runtime/node/bin/node server.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

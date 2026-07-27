@@ -1,0 +1,1219 @@
+.container {
+  width: min(calc(100% - 48px), 1180px);
+  margin-inline: auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 34px;
+  color: #718078;
+  font-size: 13px;
+}
+
+.breadcrumb a {
+  transition: color 240ms ease;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
+  color: var(--primary);
+}
+
+.eyebrow,
+.sectionHeading > span,
+.workflowIntro > span,
+.flowHeading > span,
+.analysisSection > header > span {
+  display: block;
+  margin: 0 0 14px;
+  color: var(--primary);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.excelHero {
+  overflow: hidden;
+  border-bottom: 1px solid #dfe5dc;
+  background:
+    linear-gradient(90deg, rgba(49, 95, 70, 0.045) 1px, transparent 1px) 0 0 / 52px 52px,
+    linear-gradient(rgba(49, 95, 70, 0.045) 1px, transparent 1px) 0 0 / 52px 52px,
+    #f7f9f5;
+}
+
+.excelHero > .container {
+  display: grid;
+  grid-template-columns: minmax(0, 0.83fr) minmax(520px, 1.17fr);
+  gap: 68px;
+  align-items: center;
+  min-height: 650px;
+  padding-block: 72px 66px;
+}
+
+.excelHeroCopy h1,
+.platformHeroCopy h1 {
+  max-width: 660px;
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(40px, 4.5vw, 62px);
+  line-height: 1.13;
+  letter-spacing: 0;
+}
+
+.heroSummary {
+  max-width: 610px;
+  margin: 24px 0 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.85;
+}
+
+.heroActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+}
+
+.heroActions a,
+.platformHeroLink {
+  display: inline-flex;
+  min-height: 46px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 0 19px;
+  border: 1px solid var(--primary);
+  color: #fff;
+  background: var(--primary);
+  font-size: 14px;
+  font-weight: 700;
+  transition: border-color 240ms ease, background-color 240ms ease, color 240ms ease;
+}
+
+.heroActions a:last-child {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #cdd7ce;
+}
+
+.heroActions a:hover,
+.heroActions a:focus-visible,
+.platformHeroLink:hover,
+.platformHeroLink:focus-visible {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #fff;
+}
+
+.heroMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin: 38px 0 0;
+  padding-top: 23px;
+  border-top: 1px solid #d9e1d8;
+}
+
+.heroMetrics > div {
+  padding-right: 14px;
+}
+
+.heroMetrics dt {
+  color: #78837b;
+  font-size: 12px;
+}
+
+.heroMetrics dd {
+  margin: 7px 0 0;
+  color: var(--primary-deep);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.workbookWrap {
+  position: relative;
+}
+
+.workbookWrap::before {
+  position: absolute;
+  inset: -30px -80px 42% 46%;
+  z-index: 0;
+  border: 1px solid rgba(214, 106, 34, 0.22);
+  content: "";
+}
+
+.workbook {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid #d5ddd4;
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 28px 70px rgba(38, 65, 50, 0.16);
+}
+
+.workbookBar {
+  display: grid;
+  grid-template-columns: 38px 1fr auto;
+  align-items: center;
+  min-height: 54px;
+  padding: 0 18px 0 10px;
+  color: #fff;
+  background: #315f46;
+  font-size: 13px;
+}
+
+.fileMark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.workbookBar > span {
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 11px;
+}
+
+.formulaBar {
+  display: grid;
+  grid-template-columns: 52px 1fr;
+  min-height: 42px;
+  align-items: center;
+  border-bottom: 1px solid #e1e6df;
+  color: #607168;
+  font-size: 12px;
+}
+
+.formulaBar span {
+  display: grid;
+  height: 100%;
+  place-items: center;
+  border-right: 1px solid #e1e6df;
+  color: var(--primary-deep);
+  font-weight: 800;
+}
+
+.formulaBar i {
+  padding-inline: 14px;
+  font-style: normal;
+}
+
+.sheet {
+  padding: 18px;
+  background: #fbfcfa;
+}
+
+.sheetHead,
+.sheetRow {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr 0.72fr 0.85fr 0.9fr;
+}
+
+.sheetHead strong,
+.sheetRow span {
+  min-width: 0;
+  padding: 12px 9px;
+  overflow: hidden;
+  border-right: 1px solid #dfe5dd;
+  border-bottom: 1px solid #dfe5dd;
+  color: #5d6a62;
+  font-size: 11px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sheetHead strong:first-child,
+.sheetRow span:first-child {
+  border-left: 1px solid #dfe5dd;
+}
+
+.sheetHead strong {
+  border-top: 1px solid #dfe5dd;
+  color: #334c3d;
+  background: #e9f0e9;
+  font-weight: 800;
+}
+
+.sheetRow span:last-child {
+  color: #417657;
+  background: #f1f7f1;
+}
+
+.sheetRow .pendingCell {
+  color: #a44f1b;
+  background: #fff2e8;
+}
+
+.sheetTabs {
+  display: flex;
+  gap: 4px;
+  padding: 0 15px;
+  border-top: 1px solid #e3e8e1;
+  background: #f5f7f4;
+}
+
+.sheetTabs span,
+.sheetTabs strong {
+  padding: 12px 10px 10px;
+  color: #6f7b72;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.sheetTabs strong {
+  border-bottom: 2px solid var(--primary);
+  color: var(--primary-deep);
+}
+
+.sectionHeading {
+  max-width: 650px;
+}
+
+.sectionHeading h2,
+.workflowIntro h2,
+.flowHeading h2,
+.analysisSection > header h2 {
+  margin: 0;
+  color: var(--text);
+  font-size: clamp(30px, 3.6vw, 46px);
+  line-height: 1.22;
+  letter-spacing: 0;
+}
+
+.sectionHeading p,
+.workflowIntro p,
+.flowHeading p {
+  margin: 18px 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.versionSection {
+  padding-block: 104px 112px;
+}
+
+.versionCompare {
+  display: grid;
+  grid-template-columns: 1fr 140px 1fr;
+  align-items: stretch;
+  margin-top: 54px;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.versionCompare article {
+  position: relative;
+  padding: 42px 38px;
+}
+
+.versionCompare article:first-child {
+  border-left: 3px solid var(--primary-deep);
+}
+
+.versionCompare article:last-child {
+  border-right: 3px solid var(--primary);
+}
+
+.versionNumber {
+  position: absolute;
+  top: 26px;
+  right: 30px;
+  color: #dfe5df;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.versionCompare article > svg {
+  color: var(--primary);
+}
+
+.versionCompare h3 {
+  margin: 23px 0 13px;
+  font-size: 25px;
+}
+
+.versionCompare article > p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+.versionCompare ul {
+  display: grid;
+  gap: 10px;
+  margin: 24px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.versionCompare li {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  color: #47544b;
+  font-size: 14px;
+}
+
+.versionCompare li svg {
+  color: var(--primary-deep);
+}
+
+.compareAxis {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 14px;
+  color: #77837b;
+  font-size: 11px;
+}
+
+.compareAxis i {
+  position: relative;
+  display: block;
+  width: 72px;
+  border-top: 1px solid #aeb9b0;
+}
+
+.compareAxis i::after {
+  position: absolute;
+  top: -4px;
+  right: 0;
+  width: 7px;
+  height: 7px;
+  border-top: 1px solid #7f8d82;
+  border-right: 1px solid #7f8d82;
+  content: "";
+  transform: rotate(45deg);
+}
+
+.functionBand {
+  padding-block: 96px;
+  background: #f3f0ea;
+}
+
+.functionGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin-top: 52px;
+  border-top: 1px solid #d6d1c8;
+  border-left: 1px solid #d6d1c8;
+}
+
+.functionGrid article {
+  position: relative;
+  display: grid;
+  min-height: 220px;
+  align-content: space-between;
+  padding: 28px;
+  overflow: hidden;
+  border-right: 1px solid #d6d1c8;
+  border-bottom: 1px solid #d6d1c8;
+  background: rgba(255, 255, 255, 0.46);
+}
+
+.functionGrid article > span {
+  color: #8b8e84;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.functionGrid article > svg {
+  margin-top: 34px;
+  color: var(--primary-deep);
+}
+
+.functionGrid h3 {
+  margin: 24px 0 0;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.functionGrid i {
+  position: absolute;
+  right: -28px;
+  bottom: -28px;
+  width: 70px;
+  height: 70px;
+  border: 1px solid rgba(214, 106, 34, 0.28);
+  transform: rotate(45deg);
+}
+
+.excelWorkflow {
+  display: grid;
+  grid-template-columns: 0.8fr 1.2fr;
+  gap: 80px;
+  padding-block: 112px;
+}
+
+.workflowIntro > svg {
+  margin-top: 38px;
+  color: var(--primary);
+}
+
+.excelWorkflow ol {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  list-style: none;
+}
+
+.excelWorkflow li {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 18px;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.excelWorkflow li > span {
+  color: var(--primary);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.excelWorkflow li strong {
+  font-size: 17px;
+}
+
+.excelWorkflow li p {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.platformHero {
+  overflow: hidden;
+  color: #fff;
+  background: #244b38;
+}
+
+.platformHero > .container {
+  display: grid;
+  grid-template-columns: minmax(0, 0.82fr) minmax(520px, 1.18fr);
+  gap: 70px;
+  align-items: center;
+  min-height: 640px;
+  padding-block: 74px;
+}
+
+.platformHero .breadcrumb,
+.platformHero .breadcrumb a {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.platformHero .eyebrow {
+  color: #efaa73;
+}
+
+.platformHeroCopy h1 {
+  color: #fff;
+}
+
+.platformHero .heroSummary {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.platformHeroLink {
+  margin-top: 32px;
+  border-color: #e27936;
+  background: #d66a22;
+}
+
+.dashboardWrap {
+  position: relative;
+  padding: 24px 0 0 24px;
+}
+
+.dashboardWrap::before {
+  position: absolute;
+  inset: 0 32% 42% 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+  content: "";
+}
+
+.dashboard {
+  position: relative;
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  min-height: 390px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 6px;
+  color: var(--text);
+  background: #f8faf7;
+  box-shadow: 0 28px 70px rgba(8, 24, 16, 0.34);
+}
+
+.dashboard > aside {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+  padding-top: 22px;
+  color: #fff;
+  background: #173526;
+}
+
+.dashboard > aside i {
+  width: 18px;
+  border-top: 2px solid rgba(255, 255, 255, 0.28);
+}
+
+.dashboardMain {
+  padding: 25px;
+}
+
+.dashboardTop {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #dfe6df;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.dashboardTop i {
+  color: #7b877f;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 500;
+}
+
+.dashboardMetrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 11px;
+  margin-top: 20px;
+}
+
+.dashboardMetrics > div {
+  padding: 14px;
+  border-left: 2px solid var(--primary);
+  background: #fff;
+}
+
+.dashboardMetrics small,
+.dashboardMetrics strong {
+  display: block;
+}
+
+.dashboardMetrics small {
+  color: #859087;
+  font-size: 9px;
+}
+
+.dashboardMetrics strong {
+  margin-top: 8px;
+  color: #315f46;
+  font-size: 12px;
+}
+
+.dashboardCharts {
+  display: grid;
+  grid-template-columns: 1.35fr 0.65fr;
+  gap: 18px;
+  min-height: 190px;
+  margin-top: 18px;
+}
+
+.barChart {
+  display: flex;
+  align-items: end;
+  gap: 13px;
+  padding: 34px 24px 18px;
+  border: 1px solid #e1e7e1;
+  background: repeating-linear-gradient(to top, transparent 0 36px, #edf0ed 37px);
+}
+
+.barChart i {
+  flex: 1;
+  min-width: 8px;
+  background: #70967e;
+}
+
+.barChart i:nth-child(2n) {
+  background: #d9854e;
+}
+
+.ringChart {
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#d66a22 0 25%, #315f46 25% 72%, #9aaf9f 72%);
+  border-radius: 50%;
+  aspect-ratio: 1;
+  align-self: center;
+}
+
+.ringChart::before {
+  grid-area: 1 / 1;
+  width: 58%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #f8faf7;
+  content: "";
+}
+
+.ringChart span {
+  z-index: 1;
+  grid-area: 1 / 1;
+  color: #496155;
+  font-size: 10px;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.capabilityStrip {
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+}
+
+.capabilityStrip > .container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.capabilityStrip article {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  grid-template-rows: auto auto;
+  gap: 9px 13px;
+  min-height: 152px;
+  align-content: center;
+  padding: 24px 25px;
+  border-left: 1px solid var(--line);
+}
+
+.capabilityStrip article:last-child {
+  border-right: 1px solid var(--line);
+}
+
+.capabilityStrip svg {
+  grid-row: 1 / 3;
+  color: var(--primary);
+}
+
+.capabilityStrip span {
+  color: #97a199;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.capabilityStrip strong {
+  grid-column: 2 / 4;
+  color: #37463d;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.architecture {
+  padding-block: 112px;
+}
+
+.architectureMap {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  gap: 0;
+  align-items: stretch;
+  margin-top: 56px;
+  border: 1px solid #ccd8cd;
+}
+
+.architectureCore {
+  display: grid;
+  place-items: center;
+  align-content: center;
+  min-height: 410px;
+  padding: 30px;
+  color: #fff;
+  background: #315f46;
+  text-align: center;
+}
+
+.architectureCore strong {
+  margin-top: 22px;
+  font-size: 20px;
+}
+
+.architectureCore span {
+  margin-top: 9px;
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 12px;
+}
+
+.architectureLayers {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.architectureLayers article {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 10px 14px;
+  min-height: 205px;
+  padding: 27px 30px;
+  border-left: 1px solid #d8e0d8;
+  border-bottom: 1px solid #d8e0d8;
+}
+
+.architectureLayers article:nth-child(3),
+.architectureLayers article:nth-child(4) {
+  border-bottom: 0;
+}
+
+.architectureLayers article > span {
+  grid-column: 1 / 3;
+  color: var(--primary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.architectureLayers article > svg {
+  color: var(--primary-deep);
+}
+
+.architectureLayers article > strong {
+  font-size: 17px;
+}
+
+.architectureLayers article > p {
+  grid-column: 1 / 3;
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.dataFlow {
+  padding-block: 100px;
+  color: #fff;
+  background: #262b27;
+}
+
+.dataFlow > .container {
+  display: grid;
+  grid-template-columns: 0.72fr 1.28fr;
+  gap: 86px;
+}
+
+.flowHeading > span {
+  color: #e08a50;
+}
+
+.flowHeading h2 {
+  color: #fff;
+}
+
+.flowHeading p {
+  color: rgba(255, 255, 255, 0.62);
+}
+
+.dataFlow ol {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  list-style: none;
+}
+
+.dataFlow li {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 14px;
+  padding: 24px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.dataFlow li > span {
+  color: #e08a50;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.dataFlow li strong,
+.dataFlow li small {
+  display: block;
+}
+
+.dataFlow li strong {
+  font-size: 17px;
+}
+
+.dataFlow li small {
+  margin-top: 7px;
+  color: rgba(255, 255, 255, 0.52);
+  font-size: 12px;
+}
+
+.analysisSection {
+  display: grid;
+  grid-template-columns: 0.65fr 1.35fr;
+  gap: 70px;
+  padding-block: 112px;
+}
+
+.analysisGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.analysisGrid article {
+  min-height: 188px;
+  padding: 25px;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.analysisGrid svg {
+  color: var(--primary);
+}
+
+.analysisGrid h3 {
+  margin: 25px 0 9px;
+  font-size: 17px;
+}
+
+.analysisGrid p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.analysisGrid .analysisPrimary {
+  grid-column: 1 / 4;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto 1fr;
+  gap: 0 32px;
+  min-height: 230px;
+}
+
+.analysisPrimary > svg,
+.analysisPrimary h3,
+.analysisPrimary p {
+  grid-column: 1;
+}
+
+.analysisPrimary h3 {
+  margin-top: 20px;
+}
+
+.miniBars {
+  grid-column: 2;
+  grid-row: 1 / 4;
+  display: flex;
+  align-items: end;
+  gap: 10px;
+  padding: 28px 12px 4px;
+  border-bottom: 1px solid #cfd8d0;
+}
+
+.miniBars i {
+  flex: 1;
+  background: #759a82;
+}
+
+.miniBars i:nth-child(3n) {
+  background: #d77a3b;
+}
+
+.cta {
+  display: flex;
+  width: min(calc(100% - 48px), 1180px);
+  align-items: center;
+  justify-content: space-between;
+  gap: 40px;
+  margin: 0 auto 88px;
+  padding: 42px 46px;
+  color: #fff;
+  background: #315f46;
+}
+
+.cta span {
+  color: #efaa73;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cta h2 {
+  max-width: 700px;
+  margin: 10px 0 0;
+  font-size: clamp(24px, 3vw, 36px);
+  line-height: 1.3;
+}
+
+.cta p {
+  margin: 12px 0 0;
+  color: rgba(255, 255, 255, 0.67);
+  font-size: 14px;
+}
+
+.cta > a {
+  display: inline-flex;
+  min-height: 48px;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+  padding: 0 19px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 240ms ease, background-color 240ms ease;
+}
+
+.cta > a:hover,
+.cta > a:focus-visible {
+  color: #315f46;
+  background: #fff;
+}
+
+@media (max-width: 1050px) {
+  .excelHero > .container,
+  .platformHero > .container {
+    grid-template-columns: 1fr;
+    gap: 54px;
+    padding-block: 60px;
+  }
+
+  .workbookWrap,
+  .dashboardWrap {
+    width: min(100%, 720px);
+    justify-self: center;
+  }
+
+  .versionCompare {
+    grid-template-columns: 1fr 90px 1fr;
+  }
+
+  .functionGrid,
+  .capabilityStrip > .container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .capabilityStrip article:nth-child(2) {
+    border-right: 1px solid var(--line);
+  }
+
+  .capabilityStrip article:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .analysisSection {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 780px) {
+  .container,
+  .cta {
+    width: calc(100% - 36px);
+  }
+
+  .excelHero > .container,
+  .platformHero > .container {
+    min-height: 0;
+    padding-block: 44px 52px;
+  }
+
+  .breadcrumb {
+    margin-bottom: 26px;
+  }
+
+  .excelHeroCopy h1,
+  .platformHeroCopy h1 {
+    font-size: 36px;
+  }
+
+  .heroSummary {
+    font-size: 15px;
+  }
+
+  .heroActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .heroActions a {
+    width: 100%;
+  }
+
+  .heroMetrics {
+    gap: 8px;
+  }
+
+  .heroMetrics dd {
+    font-size: 17px;
+  }
+
+  .workbookWrap,
+  .dashboardWrap {
+    padding: 0;
+  }
+
+  .workbookWrap::before,
+  .dashboardWrap::before {
+    display: none;
+  }
+
+  .workbook {
+    overflow-x: auto;
+  }
+
+  .workbookBar,
+  .formulaBar,
+  .sheet,
+  .sheetTabs {
+    min-width: 560px;
+  }
+
+  .versionSection,
+  .architecture,
+  .analysisSection {
+    padding-block: 78px;
+  }
+
+  .versionCompare {
+    grid-template-columns: 1fr;
+  }
+
+  .compareAxis {
+    min-height: 76px;
+    grid-template-columns: auto auto auto;
+  }
+
+  .versionCompare article:first-child,
+  .versionCompare article:last-child {
+    border-right: 0;
+    border-left: 3px solid var(--primary);
+  }
+
+  .functionBand,
+  .dataFlow {
+    padding-block: 76px;
+  }
+
+  .functionGrid {
+    grid-template-columns: 1fr;
+    margin-top: 38px;
+  }
+
+  .functionGrid article {
+    min-height: 180px;
+  }
+
+  .excelWorkflow,
+  .dataFlow > .container {
+    grid-template-columns: 1fr;
+    gap: 48px;
+    padding-block: 78px;
+  }
+
+  .dataFlow > .container {
+    padding-block: 0;
+  }
+
+  .dashboard {
+    grid-template-columns: 42px 1fr;
+    min-height: 330px;
+  }
+
+  .dashboardMain {
+    padding: 16px;
+  }
+
+  .dashboardMetrics {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboardMetrics > div:nth-child(n + 3) {
+    display: none;
+  }
+
+  .dashboardCharts {
+    grid-template-columns: 1fr;
+    min-height: 135px;
+  }
+
+  .ringChart {
+    display: none;
+  }
+
+  .capabilityStrip > .container {
+    width: 100%;
+    grid-template-columns: 1fr;
+  }
+
+  .capabilityStrip article,
+  .capabilityStrip article:nth-child(2),
+  .capabilityStrip article:last-child {
+    min-height: 118px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    border-left: 0;
+    padding-inline: 18px;
+  }
+
+  .architectureMap {
+    grid-template-columns: 1fr;
+  }
+
+  .architectureCore {
+    min-height: 230px;
+  }
+
+  .architectureLayers,
+  .analysisGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .architectureLayers article,
+  .architectureLayers article:nth-child(3) {
+    min-height: 175px;
+    border-bottom: 1px solid #d8e0d8;
+    border-left: 0;
+  }
+
+  .architectureLayers article:last-child {
+    border-bottom: 0;
+  }
+
+  .analysisGrid .analysisPrimary {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+    min-height: 360px;
+  }
+
+  .miniBars {
+    grid-column: 1;
+    grid-row: auto;
+    min-height: 130px;
+    margin-top: 24px;
+  }
+
+  .cta {
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 56px;
+    padding: 30px 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breadcrumb a,
+  .heroActions a,
+  .platformHeroLink,
+  .cta > a {
+    transition: none;
+  }
+}

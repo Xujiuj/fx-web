@@ -1,0 +1,1223 @@
+.wrap {
+  width: min(calc(100% - 48px), 1120px);
+  margin: 0 auto;
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 28px;
+  color: rgba(37, 55, 47, 0.64);
+  font-size: 13px;
+}
+
+.breadcrumb a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  font-weight: 650;
+}
+
+.breadcrumb a:hover {
+  color: #b7551b;
+}
+
+.sectionLabel {
+  margin: 0 0 14px;
+  color: #b7551b;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.contactBand {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  width: min(calc(100% - 48px), 1120px);
+  margin: 0 auto 88px;
+  padding: 32px 36px;
+  background: #254f3d;
+  color: #fff;
+}
+
+.contactBand div {
+  display: grid;
+  gap: 7px;
+}
+
+.contactBand span {
+  color: #b9cfc5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.contactBand strong {
+  font-size: 24px;
+  line-height: 1.45;
+}
+
+.contactBand a {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 9px;
+  min-height: 44px;
+  padding: 0 17px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  font-size: 14px;
+  font-weight: 700;
+  transition: border-color 400ms ease, background-color 400ms ease;
+}
+
+.contactBand a:hover {
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.breadcrumb a:focus-visible,
+.contactBand a:focus-visible,
+.caseRecordBody a:focus-visible,
+.featuredTopic a:focus-visible,
+.resourceIntro a:focus-visible,
+.resourceLinks a:focus-visible,
+.trustContact a:focus-visible {
+  outline: 3px solid #e2924d;
+  outline-offset: 4px;
+}
+
+/* Case studies: a vertical archive with alternating project records. */
+.caseHero {
+  overflow: hidden;
+  background: #244c3b;
+  color: #fff;
+}
+
+.caseHeroInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 390px;
+  align-items: center;
+  gap: 76px;
+  min-height: 520px;
+  padding: 72px 0;
+}
+
+.caseHero .breadcrumb {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.caseHero .sectionLabel {
+  color: #f4a45e;
+}
+
+.caseHeroCopy h1 {
+  max-width: 680px;
+  margin: 0;
+  font-size: 64px;
+  font-weight: 720;
+  line-height: 1.14;
+}
+
+.caseHeroCopy > p:last-child {
+  max-width: 650px;
+  margin: 24px 0 0;
+  color: #c9dad2;
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+.caseCompass {
+  position: relative;
+  width: 330px;
+  height: 330px;
+  justify-self: center;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 50%;
+}
+
+.caseCompass::before,
+.caseCompass::after {
+  position: absolute;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 50%;
+  content: "";
+}
+
+.caseCompass::before {
+  inset: 48px;
+}
+
+.caseCompass::after {
+  inset: 106px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.caseCompass svg {
+  position: absolute;
+  top: 141px;
+  left: 141px;
+  z-index: 2;
+  color: #f5a45e;
+}
+
+.compassAxis {
+  position: absolute;
+  top: 50%;
+  right: 25px;
+  left: 25px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.compassAxis::after {
+  position: absolute;
+  top: -140px;
+  left: 50%;
+  width: 1px;
+  height: 280px;
+  background: rgba(255, 255, 255, 0.25);
+  content: "";
+}
+
+.caseCompass > span {
+  position: absolute;
+  z-index: 2;
+  padding: 6px 9px;
+  background: #244c3b;
+  color: #d5e2dc;
+  font-size: 12px;
+}
+
+.compassStart {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.compassBuild {
+  top: 50%;
+  right: -14px;
+  transform: translateY(-50%);
+}
+
+.compassRun {
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.caseIntroduction {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  column-gap: 54px;
+  padding: 90px 0 62px;
+  border-bottom: 1px solid #d9e2dc;
+}
+
+.caseIntroduction h2 {
+  max-width: 720px;
+  margin: 0;
+  color: #234737;
+  font-size: 45px;
+  line-height: 1.28;
+}
+
+.caseIntroduction > p:last-child {
+  grid-column: 2;
+  max-width: 760px;
+  margin: 22px 0 0;
+  color: #657269;
+  line-height: 1.9;
+}
+
+.caseArchive {
+  padding: 0 0 94px;
+}
+
+.caseRecord {
+  display: grid;
+  grid-template-columns: 92px minmax(210px, 0.8fr) minmax(320px, 1.2fr);
+  gap: 34px;
+  align-items: start;
+  padding: 54px 0;
+  border-bottom: 1px solid #d9e2dc;
+}
+
+.caseRecord:nth-child(even) .caseRecordHeading {
+  grid-column: 3;
+}
+
+.caseRecord:nth-child(even) .caseRecordBody {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.caseRecordIndex {
+  display: grid;
+  justify-items: start;
+  gap: 16px;
+  color: #b7551b;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.caseRecordIndex i {
+  width: 42px;
+  height: 2px;
+  background: #db8a51;
+}
+
+.caseRecordHeading small,
+.caseRecordBody span {
+  color: #8a948d;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.caseRecordHeading h2 {
+  margin: 10px 0 0;
+  color: #244c3b;
+  font-size: 34px;
+  line-height: 1.35;
+}
+
+.caseRecordBody {
+  display: grid;
+  gap: 20px;
+}
+
+.caseRecordBody > div {
+  display: grid;
+  gap: 8px;
+}
+
+.caseRecordBody strong {
+  color: #313c35;
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.caseRecordBody p {
+  margin: 0;
+  color: #657269;
+  line-height: 1.85;
+}
+
+.caseRecordBody a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  color: #a94914;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.caseDecision {
+  margin-bottom: 80px;
+  padding: 76px 0;
+  background: #f1f5f2;
+}
+
+.caseDecision > div {
+  display: grid;
+  grid-template-columns: 0.75fr 1.25fr;
+  gap: 70px;
+}
+
+.caseDecisionTitle h2 {
+  max-width: 380px;
+  margin: 0;
+  color: #244c3b;
+  font-size: 39px;
+  line-height: 1.35;
+}
+
+.caseDecisionSteps {
+  border-top: 1px solid #bdcac2;
+}
+
+.caseDecisionSteps > div {
+  display: grid;
+  grid-template-columns: 50px 1fr;
+  gap: 18px;
+  padding: 19px 0;
+  border-bottom: 1px solid #bdcac2;
+}
+
+.caseDecisionSteps span {
+  color: #b7551b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.caseDecisionSteps p {
+  margin: 0;
+  color: #34493f;
+  line-height: 1.6;
+}
+
+/* Knowledge: editorial lead story, dense index and an explicit learning path. */
+.knowledgeHero {
+  padding: 76px 0 58px;
+  border-bottom: 1px solid #dbe4df;
+  background: #f5f8f6;
+}
+
+.knowledgeHeroInner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+  gap: 80px;
+  align-items: end;
+}
+
+.knowledgeHeroTitle h1 {
+  max-width: 720px;
+  margin: 0;
+  color: #223f32;
+  font-size: 66px;
+  line-height: 1.15;
+}
+
+.knowledgeHeroSummary {
+  padding: 26px 0 3px 28px;
+  border-left: 2px solid #cf6c29;
+  color: #56675e;
+}
+
+.knowledgeHeroSummary svg {
+  color: #b7551b;
+}
+
+.knowledgeHeroSummary p {
+  margin: 18px 0 0;
+  line-height: 1.9;
+}
+
+.knowledgeLead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(330px, 0.9fr);
+  gap: 70px;
+  padding: 92px 0;
+}
+
+.featuredTopic {
+  min-height: 440px;
+  padding: 38px;
+  background: #274f3e;
+  color: #fff;
+}
+
+.featuredTopic > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #f2a15c;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.featuredTopic h2 {
+  max-width: 530px;
+  margin: 104px 0 22px;
+  font-size: 44px;
+  line-height: 1.32;
+}
+
+.featuredTopic p {
+  max-width: 520px;
+  margin: 0;
+  color: #c8dad1;
+  line-height: 1.85;
+}
+
+.featuredTopic a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 38px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.topicIndex {
+  border-top: 3px solid #274f3e;
+}
+
+.topicIndex header,
+.topicIndex article {
+  display: grid;
+  grid-template-columns: 54px 1fr auto;
+  gap: 18px;
+  align-items: center;
+  border-bottom: 1px solid #d8e1db;
+}
+
+.topicIndex header {
+  min-height: 68px;
+  color: #78857d;
+  font-size: 12px;
+}
+
+.topicIndex header span {
+  grid-column: 1 / 3;
+  color: #283f34;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.topicIndex article {
+  min-height: 121px;
+}
+
+.topicIndex article > span {
+  color: #b7551b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.topicIndex h3 {
+  margin: 0;
+  color: #294236;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.topicIndex article svg {
+  color: #8b9d93;
+}
+
+.learningSection {
+  padding: 82px 0;
+  background: #253f34;
+  color: #fff;
+}
+
+.learningSection > div {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.75fr) minmax(0, 1.25fr);
+  gap: 80px;
+}
+
+.learningHeading .sectionLabel {
+  color: #f2a15c;
+}
+
+.learningHeading h2 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.3;
+}
+
+.learningHeading > p:last-child {
+  margin: 22px 0 0;
+  color: #bdcec5;
+  line-height: 1.85;
+}
+
+.learningPath {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.learningPath li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 18px;
+  align-items: center;
+  min-height: 74px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.learningPath span {
+  color: #f2a15c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.learningPath strong {
+  padding-right: 25px;
+  font-size: 17px;
+}
+
+.learningPath i {
+  position: absolute;
+  right: 0;
+  width: 8px;
+  height: 8px;
+  border-top: 1px solid #fff;
+  border-right: 1px solid #fff;
+  transform: rotate(45deg);
+}
+
+.resourceDesk {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.7fr) minmax(0, 1.3fr);
+  gap: 76px;
+  padding: 92px 0;
+}
+
+.resourceIntro h2 {
+  margin: 0;
+  color: #274638;
+  font-size: 40px;
+  line-height: 1.35;
+}
+
+.resourceIntro p {
+  margin: 22px 0 0;
+  color: #66736b;
+  line-height: 1.85;
+}
+
+.resourceIntro a {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 28px;
+  color: #a94914;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.resourceLinks {
+  border-top: 1px solid #d5dfd8;
+}
+
+.resourceLinks > a {
+  display: grid;
+  grid-template-columns: 34px 1fr auto;
+  gap: 19px;
+  align-items: center;
+  min-height: 112px;
+  padding: 18px 8px;
+  border-bottom: 1px solid #d5dfd8;
+  transition: padding 400ms ease, background-color 400ms ease;
+}
+
+.resourceLinks > a:hover {
+  padding-right: 18px;
+  padding-left: 18px;
+  background: #f3f7f4;
+}
+
+.resourceLinks > a > svg:first-child {
+  color: #b7551b;
+}
+
+.resourceLinks div {
+  display: grid;
+  gap: 6px;
+}
+
+.resourceLinks span {
+  color: #2f463a;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.resourceLinks strong {
+  color: #7b887f;
+  font-size: 12px;
+}
+
+.resourceLinks > a > svg:last-child {
+  color: #76877e;
+}
+
+/* Company: brand statement, operating beliefs and an honest service chronology. */
+.companyHero {
+  background: #edf3ef;
+}
+
+.companyHeroInner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 74px;
+  min-height: 560px;
+  padding: 74px 0 0;
+}
+
+.companyHeroTop {
+  grid-column: 1 / -1;
+}
+
+.companyHeroStatement {
+  align-self: center;
+  padding-bottom: 60px;
+}
+
+.companyHeroStatement h1 {
+  max-width: 670px;
+  margin: 0;
+  color: #223f32;
+  font-size: 63px;
+  line-height: 1.18;
+}
+
+.companyHeroStatement p {
+  max-width: 650px;
+  margin: 25px 0 0;
+  color: #5c6f64;
+  font-size: 17px;
+  line-height: 1.9;
+}
+
+.companyPrinciples {
+  display: grid;
+  align-self: end;
+  border-top: 3px solid #bb5c20;
+  background: #fff;
+}
+
+.companyPrinciples > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: center;
+  min-height: 86px;
+  padding: 17px 24px;
+  border-bottom: 1px solid #dbe3de;
+}
+
+.companyPrinciples span {
+  color: #748078;
+  font-size: 13px;
+}
+
+.companyPrinciples strong {
+  color: #284638;
+  font-size: 19px;
+}
+
+.companyBelief {
+  padding: 96px 0 104px;
+}
+
+.companyBeliefTitle {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 46px;
+  align-items: start;
+  margin-bottom: 60px;
+}
+
+.companyBeliefTitle h2 {
+  max-width: 760px;
+  margin: 0;
+  color: #254637;
+  font-size: 48px;
+  line-height: 1.3;
+}
+
+.companyBeliefGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #d9e1dc;
+  border-bottom: 1px solid #d9e1dc;
+}
+
+.companyBeliefGrid article {
+  min-height: 300px;
+  padding: 34px 30px;
+  border-right: 1px solid #d9e1dc;
+}
+
+.companyBeliefGrid article:last-child {
+  border-right: 0;
+}
+
+.companyBeliefGrid svg {
+  color: #b7551b;
+}
+
+.companyBeliefGrid span {
+  display: block;
+  margin-top: 54px;
+  color: #7c8981;
+  font-size: 12px;
+}
+
+.companyBeliefGrid strong {
+  display: block;
+  margin-top: 8px;
+  color: #28473a;
+  font-size: 25px;
+}
+
+.companyBeliefGrid p {
+  margin: 20px 0 0;
+  color: #66746c;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.serviceBand {
+  padding: 82px 0;
+  background: #264b3b;
+  color: #fff;
+}
+
+.serviceBand > div {
+  display: grid;
+  grid-template-columns: minmax(240px, 0.65fr) minmax(0, 1.35fr);
+  gap: 78px;
+}
+
+.serviceBandHeading .sectionLabel {
+  color: #f2a15c;
+}
+
+.serviceBandHeading h2 {
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.35;
+}
+
+.serviceList {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid rgba(255, 255, 255, 0.24);
+  border-left: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.serviceList article {
+  position: relative;
+  min-height: 145px;
+  padding: 25px;
+  border-right: 1px solid rgba(255, 255, 255, 0.24);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.24);
+}
+
+.serviceList span {
+  color: #f2a15c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.serviceList h3 {
+  max-width: 260px;
+  margin: 36px 0 0;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.serviceList i {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 24px;
+  height: 1px;
+  background: #f2a15c;
+}
+
+.companyTimeline {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.7fr) minmax(0, 1.3fr);
+  gap: 80px;
+  padding: 100px 0;
+}
+
+.companyTimelineHeading h2 {
+  margin: 0;
+  color: #27483a;
+  font-size: 43px;
+  line-height: 1.34;
+}
+
+.companyTimelineHeading > p:last-child {
+  margin: 21px 0 0;
+  color: #758179;
+  font-size: 13px;
+  line-height: 1.8;
+}
+
+.companyTimeline ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid #d3ded7;
+}
+
+.companyTimeline li {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  gap: 20px;
+  min-height: 94px;
+  padding: 20px 0;
+  border-bottom: 1px solid #d3ded7;
+}
+
+.companyTimeline li > span {
+  color: #b7551b;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.companyTimeline li div {
+  display: grid;
+  gap: 7px;
+}
+
+.companyTimeline small {
+  color: #8a958e;
+  font-size: 12px;
+}
+
+.companyTimeline strong {
+  color: #2b4438;
+  font-size: 18px;
+  line-height: 1.55;
+}
+
+.trustSection {
+  padding: 0 0 96px;
+}
+
+.trustHeading {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 46px;
+  margin-bottom: 46px;
+}
+
+.trustHeading h2 {
+  max-width: 690px;
+  margin: 0;
+  color: #27483a;
+  font-size: 42px;
+  line-height: 1.35;
+}
+
+.trustCards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 1px solid #d5dfd9;
+}
+
+.trustCards article {
+  min-height: 260px;
+  padding: 32px;
+  border-right: 1px solid #d5dfd9;
+}
+
+.trustCards article:last-child {
+  border-right: 0;
+}
+
+.trustCards svg {
+  color: #b7551b;
+}
+
+.trustCards h3 {
+  margin: 58px 0 13px;
+  color: #29483a;
+  font-size: 21px;
+}
+
+.trustCards p {
+  margin: 0;
+  color: #69766e;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.trustContact {
+  background: #f3f7f4;
+}
+
+.trustContact a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 22px;
+  color: #a94914;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+@media (max-width: 900px) {
+  .caseHeroInner,
+  .knowledgeHeroInner,
+  .knowledgeLead,
+  .learningSection > div,
+  .resourceDesk,
+  .companyHeroInner,
+  .serviceBand > div,
+  .companyTimeline {
+    grid-template-columns: 1fr;
+  }
+
+  .caseHeroInner {
+    gap: 36px;
+    min-height: 0;
+  }
+
+  .caseCompass {
+    width: 260px;
+    height: 260px;
+    justify-self: end;
+  }
+
+  .caseCompass::before {
+    inset: 38px;
+  }
+
+  .caseCompass::after {
+    inset: 82px;
+  }
+
+  .caseCompass svg {
+    top: 106px;
+    left: 106px;
+  }
+
+  .compassAxis::after {
+    top: -105px;
+    height: 210px;
+  }
+
+  .caseRecord {
+    grid-template-columns: 70px minmax(190px, 0.8fr) minmax(260px, 1.2fr);
+    gap: 24px;
+  }
+
+  .caseDecision > div,
+  .companyBeliefTitle,
+  .trustHeading {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .knowledgeHeroInner,
+  .knowledgeLead,
+  .learningSection > div,
+  .resourceDesk,
+  .serviceBand > div,
+  .companyTimeline {
+    gap: 46px;
+  }
+
+  .knowledgeHeroSummary {
+    max-width: 620px;
+  }
+
+  .companyHeroTop {
+    grid-column: 1;
+  }
+
+  .companyHeroStatement {
+    padding-bottom: 10px;
+  }
+
+  .companyPrinciples {
+    width: min(100%, 520px);
+  }
+
+  .companyBeliefGrid,
+  .trustCards {
+    grid-template-columns: 1fr;
+  }
+
+  .companyBeliefGrid article,
+  .trustCards article {
+    min-height: 0;
+    border-right: 0;
+    border-bottom: 1px solid #d9e1dc;
+  }
+
+  .companyBeliefGrid article:last-child,
+  .trustCards article:last-child {
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .wrap {
+    width: calc(100% - 36px);
+  }
+
+  .contactBand {
+    align-items: flex-start;
+    flex-direction: column;
+    width: calc(100% - 36px);
+    margin-bottom: 58px;
+    padding: 26px;
+  }
+
+  .caseHeroInner,
+  .knowledgeHero,
+  .companyHeroInner {
+    padding-top: 48px;
+  }
+
+  .caseHeroCopy h1,
+  .knowledgeHeroTitle h1,
+  .companyHeroStatement h1 {
+    font-size: 36px;
+  }
+
+  .caseHeroCopy > p:last-child,
+  .companyHeroStatement p {
+    font-size: 15px;
+  }
+
+  .caseCompass {
+    width: 220px;
+    height: 220px;
+    justify-self: center;
+  }
+
+  .caseCompass::before {
+    inset: 32px;
+  }
+
+  .caseCompass::after {
+    inset: 69px;
+  }
+
+  .caseCompass svg {
+    top: 86px;
+    left: 86px;
+  }
+
+  .compassAxis {
+    right: 20px;
+    left: 20px;
+  }
+
+  .compassAxis::after {
+    top: -89px;
+    height: 178px;
+  }
+
+  .compassBuild {
+    right: -20px;
+  }
+
+  .caseIntroduction {
+    grid-template-columns: 1fr;
+    padding: 64px 0 42px;
+  }
+
+  .caseIntroduction > p:last-child {
+    grid-column: 1;
+  }
+
+  .caseRecord {
+    grid-template-columns: 42px 1fr;
+    padding: 40px 0;
+  }
+
+  .caseRecordHeading,
+  .caseRecord:nth-child(even) .caseRecordHeading {
+    grid-column: 2;
+  }
+
+  .caseRecordBody,
+  .caseRecord:nth-child(even) .caseRecordBody {
+    grid-column: 2;
+    grid-row: auto;
+  }
+
+  .caseRecordIndex {
+    grid-row: 1 / 3;
+  }
+
+  .caseDecision,
+  .learningSection,
+  .serviceBand {
+    padding: 64px 0;
+  }
+
+  .caseDecision {
+    margin-bottom: 58px;
+  }
+
+  .knowledgeHero {
+    padding-bottom: 48px;
+  }
+
+  .knowledgeLead,
+  .resourceDesk,
+  .companyBelief,
+  .companyTimeline {
+    padding-top: 66px;
+    padding-bottom: 66px;
+  }
+
+  .featuredTopic {
+    min-height: 390px;
+    padding: 28px;
+  }
+
+  .featuredTopic h2 {
+    margin-top: 80px;
+  }
+
+  .topicIndex header,
+  .topicIndex article {
+    grid-template-columns: 42px 1fr auto;
+    gap: 10px;
+  }
+
+  .resourceLinks > a {
+    grid-template-columns: 29px 1fr auto;
+    gap: 12px;
+  }
+
+  .companyHeroInner {
+    min-height: 0;
+    padding-bottom: 52px;
+  }
+
+  .companyBeliefTitle,
+  .trustHeading {
+    margin-bottom: 38px;
+  }
+
+  .companyBeliefGrid article {
+    padding: 28px 24px;
+  }
+
+  .companyBeliefGrid span {
+    margin-top: 34px;
+  }
+
+  .serviceList {
+    grid-template-columns: 1fr;
+  }
+
+  .serviceList article {
+    min-height: 124px;
+  }
+
+  .trustSection {
+    padding-bottom: 66px;
+  }
+
+  .trustCards article {
+    padding: 28px 24px;
+  }
+
+  .trustCards h3 {
+    margin-top: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contactBand a,
+  .resourceLinks > a {
+    transition: none;
+  }
+}

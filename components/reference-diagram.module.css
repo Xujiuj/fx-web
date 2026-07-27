@@ -1,0 +1,85 @@
+.figure {
+  width: min(calc(100% - 48px), 1200px);
+  margin: 0 auto;
+  padding: clamp(48px, 7vw, 92px) 0;
+}
+
+.caption {
+  display: grid;
+  grid-template-columns: minmax(128px, 0.28fr) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+  margin-bottom: 30px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid #dbe5df;
+}
+
+.caption > span {
+  padding-top: 7px;
+  color: #b45b24;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.caption h2 {
+  margin: 0 0 10px;
+  color: #203c35;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.3;
+}
+
+.caption p {
+  max-width: 690px;
+  margin: 0;
+  color: #66766f;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.canvas {
+  overflow: hidden;
+  padding: clamp(16px, 2.8vw, 40px);
+  border: 1px solid #dce7e2;
+  background: #f7faf8;
+}
+
+.canvas img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (max-width: 720px) {
+  .figure {
+    width: calc(100% - 36px);
+    padding: 62px 0;
+  }
+
+  .caption {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+
+  .caption > span {
+    padding-top: 0;
+  }
+
+  .caption h2 {
+    font-size: 25px;
+  }
+
+  .caption p {
+    font-size: 14px;
+  }
+
+  .canvas {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  .canvas img {
+    min-width: 620px;
+  }
+}

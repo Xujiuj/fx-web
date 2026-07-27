@@ -1,0 +1,563 @@
+{
+  "generatedBy": "scripts/optimize-media.mjs",
+  "requestedWidths": [
+    480,
+    768,
+    1280,
+    1920
+  ],
+  "images": {
+    "fengxing-hero-accounting": {
+      "source": "/media/fengxing-hero-accounting.png",
+      "sourceWidth": 1672,
+      "sourceHeight": 941,
+      "profile": "hero",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 270,
+          "bytes": 8051,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 10500,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 270,
+          "bytes": 14346,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 432,
+          "bytes": 15047,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 21148,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 432,
+          "bytes": 29631,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 720,
+          "bytes": 34263,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 49916,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 720,
+          "bytes": 69371,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1672,
+          "height": 941,
+          "bytes": 49714,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1672.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1672,
+          "height": 941,
+          "bytes": 75192,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1672.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1672,
+          "height": 941,
+          "bytes": 109680,
+          "src": "/media/optimized/fengxing-hero-accounting/fengxing-hero-accounting-1672.jpg"
+        }
+      ]
+    },
+    "fengxing-hero-management": {
+      "source": "/media/fengxing-hero-management.png",
+      "sourceWidth": 1672,
+      "sourceHeight": 941,
+      "profile": "hero",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 270,
+          "bytes": 11656,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 270,
+          "bytes": 13326,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 270,
+          "bytes": 16508,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 432,
+          "bytes": 25272,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 432,
+          "bytes": 29922,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 432,
+          "bytes": 37088,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 720,
+          "bytes": 57360,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 720,
+          "bytes": 71198,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 720,
+          "bytes": 90842,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1672,
+          "height": 941,
+          "bytes": 82736,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1672.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1672,
+          "height": 941,
+          "bytes": 106740,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1672.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1672,
+          "height": 941,
+          "bytes": 142884,
+          "src": "/media/optimized/fengxing-hero-management/fengxing-hero-management-1672.jpg"
+        }
+      ]
+    },
+    "path-carbon-warm": {
+      "source": "/media/path-carbon-warm.jpg",
+      "sourceWidth": 1800,
+      "sourceHeight": 1100,
+      "profile": "content",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 293,
+          "bytes": 9938,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 293,
+          "bytes": 13668,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 293,
+          "bytes": 17473,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 469,
+          "bytes": 23215,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 469,
+          "bytes": 31216,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 469,
+          "bytes": 40506,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 782,
+          "bytes": 60749,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 782,
+          "bytes": 71036,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 782,
+          "bytes": 99450,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1800,
+          "height": 1100,
+          "bytes": 115625,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1800.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1800,
+          "height": 1100,
+          "bytes": 125112,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1800.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1800,
+          "height": 1100,
+          "bytes": 182408,
+          "src": "/media/optimized/path-carbon-warm/path-carbon-warm-1800.jpg"
+        }
+      ]
+    },
+    "fengxing-platform": {
+      "source": "/media/fengxing-platform.jpg",
+      "sourceWidth": 1620,
+      "sourceHeight": 940,
+      "profile": "content",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 279,
+          "bytes": 12682,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 279,
+          "bytes": 15206,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 279,
+          "bytes": 21936,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 446,
+          "bytes": 26974,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 446,
+          "bytes": 32922,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 446,
+          "bytes": 49448,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 743,
+          "bytes": 60091,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 743,
+          "bytes": 71546,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 743,
+          "bytes": 112590,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1620,
+          "height": 940,
+          "bytes": 90498,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1620.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1620,
+          "height": 940,
+          "bytes": 110070,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1620.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1620,
+          "height": 940,
+          "bytes": 172306,
+          "src": "/media/optimized/fengxing-platform/fengxing-platform-1620.jpg"
+        }
+      ]
+    },
+    "fengxing-data": {
+      "source": "/media/fengxing-data.jpg",
+      "sourceWidth": 1540,
+      "sourceHeight": 850,
+      "profile": "content",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 265,
+          "bytes": 8541,
+          "src": "/media/optimized/fengxing-data/fengxing-data-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 265,
+          "bytes": 10908,
+          "src": "/media/optimized/fengxing-data/fengxing-data-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 265,
+          "bytes": 17742,
+          "src": "/media/optimized/fengxing-data/fengxing-data-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 424,
+          "bytes": 17972,
+          "src": "/media/optimized/fengxing-data/fengxing-data-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 424,
+          "bytes": 22254,
+          "src": "/media/optimized/fengxing-data/fengxing-data-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 424,
+          "bytes": 38015,
+          "src": "/media/optimized/fengxing-data/fengxing-data-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 706,
+          "bytes": 40388,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 706,
+          "bytes": 48130,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 706,
+          "bytes": 82007,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1540,
+          "height": 850,
+          "bytes": 50968,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1540.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1540,
+          "height": 850,
+          "bytes": 66058,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1540.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1540,
+          "height": 850,
+          "bytes": 110741,
+          "src": "/media/optimized/fengxing-data/fengxing-data-1540.jpg"
+        }
+      ]
+    },
+    "fengxing-excel": {
+      "source": "/media/fengxing-excel.jpg",
+      "sourceWidth": 1640,
+      "sourceHeight": 790,
+      "profile": "content",
+      "variants": [
+        {
+          "format": "avif",
+          "width": 480,
+          "height": 231,
+          "bytes": 14619,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-480.avif"
+        },
+        {
+          "format": "webp",
+          "width": 480,
+          "height": 231,
+          "bytes": 17244,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-480.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 480,
+          "height": 231,
+          "bytes": 24477,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-480.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 768,
+          "height": 370,
+          "bytes": 31241,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-768.avif"
+        },
+        {
+          "format": "webp",
+          "width": 768,
+          "height": 370,
+          "bytes": 39202,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-768.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 768,
+          "height": 370,
+          "bytes": 58785,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-768.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1280,
+          "height": 617,
+          "bytes": 68460,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1280.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1280,
+          "height": 617,
+          "bytes": 83584,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1280.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1280,
+          "height": 617,
+          "bytes": 143454,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1280.jpg"
+        },
+        {
+          "format": "avif",
+          "width": 1640,
+          "height": 790,
+          "bytes": 89690,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1640.avif"
+        },
+        {
+          "format": "webp",
+          "width": 1640,
+          "height": 790,
+          "bytes": 111818,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1640.webp"
+        },
+        {
+          "format": "jpeg",
+          "width": 1640,
+          "height": 790,
+          "bytes": 219138,
+          "src": "/media/optimized/fengxing-excel/fengxing-excel-1640.jpg"
+        }
+      ]
+    }
+  }
+}

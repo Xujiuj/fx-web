@@ -1,0 +1,12 @@
+:global(.reference-page) {
+  display: flex;
+  flex-direction: column;
+}
+
+:global(.reference-page .subpage-contact) {
+  order: 2;
+}
+
+.diagramSlot {
+  order: 1;
+}
