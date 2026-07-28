@@ -51,7 +51,7 @@ jobs:
         with:
           host: 8.145.48.29
           username: root
-          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
           source: fx-web-release.tgz
           target: /tmp
           overwrite: true
@@ -61,13 +61,13 @@ jobs:
         with:
           host: 8.145.48.29
           username: root
-          password: ${{ secrets.DEPLOY_PASSWORD }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
           command_timeout: 10m
           script_stop: true
           script: |
             set -euo pipefail
             service=fx-web.service
-            target=/opt/fx/apps/website/current
+            target=/opt/fx-web/apps/website/current
             archive=/tmp/fx-web-release.tgz
 
             systemctl status "$service" --no-pager > /tmp/fx-web-status-before.log || true

@@ -6,11 +6,11 @@ After=network.target
 Type=simple
 User=fx-web
 Group=fx-web
-WorkingDirectory=/opt/fx/apps/website/current
+WorkingDirectory=/opt/fx-web/apps/website/current
 Environment=NODE_ENV=production
 Environment=HOSTNAME=127.0.0.1
 Environment=PORT=3010
-EnvironmentFile=-/opt/fx/apps/website/current/.env
+EnvironmentFile=-/opt/fx-web/apps/website/current/.env
 ExecStart=/opt/fx/runtime/node/bin/node server.js
 Restart=always
 RestartSec=5

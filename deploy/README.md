@@ -40,7 +40,7 @@ initial certificate bootstrap if unrelated subdomains are not HTTPS-ready.
 ## Release layout
 
 The deployment workflow replaces the contents of
-`/opt/fx/apps/website/current` in place after CI verification. No release
+`/opt/fx-web/apps/website/current` in place after CI verification. No release
 archive, snapshot, or previous-service copy is retained. A standalone Next.js
 release needs these items together:
 

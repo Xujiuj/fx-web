@@ -4,7 +4,7 @@
 
 - Host: `8.145.48.29`
 - User: `root`
-- Authentication: interactive deployments use the protected runtime variable `DEPLOY_SSH_PASSWORD`; GitHub Actions uses the repository secret `DEPLOY_PASSWORD`. Never write credentials to source files, Git history, terminal output, or logs.
+- Authentication: interactive deployments use an authorized SSH private key; GitHub Actions uses the repository secret `DEPLOY_SSH_KEY`. Never write credentials to source files, Git history, terminal output, or logs.
 
 ## Incident Handling
 
