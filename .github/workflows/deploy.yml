@@ -42,8 +42,9 @@ jobs:
         run: |
           mkdir -p release/.next
           cp -R .next/standalone/. release/
-          cp -R .next/static release/.next/static
-          cp -R public release/public
+          mkdir -p release/.next/static release/public
+          cp -R .next/static/. release/.next/static/
+          cp -R public/. release/public/
           tar -C release -czf fx-web-release.tgz .
 
       - name: Upload release archive

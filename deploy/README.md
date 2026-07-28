@@ -58,8 +58,11 @@ directory. If that directory has no `.env`, it moves the existing `.env` from
 The workflow installs the matching `fx-web.service` unit and reloads systemd
 before it starts the new release.
 
-Copy `.next/static` into `.next/standalone/.next/static` and `public` into
-`.next/standalone/public` before publishing the release directory. The host
+Copy the contents of `.next/static/` into `.next/standalone/.next/static/` and
+the contents of `public/` into `.next/standalone/public/` before publishing the
+release directory. Copying the directories themselves on top of an existing
+release creates nested paths and causes CSS, JavaScript, and media requests to
+return `404`. The host
 `.env` file is preserved during the in-place replacement and is never copied
 from source control.
 
