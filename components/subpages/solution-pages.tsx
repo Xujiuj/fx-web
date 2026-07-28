@@ -18,6 +18,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
+import { ReferenceDiagram } from "@/components/reference-diagram";
 import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
@@ -116,6 +117,14 @@ export function TrainingPage({ page }: SolutionPageProps) {
         </ol>
       </section>
 
+      <ReferenceDiagram
+        eyebrow="核算方法"
+        title="温室气体核算的数据建模流程"
+        description="以活动数据、排放因子、计算规则和核算结果为主线，说明企业开展核算时需要建立的数据关系。"
+        src="/media/reference-diagrams/data-modeling-flow.svg"
+        alt="企业温室气体核算数据建模流程图"
+      />
+
       <section className={styles.curriculum} aria-labelledby="curriculum-title">
         <div className={`${styles.curriculumIntro} page-reveal`}>
           <BookOpenCheck aria-hidden="true" size={34} />
@@ -183,6 +192,14 @@ export function PracticalPage({ page }: SolutionPageProps) {
           ))}
         </ol>
       </section>
+
+      <ReferenceDiagram
+        eyebrow="实施流程"
+        title="首次核算的实施步骤"
+        description="从项目准备、数据建模到成果交付，明确各阶段的工作事项和交付结果。"
+        src="/media/reference-diagrams/agile-implementation.svg"
+        alt="企业温室气体核算实施流程图"
+      />
 
       <section className={styles.deliverySection} aria-labelledby="delivery-title">
         <div className={`${styles.deliveryHeading} page-reveal`}>
@@ -257,6 +274,14 @@ export function ConsultingPage({ page }: SolutionPageProps) {
           </div>
         </div>
       </section>
+
+      <ReferenceDiagram
+        eyebrow="集团协同"
+        title="集团与成员企业的核算实施路径"
+        description="呈现集团与成员企业在口径制定、数据报送、汇总复核中的协同关系。"
+        src="/media/reference-diagrams/group-implementation.svg"
+        alt="集团与成员企业温室气体核算实施路径图"
+      />
 
       <section className={styles.responsibilitySection} aria-labelledby="responsibility-title">
         <div className={`${styles.responsibilityHeading} page-reveal`}>
@@ -333,6 +358,14 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
           <div><span>01</span><strong>业务数据层</strong><small>多组织、多年度活动数据持续沉淀</small></div>
         </div>
       </section>
+
+      <ReferenceDiagram
+        eyebrow="数据治理"
+        title="企业碳数据治理框架"
+        description="将数据标准、核算规则和管理应用纳入统一体系，为日常维护和管理分析提供清晰基础。"
+        src="/media/reference-diagrams/carbon-data-governance.svg"
+        alt="企业碳数据治理框架图"
+      />
 
       <section className={`${styles.platformRoadmap} page-reveal`} aria-labelledby="platform-roadmap-title">
         <div>
