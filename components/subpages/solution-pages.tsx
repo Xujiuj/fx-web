@@ -29,7 +29,7 @@ const solutionHeroArt = {
     alt: "企业碳核算方法的层叠抽象视觉"
   },
   practical: {
-    src: "/media/solution-practical-generated.png",
+    src: "/media/solution-platform-generated.png",
     alt: "企业活动数据到核算成果的抽象流程视觉"
   },
   consulting: {
@@ -37,7 +37,7 @@ const solutionHeroArt = {
     alt: "集团多组织协同核算的抽象网络视觉"
   },
   platform: {
-    src: "/media/solution-platform-generated.png",
+    src: "/media/solution-practical-generated.png",
     alt: "企业碳数据持续运营的抽象生态视觉"
   }
 } as const;
