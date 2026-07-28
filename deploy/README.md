@@ -52,6 +52,12 @@ node_modules/        # included by the standalone output
 .env                 # provisioned on-host, never copied from source control
 ```
 
+On the first activation at this path, the workflow creates the target
+directory. If that directory has no `.env`, it moves the existing `.env` from
+`/opt/fx/apps/website/current`; it never copies the file or creates a backup.
+The workflow installs the matching `fx-web.service` unit and reloads systemd
+before it starts the new release.
+
 Copy `.next/static` into `.next/standalone/.next/static` and `public` into
 `.next/standalone/public` before publishing the release directory. The host
 `.env` file is preserved during the in-place replacement and is never copied

@@ -52,7 +52,7 @@ jobs:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: fx-web-release.tgz
+          source: fx-web-release.tgz,deploy/fx-web.service
           target: /tmp
           overwrite: true
 
@@ -68,13 +68,21 @@ jobs:
             set -euo pipefail
             service=fx-web.service
             target=/opt/fx-web/apps/website/current
+            legacy_target=/opt/fx/apps/website/current
             archive=/tmp/fx-web-release.tgz
+            unit=/tmp/deploy/fx-web.service
 
-            systemctl status "$service" --no-pager > /tmp/fx-web-status-before.log || true
-            journalctl -u "$service" -n 200 --no-pager > /tmp/fx-web-journal-before.log || true
+            systemctl status "$service" --no-pager || true
+            journalctl -u "$service" -n 200 --no-pager || true
 
-            test -d "$target"
             test -f "$archive"
+            test -f "$unit"
+
+            install -d -o fx-web -g fx-web "$target"
+            if [ ! -f "$target/.env" ] && [ -f "$legacy_target/.env" ]; then
+              mv "$legacy_target/.env" "$target/.env"
+              chown fx-web:fx-web "$target/.env"
+            fi
 
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
@@ -82,6 +90,8 @@ jobs:
             chown -R fx-web:fx-web "$target"
             rm -f "$archive"
 
+            install -m 0644 "$unit" /etc/systemd/system/fx-web.service
+            systemctl daemon-reload
             systemctl restart "$service"
             systemctl is-active --quiet "$service"
             curl --fail --silent --show-error --max-time 15 http://127.0.0.1:3010/ > /dev/null
