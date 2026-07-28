@@ -9,13 +9,13 @@ import {
   FileCheck2,
   FileSpreadsheet,
   GraduationCap,
-  Home,
   Layers3,
   Network,
   RefreshCw,
   ShieldCheck,
   Waypoints
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
 import { ReferenceDiagram } from "@/components/reference-diagram";
@@ -23,16 +23,32 @@ import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
 
-function Breadcrumb({ label }: { label: string }) {
+const solutionHeroArt = {
+  training: {
+    src: "/media/solution-training-generated.png",
+    alt: "企业碳核算方法的层叠抽象视觉"
+  },
+  practical: {
+    src: "/media/solution-practical-generated.png",
+    alt: "企业活动数据到核算成果的抽象流程视觉"
+  },
+  consulting: {
+    src: "/media/solution-consulting-generated.png",
+    alt: "集团多组织协同核算的抽象网络视觉"
+  },
+  platform: {
+    src: "/media/solution-platform-generated.png",
+    alt: "企业碳数据持续运营的抽象生态视觉"
+  }
+} as const;
+
+function SolutionHeroArt({ variant }: { variant: keyof typeof solutionHeroArt }) {
+  const art = solutionHeroArt[variant];
+
   return (
-    <nav className={styles.breadcrumb} aria-label="面包屑">
-      <Link href="/">
-        <Home aria-hidden="true" size={14} />
-        首页
-      </Link>
-      <span aria-hidden="true">/</span>
-      <span>{label}</span>
-    </nav>
+    <figure className={styles.solutionHeroVisual}>
+      <Image src={art.src} alt={art.alt} fill priority sizes="100vw" />
+    </figure>
   );
 }
 
@@ -54,10 +70,10 @@ function ContactAction({ title }: { title: string }) {
 export function TrainingPage({ page }: SolutionPageProps) {
   return (
     <>
-      <section className={styles.standardHero}>
+      <section className={`${styles.standardHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
+        <SolutionHeroArt variant="training" />
         <div className={styles.standardHeroInner}>
           <div className={`${styles.standardHeroCopy} page-reveal`}>
-            <Breadcrumb label={page.navLabel} />
             <span className={styles.kicker}>CARBON ACCOUNTING PROGRAM</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
@@ -135,10 +151,10 @@ export function TrainingPage({ page }: SolutionPageProps) {
 export function PracticalPage({ page }: SolutionPageProps) {
   return (
     <>
-      <section className={styles.practicalHero}>
+      <section className={`${styles.practicalHero} ${styles.solutionHero} ${styles.solutionHeroDark}`}>
+        <SolutionHeroArt variant="practical" />
         <div className={styles.practicalHeroInner}>
           <div className={`${styles.practicalHeroCopy} page-reveal`}>
-            <Breadcrumb label={page.navLabel} />
             <span className={styles.kicker}>FIRST INVENTORY WORKSHOP</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
@@ -219,9 +235,9 @@ export function ConsultingPage({ page }: SolutionPageProps) {
 
   return (
     <>
-      <section className={styles.consultingHero}>
+      <section className={`${styles.consultingHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
+        <SolutionHeroArt variant="consulting" />
         <div className={`${styles.consultingHeroInner} page-reveal`}>
-          <Breadcrumb label={page.navLabel} />
           <span className={styles.kicker}>GROUP ACCOUNTING SYSTEM</span>
           <h1>{page.title}</h1>
           <p>{page.summary}</p>
@@ -305,10 +321,10 @@ export function ConsultingPage({ page }: SolutionPageProps) {
 export function PlatformSolutionPage({ page }: SolutionPageProps) {
   return (
     <>
-      <section className={styles.platformHero}>
+      <section className={`${styles.platformHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
+        <SolutionHeroArt variant="platform" />
         <div className={styles.platformHeroInner}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
-            <Breadcrumb label={page.navLabel} />
             <span className={styles.kicker}>CONTINUOUS CARBON OPERATIONS</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
