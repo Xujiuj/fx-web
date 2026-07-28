@@ -3,9 +3,7 @@ import {
   BarChart3,
   Building2,
   CheckCircle2,
-  ClipboardCheck,
   Database,
-  FileSpreadsheet,
   Gauge,
   Layers3,
   LineChart,
@@ -15,26 +13,16 @@ import {
   Table2,
   Workflow,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import type { Subpage } from "@/lib/cms-content";
-import { ReferenceDiagram } from "@/components/reference-diagram";
 import styles from "./product-pages.module.css";
 
 type ProductPageProps = { page: Subpage };
 
 const excelFeatureIcons: LucideIcon[] = [Table2, LineChart, ShieldCheck, RefreshCcw];
 const platformFeatureIcons: LucideIcon[] = [Database, Gauge, Network, BarChart3];
-
-function Breadcrumb({ label }: { label: string }) {
-  return (
-    <nav className={styles.breadcrumb} aria-label="面包屑">
-      <Link href="/">首页</Link>
-      <span aria-hidden="true">/</span>
-      <span aria-current="page">{label}</span>
-    </nav>
-  );
-}
 
 function PageCta({ title }: { title: string }) {
   return (
@@ -52,59 +40,17 @@ function PageCta({ title }: { title: string }) {
   );
 }
 
-function ExcelWorkbookPreview() {
-  const columns = ["排放类别", "活动数据", "单位", "排放因子", "核算结果"];
-  const rows = [
-    ["固定燃烧", "已维护", "标准单位", "已匹配", "自动更新"],
-    ["外购电力", "已维护", "标准单位", "已匹配", "自动更新"],
-    ["运输活动", "待补充", "标准单位", "可配置", "待核算"],
-  ];
-
-  return (
-    <div className={styles.workbook} role="img" aria-label="Excel 温室气体核算工具工作表示意">
-      <div className={styles.workbookBar}>
-        <div className={styles.fileMark}><FileSpreadsheet size={19} aria-hidden="true" /></div>
-        <strong>企业温室气体核算</strong>
-        <span>数据已保存</span>
-      </div>
-      <div className={styles.formulaBar}>
-        <span>fx</span>
-        <i>活动数据 × 排放因子</i>
-      </div>
-      <div className={styles.sheet}>
-        <div className={styles.sheetHead}>
-          {columns.map((column) => <strong key={column}>{column}</strong>)}
-        </div>
-        {rows.map((row, rowIndex) => (
-          <div className={styles.sheetRow} key={row[0]}>
-            {row.map((cell, cellIndex) => (
-              <span key={cell} className={rowIndex === 2 && cellIndex === 1 ? styles.pendingCell : undefined}>{cell}</span>
-            ))}
-          </div>
-        ))}
-      </div>
-      <div className={styles.sheetTabs}>
-        <strong>活动数据</strong>
-        <span>排放因子</span>
-        <span>核算结果</span>
-        <span>年度分析</span>
-      </div>
-    </div>
-  );
-}
-
 export function ExcelProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.excelHero}>
+        <Image className={styles.heroBackdrop} src="/media/product-excel-hero.webp" alt="" fill priority sizes="100vw" />
         <div className={styles.container}>
           <div className={`${styles.excelHeroCopy} page-reveal`}>
-            <Breadcrumb label={page.navLabel} />
-            <p className={styles.eyebrow}>EXCEL ACCOUNTING TOOL</p>
+            <p className={styles.eyebrow}>Excel 温室气体核算工具</p>
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.heroActions}>
-              <a href="#excel-workflow">查看使用流程 <ArrowRight size={17} aria-hidden="true" /></a>
               <Link href="/#contact">咨询适用版本</Link>
             </div>
             <dl className={styles.heroMetrics}>
@@ -115,9 +61,6 @@ export function ExcelProductPage({ page }: ProductPageProps) {
                 </div>
               ))}
             </dl>
-          </div>
-          <div className={`${styles.workbookWrap} page-reveal`}>
-            <ExcelWorkbookPreview />
           </div>
         </div>
       </section>
@@ -179,67 +122,8 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <ReferenceDiagram
-        eyebrow="EXCEL METHOD MAP"
-        title="Excel 建模版的标准化核算流程"
-        description="参考流程图补充展示工具内的数据维护、计算与成果输出关系，便于快速理解模板的使用边界。"
-        src="/media/reference-diagrams/excel-standard-flow.svg"
-        alt="企业温室气体核算标准化流程图，Excel 建模版"
-      />
-
-      <section id="excel-workflow" className={`${styles.excelWorkflow} ${styles.container} page-reveal`} aria-labelledby="excel-workflow-title">
-        <div className={styles.workflowIntro}>
-          <span>WORKFLOW</span>
-          <h2 id="excel-workflow-title">四步形成可复核的核算结果</h2>
-          <p>先明确组织和核算边界，再维护业务数据。工具根据配置自动完成核算与结果更新。</p>
-          <ClipboardCheck size={42} strokeWidth={1.5} aria-hidden="true" />
-        </div>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <strong>{step}</strong>
-                <p>{index === 0 ? "根据企业组织形态确认单公司版或集团版。" : index === 1 ? "梳理组织范围、运营边界与适用核算口径。" : index === 2 ? "按统一数据结构录入并维护企业活动数据。" : "生成核算结果，支持后续分析与清晰追溯。"}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <PageCta title={page.title} />
     </>
-  );
-}
-
-function PlatformDashboardPreview() {
-  return (
-    <div className={styles.dashboard} role="img" aria-label="企业碳管理数字化平台管理界面示意">
-      <aside>
-        <Database size={21} aria-hidden="true" />
-        <i />
-        <i />
-        <i />
-        <i />
-      </aside>
-      <div className={styles.dashboardMain}>
-        <div className={styles.dashboardTop}>
-          <span>碳排放管理概览</span>
-          <i>组织范围 · 本年度</i>
-        </div>
-        <div className={styles.dashboardMetrics}>
-          <div><small>组织数据</small><strong>统一管理</strong></div>
-          <div><small>核算口径</small><strong>灵活切换</strong></div>
-          <div><small>数据链路</small><strong>全程追溯</strong></div>
-        </div>
-        <div className={styles.dashboardCharts}>
-          <div className={styles.barChart}>
-            {[46, 72, 58, 84, 66, 91].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}
-          </div>
-          <div className={styles.ringChart}><span>多维<br />分析</span></div>
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -247,18 +131,15 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.platformHero}>
+        <Image className={styles.heroBackdrop} src="/media/product-platform-hero.webp" alt="" fill priority sizes="100vw" />
         <div className={styles.container}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
-            <Breadcrumb label={page.navLabel} />
-            <p className={styles.eyebrow}>CARBON MANAGEMENT PLATFORM</p>
+            <p className={styles.eyebrow}>企业碳管理数字化平台</p>
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <Link className={styles.platformHeroLink} href="/#contact">
               预约平台演示 <ArrowRight size={18} aria-hidden="true" />
             </Link>
-          </div>
-          <div className={`${styles.dashboardWrap} page-reveal`}>
-            <PlatformDashboardPreview />
           </div>
         </div>
       </section>
@@ -310,14 +191,6 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           </div>
         </div>
       </section>
-
-      <ReferenceDiagram
-        eyebrow="PLATFORM REFERENCE"
-        title="核算平台功能架构图"
-        description="通过原始平台架构图补充展示功能层级，与上方的平台能力和数据链路形成对应关系。"
-        src="/media/reference-diagrams/platform-architecture.svg"
-        alt="核算平台功能架构图"
-      />
 
       <section className={styles.dataFlow} aria-labelledby="platform-flow-title">
         <div className={styles.container}>

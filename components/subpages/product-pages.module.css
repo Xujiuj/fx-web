@@ -35,28 +35,34 @@
 }
 
 .excelHero {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
-  border-bottom: 1px solid #dfe5dc;
-  background:
-    linear-gradient(90deg, rgba(49, 95, 70, 0.045) 1px, transparent 1px) 0 0 / 52px 52px,
-    linear-gradient(rgba(49, 95, 70, 0.045) 1px, transparent 1px) 0 0 / 52px 52px,
-    #f7f9f5;
+  color: #fff;
+  background: #14211d;
 }
 
-.excelHero > .container {
-  display: grid;
-  grid-template-columns: minmax(0, 0.83fr) minmax(520px, 1.17fr);
-  gap: 68px;
-  align-items: center;
-  min-height: 650px;
-  padding-block: 72px 66px;
+.heroBackdrop {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0.94;
+}
+
+.excelHero > .container,
+.platformHero > .container {
+  position: relative;
+  z-index: 1;
+  display: block;
+  min-height: 620px;
+  padding-block: 116px 84px;
 }
 
 .excelHeroCopy h1,
 .platformHeroCopy h1 {
   max-width: 660px;
   margin: 0;
-  color: var(--text);
+  color: #fff;
   font-size: clamp(40px, 4.5vw, 62px);
   line-height: 1.13;
   letter-spacing: 0;
@@ -65,7 +71,7 @@
 .heroSummary {
   max-width: 610px;
   margin: 24px 0 0;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.8);
   font-size: 17px;
   line-height: 1.85;
 }
@@ -94,12 +100,6 @@
   transition: border-color 240ms ease, background-color 240ms ease, color 240ms ease;
 }
 
-.heroActions a:last-child {
-  color: var(--text);
-  background: rgba(255, 255, 255, 0.7);
-  border-color: #cdd7ce;
-}
-
 .heroActions a:hover,
 .heroActions a:focus-visible,
 .platformHeroLink:hover,
@@ -114,7 +114,7 @@
   grid-template-columns: repeat(3, 1fr);
   margin: 38px 0 0;
   padding-top: 23px;
-  border-top: 1px solid #d9e1d8;
+  border-top: 1px solid rgba(255, 255, 255, 0.32);
 }
 
 .heroMetrics > div {
@@ -122,13 +122,13 @@
 }
 
 .heroMetrics dt {
-  color: #78837b;
+  color: rgba(255, 255, 255, 0.66);
   font-size: 12px;
 }
 
 .heroMetrics dd {
   margin: 7px 0 0;
-  color: var(--primary-deep);
+  color: #fff;
   font-size: 20px;
   font-weight: 800;
 }
@@ -488,23 +488,11 @@
 }
 
 .platformHero {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
   color: #fff;
-  background: #244b38;
-}
-
-.platformHero > .container {
-  display: grid;
-  grid-template-columns: minmax(0, 0.82fr) minmax(520px, 1.18fr);
-  gap: 70px;
-  align-items: center;
-  min-height: 640px;
-  padding-block: 74px;
-}
-
-.platformHero .breadcrumb,
-.platformHero .breadcrumb a {
-  color: rgba(255, 255, 255, 0.65);
+  background: #0f201a;
 }
 
 .platformHero .eyebrow {
@@ -981,9 +969,7 @@
 @media (max-width: 1050px) {
   .excelHero > .container,
   .platformHero > .container {
-    grid-template-columns: 1fr;
-    gap: 54px;
-    padding-block: 60px;
+    padding-block: 88px 70px;
   }
 
   .workbookWrap,
@@ -1022,8 +1008,8 @@
 
   .excelHero > .container,
   .platformHero > .container {
-    min-height: 0;
-    padding-block: 44px 52px;
+    min-height: 520px;
+    padding-block: 84px 48px;
   }
 
   .breadcrumb {

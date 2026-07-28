@@ -361,6 +361,188 @@
   line-height: 1.6;
 }
 
+/* Industry cases: business scenarios and implementation coverage, not a link index. */
+.caseHeroIndex {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  border-left: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.caseHeroIndex > div {
+  display: grid;
+  gap: 28px;
+  min-height: 150px;
+  align-content: space-between;
+  padding: 24px;
+  border-right: 1px solid rgba(255, 255, 255, 0.28);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.caseHeroIndex span {
+  color: #efaa73;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.caseHeroIndex strong {
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.industryIntroduction {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 44px;
+  padding: 96px 0 58px;
+}
+
+.industryIntroduction h2 {
+  max-width: 720px;
+  margin: 0;
+  color: #234737;
+  font-size: 46px;
+  line-height: 1.28;
+}
+
+.industryIntroduction > p:last-child {
+  grid-column: 2;
+  max-width: 760px;
+  margin: 22px 0 0;
+  color: #657269;
+  line-height: 1.9;
+}
+
+.industryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  border-top: 1px solid #d9e2dc;
+  border-left: 1px solid #d9e2dc;
+}
+
+.industryGrid article {
+  min-height: 326px;
+  padding: 34px;
+  border-right: 1px solid #d9e2dc;
+  border-bottom: 1px solid #d9e2dc;
+}
+
+.industryCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #b7551b;
+}
+
+.industryCardTop span {
+  color: #9aaba0;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.industryGrid h2 {
+  margin: 45px 0 26px;
+  color: #234737;
+  font-size: 28px;
+  line-height: 1.3;
+}
+
+.industryGrid dl {
+  margin: 0;
+  padding: 16px 0;
+  border-top: 1px solid #e0e7e2;
+  border-bottom: 1px solid #e0e7e2;
+}
+
+.industryGrid dl div {
+  display: grid;
+  grid-template-columns: 74px 1fr;
+  gap: 14px;
+}
+
+.industryGrid dt {
+  color: #88958d;
+  font-size: 12px;
+}
+
+.industryGrid dd {
+  margin: 0;
+  color: #3d5147;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.industryGrid article > p {
+  margin: 20px 0 0;
+  color: #657269;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.caseScope {
+  margin-top: 88px;
+  padding: 92px 0;
+  color: #fff;
+  background: #244c3b;
+}
+
+.caseScope > div {
+  display: grid;
+  grid-template-columns: 0.74fr 1.26fr;
+  gap: 78px;
+}
+
+.caseScope .sectionLabel {
+  color: #f1a463;
+}
+
+.caseScopeHeading h2 {
+  max-width: 430px;
+  margin: 0;
+  font-size: 42px;
+  line-height: 1.3;
+}
+
+.caseScopeHeading > p:last-child {
+  margin: 22px 0 0;
+  color: #bed1c7;
+  line-height: 1.85;
+}
+
+.caseScope ol {
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  list-style: none;
+}
+
+.caseScope li {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 16px;
+  padding: 23px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+}
+
+.caseScope li > span {
+  color: #f1a463;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.caseScope li strong {
+  display: block;
+  font-size: 17px;
+}
+
+.caseScope li p {
+  margin: 8px 0 0;
+  color: #c7d8d0;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
 /* Knowledge: editorial lead story, dense index and an explicit learning path. */
 .knowledgeHero {
   padding: 76px 0 58px;
@@ -963,6 +1145,16 @@
     min-height: 0;
   }
 
+  .industryIntroduction,
+  .caseScope > div {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .industryIntroduction > p:last-child {
+    grid-column: 1;
+  }
+
   .caseCompass {
     width: 260px;
     height: 260px;
@@ -1070,6 +1262,34 @@
   .caseHeroCopy > p:last-child,
   .companyHeroStatement p {
     font-size: 15px;
+  }
+
+  .caseHeroIndex,
+  .industryGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .caseHeroIndex > div,
+  .industryGrid article {
+    min-height: 0;
+  }
+
+  .industryIntroduction {
+    padding: 64px 0 42px;
+  }
+
+  .industryIntroduction h2,
+  .caseScopeHeading h2 {
+    font-size: 34px;
+  }
+
+  .industryGrid article {
+    padding: 27px 22px;
+  }
+
+  .caseScope {
+    margin-top: 58px;
+    padding: 64px 0;
   }
 
   .caseCompass {

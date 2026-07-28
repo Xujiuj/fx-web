@@ -3,16 +3,18 @@ import {
   BookOpen,
   Building2,
   CheckCircle2,
-  Compass,
   Download,
+  Factory,
   FileSpreadsheet,
   GraduationCap,
   Home,
+  Landmark,
   Library,
   Network,
   ShieldCheck,
   Target,
   Waypoints,
+  Warehouse,
 } from "lucide-react";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
@@ -52,11 +54,11 @@ function ContactBand({ title }: { title: string }) {
   );
 }
 
-const caseNotes = [
-  "先统一核算方法与组织认知，再进入数据实践。",
-  "以首次核算为主线，让数据采集、校核与结果输出形成闭环。",
-  "面向多法人组织统一数据结构、核算口径与汇总方式。",
-  "把一次核算沉淀为可持续运行、可追溯的数据体系。",
+const industryCaseDetails = [
+  { label: "制造业", icon: Factory, focus: "生产环节、能源消耗与工厂边界", description: "围绕固定燃烧、外购电力和生产过程数据，梳理覆盖生产现场的核算基础。" },
+  { label: "能源与公用事业", icon: Landmark, focus: "资产边界、供能数据与年度分析", description: "将设备、站点和供能环节纳入统一口径，为多年度管理和信息披露准备数据。" },
+  { label: "园区与多组织管理", icon: Warehouse, focus: "组织分级、数据汇总与责任分工", description: "明确园区、成员企业及运营主体的职责边界，形成可持续维护的数据协同方式。" },
+  { label: "供应链与品牌企业", icon: Network, focus: "采购数据、供应商协同与范围三准备", description: "从可获得的数据出发，逐步建立供应链排放信息的收集、校核与应用基础。" },
 ];
 
 export function CasesPage({ page }: EditorialPageProps) {
@@ -65,71 +67,71 @@ export function CasesPage({ page }: EditorialPageProps) {
       <section className={styles.caseHero}>
         <div className={`${styles.wrap} ${styles.caseHeroInner}`}>
           <div className={`${styles.caseHeroCopy} page-reveal`}>
-            <Breadcrumb page={page} />
-            <SectionLabel>{page.eyebrow}</SectionLabel>
+            <SectionLabel>行业案例</SectionLabel>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
-          <div className={`${styles.caseCompass} page-reveal`} aria-hidden="true">
-            <div className={styles.compassAxis} />
-            <span className={styles.compassStart}>识别阶段</span>
-            <span className={styles.compassBuild}>建设能力</span>
-            <span className={styles.compassRun}>持续运营</span>
-            <Compass size={48} />
-          </div>
-        </div>
-      </section>
-
-      <section className={`${styles.wrap} ${styles.caseIntroduction} page-reveal`} aria-labelledby="case-intro-title">
-        <SectionLabel>DELIVERY ARCHIVE</SectionLabel>
-        <h2 id="case-intro-title">四类交付路径，对应企业不同能力阶段</h2>
-        <p>以下内容按建设方式组织，不使用未经确认的客户名称或成效数字。企业可从当前问题出发，找到更接近自身现状的实践路径。</p>
-      </section>
-
-      <section className={`${styles.wrap} ${styles.caseArchive}`} aria-label="交付案例分类">
-        {page.features.map((feature, index) => (
-          <article className={`${styles.caseRecord} page-reveal`} key={feature}>
-            <div className={styles.caseRecordIndex} aria-hidden="true">
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <i />
-            </div>
-            <div className={styles.caseRecordHeading}>
-              <small>交付类型</small>
-              <h2>{feature}</h2>
-            </div>
-            <div className={styles.caseRecordBody}>
-              <div>
-                <span>实施主线</span>
-                <strong>{page.steps[index] ?? "围绕实际业务问题形成建设路径"}</strong>
-              </div>
-              <p>{caseNotes[index] ?? "从实际问题出发，形成企业可持续使用的管理能力。"}</p>
-              <Link href={index === 0 ? "/solution-standard" : index === 1 ? "/solution-practical" : index === 2 ? "/solution-consulting" : "/solution-platform"}>
-                查看对应方案
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            </div>
-          </article>
-        ))}
-      </section>
-
-      <section className={`${styles.caseDecision} page-reveal`} aria-labelledby="case-decision-title">
-        <div className={styles.wrap}>
-          <div className={styles.caseDecisionTitle}>
-            <SectionLabel>HOW TO READ</SectionLabel>
-            <h2 id="case-decision-title">从问题到价值，按同一套维度判断</h2>
-          </div>
-          <div className={styles.caseDecisionSteps}>
-            {page.steps.map((step, index) => (
-              <div key={step}>
+          <div className={`${styles.caseHeroIndex} page-reveal`} aria-label="覆盖行业">
+            {industryCaseDetails.map((item, index) => (
+              <div key={item.label}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <p>{step}</p>
+                <strong>{page.features[index] ?? item.label}</strong>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <ContactBand title="从企业当前阶段开始匹配建设路径" />
+      <section className={`${styles.wrap} ${styles.industryIntroduction} page-reveal`} aria-labelledby="industry-intro-title">
+        <SectionLabel>业务场景</SectionLabel>
+        <h2 id="industry-intro-title">行业不同，数据基础和工作重点也不同</h2>
+        <p>以下案例按常见业务场景整理，不展示未经确认的客户名称或项目成效。企业可据此判断本单位的数据准备、组织协同与核算工作重点。</p>
+      </section>
+
+      <section className={`${styles.wrap} ${styles.industryGrid}`} aria-label="行业场景">
+        {industryCaseDetails.map((item, index) => {
+          const Icon = item.icon;
+          return (
+            <article className="page-reveal" key={item.label}>
+              <div className={styles.industryCardTop}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <Icon size={27} aria-hidden="true" />
+              </div>
+              <h2>{page.features[index] ?? item.label}</h2>
+              <dl>
+                <div>
+                  <dt>关注重点</dt>
+                  <dd>{item.focus}</dd>
+                </div>
+              </dl>
+              <p>{item.description}</p>
+            </article>
+          );
+        })}
+      </section>
+
+      <section className={`${styles.caseScope} page-reveal`} aria-labelledby="case-scope-title">
+        <div className={styles.wrap}>
+          <div className={styles.caseScopeHeading}>
+            <SectionLabel>实施范围</SectionLabel>
+            <h2 id="case-scope-title">从业务边界到管理应用，逐项明确工作范围</h2>
+            <p>实施内容以企业实际数据条件和管理目标为基础确认，不用跳转链接替代范围说明。</p>
+          </div>
+          <ol>
+            {page.steps.map((step, index) => (
+              <li key={step}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <strong>{step}</strong>
+                  <p>{index === 0 ? "结合组织结构、业务流程和管理目标，确定本次工作的边界。" : index === 1 ? "确认活动数据、能源数据及相关凭证的来源和责任人。" : index === 2 ? "统一数据口径、核算规则和内部复核方式。" : "形成可用于后续更新、分析和管理沟通的成果。"}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <ContactBand title="从行业场景开始梳理企业碳管理工作" />
     </>
   );
 }
