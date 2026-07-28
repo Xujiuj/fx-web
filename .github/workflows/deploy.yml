@@ -45,6 +45,7 @@ jobs:
           mkdir -p release/.next/static release/public
           cp -R .next/static/. release/.next/static/
           cp -R public/. release/public/
+          rm -f release/site.db
           tar -C release -czf fx-web-release.tgz .
 
       - name: Upload release archive
@@ -86,7 +87,7 @@ jobs:
             fi
 
             systemctl stop "$service"
-            find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
+            find "$target" -mindepth 1 -maxdepth 1 ! -name .env ! -name site.db -exec rm -rf -- {} +
             tar -xzf "$archive" -C "$target"
             chown -R fx-web:fx-web "$target"
             rm -f "$archive"
