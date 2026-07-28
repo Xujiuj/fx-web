@@ -57,20 +57,23 @@ export type Subpage = {
 
 type StoredSubpage = Omit<Subpage, "layout" | "sections"> & Partial<Pick<Subpage, "layout" | "sections">>;
 
-const platformImage = "/media/fengxing-platform.jpg";
-const dataImage = "/media/fengxing-data.jpg";
-const excelImage = "/media/fengxing-excel.jpg";
 const heroVisual = "/media/fengxing-hero-accounting.png";
 const heroPlatform = "/media/fengxing-hero-management.png";
+const platformImage = heroVisual;
+const dataImage = heroPlatform;
+const excelImage = "/media/about-philosophy-generated.png";
 
 const legacyB2BMedia: Record<string, string> = {
-  "/media/candidate-team-1.jpg": "/media/fengxing-excel.jpg",
-  "/media/candidate-engineer-1.jpg": "/media/fengxing-data.jpg",
-  "/media/candidate-plans-1.jpg": "/media/fengxing-platform.jpg",
-  "/media/about-vision.jpg": "/media/fengxing-platform.jpg",
+  "/media/candidate-team-1.jpg": excelImage,
+  "/media/candidate-engineer-1.jpg": dataImage,
+  "/media/candidate-plans-1.jpg": platformImage,
+  "/media/about-vision.jpg": "/media/about-vision-generated.png",
+  "/media/fengxing-data.jpg": dataImage,
+  "/media/fengxing-excel.jpg": excelImage,
+  "/media/fengxing-platform.jpg": platformImage,
   "/media/hero-carbon-warm.jpg": heroVisual,
   "/media/hero-carbon-enterprise.png": heroVisual,
-  "/media/path-carbon-warm.jpg": "/media/fengxing-platform.jpg"
+  "/media/path-carbon-warm.jpg": heroVisual
 };
 
 const legacyCertificateImages = new Set([
@@ -86,10 +89,8 @@ function b2bMedia(src: string) {
   return legacyB2BMedia[src] ?? src;
 }
 
-function heroMedia(src: string, index: number) {
-  const normalized = b2bMedia(src);
-  if (normalized === "/media/fengxing-platform.jpg") return index === 0 ? heroVisual : heroPlatform;
-  return normalized;
+function heroMedia(src: string) {
+  return b2bMedia(src);
 }
 
 function normalizeHomeContent(content: HomeContent): HomeContent {
@@ -101,7 +102,7 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
   return {
     ...content,
     navItems: hasLegacyNavigation ? defaultNavItems : content.navItems,
-    heroSlides: content.heroSlides.map((slide, index) => ({ ...slide, image: heroMedia(slide.image, index) })),
+    heroSlides: content.heroSlides.map((slide) => ({ ...slide, image: heroMedia(slide.image) })),
     solutionItems: (content.solutionItems?.length ? content.solutionItems : defaultSolutionItems).map((item) => ({ ...item, image: b2bMedia(item.image) })),
     newsItems: (hasLegacySolutionItems || storedNews.length === 0 ? defaultLatestUpdates : storedNews).map((item) => ({ ...item, image: b2bMedia(item.image) })),
     certificateImages: (content.certificateImages ?? []).filter((src) => !legacyCertificateImages.has(src)),

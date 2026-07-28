@@ -131,7 +131,7 @@ function TimelineTable({ home, onCommit, busy }: { home: HomeContent; onCommit: 
 }
 
 function SolutionsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
-  return <Tabs items={[{ key: "solutions", label: "解决方案", children: <NewsTable title="解决方案" items={home.solutionItems} image="/media/fengxing-data.jpg" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, solutionItems: items }))} /> }, { key: "news", label: "最新动态", children: <NewsTable title="最新动态" items={home.newsItems} image="/media/fengxing-data.jpg" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, newsItems: items }))} /> }]} />;
+  return <Tabs items={[{ key: "solutions", label: "解决方案", children: <NewsTable title="解决方案" items={home.solutionItems} image="/media/fengxing-hero-management.png" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, solutionItems: items }))} /> }, { key: "news", label: "最新动态", children: <NewsTable title="最新动态" items={home.newsItems} image="/media/fengxing-hero-management.png" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, newsItems: items }))} /> }]} />;
 }
 
 function NewsTable({ title, items, image, onCommit, busy }: { title: string; items: NewsItem[]; image: string; onCommit: (items: NewsItem[]) => Promise<void>; busy: boolean }) {
@@ -162,7 +162,7 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
       { title: "页面标题", dataIndex: "title" },
       { title: "页面配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || record.navLabel} /> }
     ]}
-    createItem={() => ({ id: crypto.randomUUID(), slug: "new-page", layout: "training" as const, navLabel: "新页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-data.jpg", icon: "chart" as IconKey, metrics: [], features: [], steps: [], sections: [] })}
+    createItem={() => ({ id: crypto.randomUUID(), slug: "new-page", layout: "training" as const, navLabel: "新页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart" as IconKey, metrics: [], features: [], steps: [], sections: [] })}
     onCreate={(item) => onCommit((current) => [...current, omitId(item)])}
     onUpdate={(item) => onCommit((current) => current.map((entry, index) => String(index) === item.id ? omitId(item) : entry))}
     onDelete={(item) => onCommit((current) => current.filter((_, index) => String(index) !== item.id))}

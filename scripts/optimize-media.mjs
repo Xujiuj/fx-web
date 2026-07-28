@@ -13,10 +13,7 @@ const requestedWidths = [480, 768, 1280, 1920];
 const sources = [
   { file: "fengxing-hero-accounting.png", profile: "hero" },
   { file: "fengxing-hero-management.png", profile: "hero" },
-  { file: "path-carbon-warm.jpg", profile: "content" },
-  { file: "fengxing-platform.jpg", profile: "content" },
-  { file: "fengxing-data.jpg", profile: "content" },
-  { file: "fengxing-excel.jpg", profile: "content" },
+  { file: "path-carbon-warm.jpg", profile: "content" }
 ];
 
 const formats = {

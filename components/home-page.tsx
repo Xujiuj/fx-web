@@ -17,7 +17,7 @@ import {
   Sparkles,
   Workflow
 } from "lucide-react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
@@ -42,17 +42,23 @@ const aboutPresentation = {
   about: {
     label: "关于我们",
     kicker: "ABOUT US",
-    layout: "text-only"
+    layout: "profile",
+    image: "/media/about-company-generated.png",
+    imageAlt: "企业碳数据治理的抽象层叠视觉"
   },
   mission: {
     label: "公司理念",
     kicker: "OUR PHILOSOPHY",
-    layout: "text-only"
+    layout: "philosophy",
+    image: "/media/about-philosophy-generated.png",
+    imageAlt: "可追溯碳管理方法的抽象层叠视觉"
   },
   vision: {
     label: "公司愿景",
     kicker: "COMPANY VISION",
-    layout: "text-only"
+    layout: "vision",
+    image: "/media/about-vision-generated.png",
+    imageAlt: "低碳转型愿景的全景抽象视觉"
   }
 } as const;
 
@@ -276,6 +282,7 @@ function HeroTitle({ title }: { title: string }) {
 
 function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
   const [activeValue, setActiveValue] = useState(tabs[0]?.value ?? "about");
+  const shouldReduceMotion = useReducedMotion();
   const activeTab = tabs.find((tab) => tab.value === activeValue) ?? tabs[0];
 
   if (!activeTab) return null;
@@ -283,10 +290,10 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
   const presentation = aboutPresentation[activeTab.value as keyof typeof aboutPresentation] ?? {
     label: activeTab.label,
     kicker: activeTab.kicker,
-    layout: "text-only" as const
+    layout: "profile" as const,
+    image: "/media/about-company-generated.png",
+    imageAlt: activeTab.title
   };
-
-  const copyInitial = { opacity: 0, y: 20 };
 
   return (
     <section className="about-section" id="about">
@@ -301,24 +308,102 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
         <div className="about-content" role="tabpanel" aria-labelledby={`about-tab-${activeTab.value}`}>
           <AnimatePresence mode="popLayout">
             <motion.div
-              className={`about-panel ${presentation.layout}`}
+              className={`about-panel about-panel--${presentation.layout}`}
               key={activeTab.value}
-              initial={{ opacity: 0 }}
+              initial={shouldReduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
+              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, transition: { duration: 0.2 } }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.26, ease: [0.22, 1, 0.36, 1] }}
             >
-              <motion.div
-                className="about-copy"
-                initial={copyInitial}
-                animate={{ opacity: 1, x: 0, y: 0 }}
-                transition={{ duration: 0.98, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <p className="kicker">{presentation.kicker}</p>
-                <span className="about-rule" aria-hidden="true" />
-                <h2>{activeTab.title}</h2>
-                <p>{activeTab.body}</p>
-              </motion.div>
+              {presentation.layout === "profile" ? (
+                <>
+                  <motion.div
+                    className="about-profile-copy"
+                    initial={shouldReduceMotion ? false : { opacity: 0, x: 34 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.6, delay: shouldReduceMotion ? 0 : 0.05, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <div className="about-copy-meta"><span className="about-index">01</span><p className="about-kicker">{presentation.kicker}</p></div>
+                    <h2>{activeTab.title}</h2>
+                    <span className="about-rule" aria-hidden="true" />
+                    <p>{activeTab.body}</p>
+                  </motion.div>
+                  <motion.figure
+                    className="about-profile-media about-artwork"
+                    aria-label="企业碳数据治理抽象视觉"
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 22, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.68, delay: shouldReduceMotion ? 0 : 0.16, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 46vw" />
+                    <span className="about-artwork-grid" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-a" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-b" aria-hidden="true" />
+                    <span className="about-artwork-route" aria-hidden="true" />
+                    <figcaption>{presentation.label}</figcaption>
+                  </motion.figure>
+                  <motion.span className="about-profile-line" aria-hidden="true" initial={shouldReduceMotion ? false : { scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.7, delay: shouldReduceMotion ? 0 : 0.28 }} />
+                </>
+              ) : null}
+              {presentation.layout === "philosophy" ? (
+                <>
+                  <motion.figure
+                    className="about-philosophy-media about-artwork"
+                    aria-label="可追溯碳管理方法抽象视觉"
+                    initial={shouldReduceMotion ? false : { opacity: 0, x: -42 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 34vw" />
+                    <span className="about-artwork-grid" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-a" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-b" aria-hidden="true" />
+                    <span className="about-artwork-route" aria-hidden="true" />
+                    <span className="about-philosophy-frame" aria-hidden="true" />
+                  </motion.figure>
+                  <motion.div
+                    className="about-philosophy-copy"
+                    initial={shouldReduceMotion ? false : { opacity: 0, x: 42 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.1, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p className="about-kicker">{presentation.kicker}</p>
+                    <span className="about-rule" aria-hidden="true" />
+                    <h2>{activeTab.title}</h2>
+                    <p>{activeTab.body}</p>
+                  </motion.div>
+                </>
+              ) : null}
+              {presentation.layout === "vision" ? (
+                <>
+                  <motion.figure
+                    className="about-vision-media about-artwork"
+                    aria-label="低碳转型愿景抽象视觉"
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: -30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.64, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 72vw" />
+                    <span className="about-artwork-grid" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-a" aria-hidden="true" />
+                    <span className="about-artwork-plane about-artwork-plane-b" aria-hidden="true" />
+                    <span className="about-artwork-route" aria-hidden="true" />
+                    <span className="about-vision-panel about-vision-panel-a" aria-hidden="true" />
+                    <span className="about-vision-panel about-vision-panel-b" aria-hidden="true" />
+                  </motion.figure>
+                  <motion.div
+                    className="about-vision-copy"
+                    initial={shouldReduceMotion ? false : { opacity: 0, y: 22 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.56, delay: shouldReduceMotion ? 0 : 0.16, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    <p className="about-kicker">{presentation.kicker}</p>
+                    <span className="about-rule" aria-hidden="true" />
+                    <h2>{activeTab.title}</h2>
+                    <p>{activeTab.body}</p>
+                  </motion.div>
+                </>
+              ) : null}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -358,19 +443,20 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
         <div className="latest-updates-list">
           {items.map((item, index) => (
             <a className="latest-update" href={item.href} key={item.title}>
-              <span className="latest-update-index">0{index + 1}</span>
+              <span className="latest-update-icon" aria-hidden="true">
+                {index % 3 === 0 ? <BarChart3 size={40} strokeWidth={1.45} /> : null}
+                {index % 3 === 1 ? <DatabaseZap size={40} strokeWidth={1.45} /> : null}
+                {index % 3 === 2 ? <LineChart size={40} strokeWidth={1.45} /> : null}
+              </span>
               <div>
                 <p>{item.action}</p>
                 <h3>{item.title}</h3>
                 {item.summary ? <span>{item.summary}</span> : null}
               </div>
-              <ArrowRight size={18} aria-hidden="true" />
+              <span className="latest-update-action">了解更多 <ArrowRight size={15} aria-hidden="true" /></span>
             </a>
           ))}
         </div>
-        <Link className="latest-updates-more" href="/knowledge-center">
-          查看全部动态 <ArrowRight size={16} />
-        </Link>
       </div>
     </section>
   );
