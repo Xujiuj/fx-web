@@ -1,0 +1,88 @@
+name: Build And Deploy
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build standalone release
+        run: npm run build
+
+      - name: Package release
+        run: |
+          mkdir -p release/.next
+          cp -R .next/standalone/. release/
+          cp -R .next/static release/.next/static
+          cp -R public release/public
+          tar -C release -czf fx-web-release.tgz .
+
+      - name: Upload release archive
+        uses: appleboy/scp-action@v1
+        with:
+          host: 8.145.48.29
+          username: root
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          source: fx-web-release.tgz
+          target: /tmp
+          overwrite: true
+
+      - name: Replace production service
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 8.145.48.29
+          username: root
+          password: ${{ secrets.DEPLOY_PASSWORD }}
+          command_timeout: 10m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            service=fx-web.service
+            target=/opt/fx/apps/website/current
+            archive=/tmp/fx-web-release.tgz
+
+            systemctl status "$service" --no-pager > /tmp/fx-web-status-before.log || true
+            journalctl -u "$service" -n 200 --no-pager > /tmp/fx-web-journal-before.log || true
+
+            test -d "$target"
+            test -f "$archive"
+
+            systemctl stop "$service"
+            find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
+            tar -xzf "$archive" -C "$target"
+            chown -R fx-web:fx-web "$target"
+            rm -f "$archive"
+
+            systemctl restart "$service"
+            systemctl is-active --quiet "$service"
+            curl --fail --silent --show-error --max-time 15 http://127.0.0.1:3010/ > /dev/null
+            journalctl -u "$service" -p warning -n 50 --no-pager

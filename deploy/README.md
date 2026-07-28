@@ -39,8 +39,9 @@ initial certificate bootstrap if unrelated subdomains are not HTTPS-ready.
 
 ## Release layout
 
-Deploy immutable releases below `/opt/fx/apps/website/releases/<release-id>` and
-point `/opt/fx/apps/website/current` at the active release. A standalone Next.js
+The deployment workflow replaces the contents of
+`/opt/fx/apps/website/current` in place after CI verification. No release
+archive, snapshot, or previous-service copy is retained. A standalone Next.js
 release needs these items together:
 
 ```text
@@ -52,8 +53,9 @@ node_modules/        # included by the standalone output
 ```
 
 Copy `.next/static` into `.next/standalone/.next/static` and `public` into
-`.next/standalone/public` before publishing the release directory. Preserve the
-previous `current` target until post-deploy checks pass.
+`.next/standalone/public` before publishing the release directory. The host
+`.env` file is preserved during the in-place replacement and is never copied
+from source control.
 
 The Nginx cache policy is deliberately narrow:
 
@@ -103,15 +105,9 @@ origin for HTTP and `www`, and
 Also exercise the contact form and an authenticated admin login after each
 release; a homepage-only check does not cover the database or write paths.
 
-## Rollback
+## Incident recovery
 
-1. Repoint `/opt/fx/apps/website/current` to the previous release using an
-   atomic symlink replacement.
-2. Restart `fx-web.service` and verify `http://127.0.0.1:3010/` returns success.
-3. Run `sudo nginx -t`; reload Nginx only if its configuration changed as part
-   of the rollback.
-4. Recheck the canonical HTTPS homepage, one subpage, admin login, and contact
-   form. Retain failed release logs until the cause is understood.
-
-Database changes require their own backward-compatible rollback plan before
-deployment. Never point an old application release at a schema it cannot read.
+When a deployment fails, inspect the service and deployment logs first, trace
+the root cause, and deploy a corrected version. Do not apply speculative
+patches or restore a prior service copy. Database changes require their own
+forward-compatible migration plan before deployment.
