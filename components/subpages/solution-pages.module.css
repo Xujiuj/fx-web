@@ -505,24 +505,24 @@
 .consultingHeroInner {
   position: relative;
   z-index: 1;
-  width: min(calc(100% - 48px), 930px);
+  width: min(calc(100% - 48px), 1140px);
   min-height: 560px;
   margin: 0 auto;
   padding: 72px 0;
-  text-align: center;
+  text-align: left;
 }
 
 .consultingHeroInner h1,
 .consultingHeroInner > p {
-  margin-right: auto;
-  margin-left: auto;
+  margin-right: 0;
+  margin-left: 0;
 }
 
 .consultingHeroInner dl {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  max-width: 720px;
-  margin: 58px auto 0;
+  max-width: 660px;
+  margin: 48px 0 0;
   border-top: 1px solid #cdd8d0;
   border-bottom: 1px solid #cdd8d0;
 }

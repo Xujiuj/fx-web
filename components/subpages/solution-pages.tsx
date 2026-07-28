@@ -18,7 +18,6 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
-import { ReferenceDiagram } from "@/components/reference-diagram";
 import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
@@ -74,7 +73,7 @@ export function TrainingPage({ page }: SolutionPageProps) {
         <SolutionHeroArt variant="training" />
         <div className={styles.standardHeroInner}>
           <div className={`${styles.standardHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>CARBON ACCOUNTING PROGRAM</span>
+            <span className={styles.kicker}>温室气体核算培训</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
@@ -82,8 +81,8 @@ export function TrainingPage({ page }: SolutionPageProps) {
             <div className={styles.courseBriefTitle}>
               <GraduationCap aria-hidden="true" size={28} />
               <div>
-                <span>培训成果</span>
-                <strong>把标准转化为企业可执行的方法</strong>
+              <span>培训收获</span>
+              <strong>让核算方法进入企业日常工作</strong>
               </div>
             </div>
             <dl>
@@ -100,9 +99,9 @@ export function TrainingPage({ page }: SolutionPageProps) {
 
       <section className={`${styles.standardPath} page-reveal`} aria-labelledby="standard-path-title">
         <header>
-          <span>LEARNING PATH</span>
-          <h2 id="standard-path-title">从统一认知到独立核算</h2>
-          <p>围绕企业真实组织边界、活动数据与核算口径组织培训，让学习成果直接进入日常工作。</p>
+          <span>培训安排</span>
+          <h2 id="standard-path-title">把培训内容落到实际工作</h2>
+          <p>围绕企业组织边界、活动数据和核算口径开展讲解与演练，帮助参与人员明确后续工作的做法。</p>
         </header>
         <ol>
           {page.steps.map((step, index) => (
@@ -110,32 +109,24 @@ export function TrainingPage({ page }: SolutionPageProps) {
               <span>{String(index + 1).padStart(2, "0")}</span>
               <div>
                 <strong>{step}</strong>
-                <p>{index === 0 ? "明确参与人员、现有基础与本次培训目标。" : index === 1 ? "结合适用标准理解组织边界、运营边界与核算原则。" : index === 2 ? "用企业场景完成数据维护、因子匹配和结果校核。" : "形成可复用的台账、方法与内部协作机制。"}</p>
+                <p>{index === 0 ? "明确参与人员、现有基础和本次培训范围。" : index === 1 ? "结合适用标准梳理组织边界、排放源和数据来源。" : index === 2 ? "用企业实际场景完成数据维护、因子匹配和结果复核。" : "形成后续核算可直接使用的工作清单和台账要求。"}</p>
               </div>
             </li>
           ))}
         </ol>
       </section>
 
-      <ReferenceDiagram
-        eyebrow="METHOD REFERENCE"
-        title="标准化流程图：把方法落实到每一笔活动数据"
-        description="以原始参考图呈现从活动数据、排放因子到核算成果的标准化关系，培训现场可直接结合该结构开展讲解。"
-        src="/media/reference-diagrams/data-modeling-flow.svg"
-        alt="企业温室气体核算数据建模流程图"
-      />
-
       <section className={styles.curriculum} aria-labelledby="curriculum-title">
         <div className={`${styles.curriculumIntro} page-reveal`}>
           <BookOpenCheck aria-hidden="true" size={34} />
           <span>课程目录</span>
-          <h2 id="curriculum-title">标准、工具与案例组成一套完整课程</h2>
-          <p>课程内容既覆盖核算依据，也保留足够的实操时间，适合企业内部统一方法和培养执行人员。</p>
+          <h2 id="curriculum-title">围绕企业实际工作的课程安排</h2>
+          <p>课程覆盖核算依据、数据准备和结果复核，并结合企业场景安排实操演练。</p>
         </div>
         <div className={styles.curriculumList}>
           {page.features.map((feature, index) => (
             <article className="page-reveal" key={feature}>
-              <span>MODULE {String(index + 1).padStart(2, "0")}</span>
+              <span>课程 {String(index + 1).padStart(2, "0")}</span>
               <h3>{feature}</h3>
               <Check aria-hidden="true" size={18} />
             </article>
@@ -143,7 +134,7 @@ export function TrainingPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      <ContactAction title="为企业安排一套可落地的核算培训" />
+      <ContactAction title="为企业安排温室气体核算培训" />
     </>
   );
 }
@@ -155,7 +146,7 @@ export function PracticalPage({ page }: SolutionPageProps) {
         <SolutionHeroArt variant="practical" />
         <div className={styles.practicalHeroInner}>
           <div className={`${styles.practicalHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>FIRST INVENTORY WORKSHOP</span>
+            <span className={styles.kicker}>首次核算实施</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
@@ -171,7 +162,7 @@ export function PracticalPage({ page }: SolutionPageProps) {
             <div className={styles.workbenchResult}>
               <ClipboardCheck aria-hidden="true" size={30} />
               <span>核算成果</span>
-              <strong>可复核</strong>
+              <strong>结果可复核</strong>
             </div>
           </div>
         </div>
@@ -179,33 +170,25 @@ export function PracticalPage({ page }: SolutionPageProps) {
 
       <section className={`${styles.inventoryFlow} page-reveal`} aria-labelledby="inventory-flow-title">
         <div className={styles.flowHeading}>
-          <span>WORKFLOW</span>
-          <h2 id="inventory-flow-title">首次核算的四道连续工序</h2>
+          <span>实施步骤</span>
+          <h2 id="inventory-flow-title">完成首次核算的工作安排</h2>
         </div>
         <ol>
           {page.steps.map((step, index) => (
             <li key={step}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <strong>{step}</strong>
-              <small>{index === 0 ? "确认组织与运营边界" : index === 1 ? "补齐来源与凭证信息" : index === 2 ? "统一计算规则" : "形成可持续更新的成果"}</small>
+              <small>{index === 0 ? "确认组织范围和核算边界" : index === 1 ? "补齐数据来源与凭证信息" : index === 2 ? "核对排放因子与计算规则" : "交付可用于后续更新的核算结果"}</small>
             </li>
           ))}
         </ol>
       </section>
 
-      <ReferenceDiagram
-        eyebrow="IMPLEMENTATION ROUTE"
-        title="敏捷实施技术路线：每一步都有可校核的输出"
-        description="参考图将项目中的准备、建模、核算与交付连接起来，和实战营的工作节奏一一对应。"
-        src="/media/reference-diagrams/agile-implementation.svg"
-        alt="企业温室气体核算敏捷实施技术路线图"
-      />
-
       <section className={styles.deliverySection} aria-labelledby="delivery-title">
         <div className={`${styles.deliveryHeading} page-reveal`}>
-          <span>DELIVERABLES</span>
-          <h2 id="delivery-title">项目过程中同步校核，交付后可以继续使用</h2>
-          <p>不是一次性的结果计算，而是将企业核算所需的数据结构、计算规则和复核方法一并留下。</p>
+          <span>交付内容</span>
+          <h2 id="delivery-title">项目完成后可继续使用的核算基础</h2>
+          <p>除核算结果外，项目还会整理数据结构、计算规则和复核要求，便于企业后续年度更新。</p>
         </div>
         <div className={styles.deliveryRows}>
           {page.features.map((feature, index) => (
@@ -221,7 +204,7 @@ export function PracticalPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      <ContactAction title="从企业真实数据开始第一次完整核算" />
+      <ContactAction title="从企业现有数据开始首次核算" />
     </>
   );
 }
@@ -238,7 +221,7 @@ export function ConsultingPage({ page }: SolutionPageProps) {
       <section className={`${styles.consultingHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
         <SolutionHeroArt variant="consulting" />
         <div className={`${styles.consultingHeroInner} page-reveal`}>
-          <span className={styles.kicker}>GROUP ACCOUNTING SYSTEM</span>
+          <span className={styles.kicker}>集团核算建设</span>
           <h1>{page.title}</h1>
           <p>{page.summary}</p>
           <dl>
@@ -254,9 +237,9 @@ export function ConsultingPage({ page }: SolutionPageProps) {
 
       <section className={`${styles.organization} page-reveal`} aria-labelledby="organization-title">
         <header>
-          <span>ORGANIZATION</span>
-          <h2 id="organization-title">集团统一核算架构</h2>
-          <p>统一规则由集团沉淀，核算工作在各层级有序开展，最终形成可追溯的集团数据。</p>
+          <span>组织分工</span>
+          <h2 id="organization-title">集团与成员企业的核算分工</h2>
+          <p>集团负责统一规则和汇总要求，成员企业负责数据维护与本单位核算，共同形成可追溯的集团数据。</p>
         </header>
         <div className={styles.organizationTree}>
           <div className={styles.organizationRoot}>
@@ -274,14 +257,6 @@ export function ConsultingPage({ page }: SolutionPageProps) {
           </div>
         </div>
       </section>
-
-      <ReferenceDiagram
-        eyebrow="GROUP PATH"
-        title="集团与分子公司的实施路径"
-        description="保留参考图中的分层推进关系，帮助管理者快速确认集团与各组织单元的协作边界。"
-        src="/media/reference-diagrams/group-implementation.svg"
-        alt="集团和分子公司实施路径图"
-      />
 
       <section className={styles.responsibilitySection} aria-labelledby="responsibility-title">
         <div className={`${styles.responsibilityHeading} page-reveal`}>
@@ -313,7 +288,7 @@ export function ConsultingPage({ page }: SolutionPageProps) {
         </ol>
       </section>
 
-      <ContactAction title="建立适合集团组织方式的统一核算体系" />
+      <ContactAction title="建立适合集团组织方式的核算体系" />
     </>
   );
 }
@@ -325,7 +300,7 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
         <SolutionHeroArt variant="platform" />
         <div className={styles.platformHeroInner}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>CONTINUOUS CARBON OPERATIONS</span>
+            <span className={styles.kicker}>碳数据管理平台</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
@@ -347,9 +322,9 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
       <section className={styles.platformLayers} aria-labelledby="platform-layers-title">
         <div className={`${styles.platformLayersIntro} page-reveal`}>
           <Layers3 aria-hidden="true" size={36} />
-          <span>GOVERNANCE LAYERS</span>
-          <h2 id="platform-layers-title">从底层数据到管理决策的四层体系</h2>
-          <p>数据只维护一次，由统一核算引擎承接不同标准、组织和年度的计算与分析。</p>
+          <span>平台结构</span>
+          <h2 id="platform-layers-title">从业务数据到管理分析的四层结构</h2>
+          <p>企业统一维护基础数据，平台按照不同标准、组织和年度完成核算与分析。</p>
         </div>
         <div className={`${styles.layerStack} page-reveal`}>
           <div><span>04</span><strong>管理应用层</strong><small>趋势、强度、基准年与经营决策</small></div>
@@ -358,14 +333,6 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
           <div><span>01</span><strong>业务数据层</strong><small>多组织、多年度活动数据持续沉淀</small></div>
         </div>
       </section>
-
-      <ReferenceDiagram
-        eyebrow="GOVERNANCE REFERENCE"
-        title="碳数据治理与标准体系"
-        description="将数据标准、核算逻辑与管理应用放在同一张参考图中，明确持续运营的治理基础。"
-        src="/media/reference-diagrams/carbon-data-governance.svg"
-        alt="碳数据治理与标准体系图"
-      />
 
       <section className={`${styles.platformRoadmap} page-reveal`} aria-labelledby="platform-roadmap-title">
         <div>
@@ -383,7 +350,7 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
         </ol>
       </section>
 
-      <ContactAction title="把一次核算升级为可持续运营的管理能力" />
+      <ContactAction title="为企业建设可持续使用的碳数据管理平台" />
     </>
   );
 }
