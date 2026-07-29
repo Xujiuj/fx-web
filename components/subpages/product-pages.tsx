@@ -16,6 +16,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
+import { ReferenceDiagram } from "@/components/reference-diagram";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./product-pages.module.css";
 
@@ -122,6 +123,14 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
+      <ReferenceDiagram
+        eyebrow="核算方法"
+        title="Excel 工具的数据维护与核算关系"
+        description="说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"
+        src="/media/reference-diagrams/excel-standard-flow.svg"
+        alt="Excel 温室气体核算工具的数据维护与核算关系图"
+      />
+
       <PageCta title={page.title} />
     </>
   );
@@ -191,6 +200,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           </div>
         </div>
       </section>
+
+      <ReferenceDiagram
+        eyebrow="平台架构"
+        title="企业碳管理平台功能架构"
+        description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
+        src="/media/reference-diagrams/platform-architecture.svg"
+        alt="企业碳管理平台功能架构图"
+      />
 
       <section className={styles.dataFlow} aria-labelledby="platform-flow-title">
         <div className={styles.container}>
