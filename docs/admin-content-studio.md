@@ -15,7 +15,7 @@
 
 - 内容管理：单一工作区，按“基础设置、首页编排、解决方案与动态、产品中心、资质与伙伴、独立页面”分区。
 - 账号管理：独立系统功能。
-- 历史 `/admin/site/*`、`/admin/business/*`、`/admin/assets/proof` 和 `/admin/pages` 地址重定向到内容管理，避免旧书签失效。
+- 不保留历史后台目录或兼容跳转。平台入口固定为 `/admin/content`、`/admin/system/users` 和 `/admin/login`。
 
 ## 接口契约
 
