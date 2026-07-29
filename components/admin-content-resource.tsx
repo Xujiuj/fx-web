@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { App, Button, Card, Col, Descriptions, Form, Image, Input, Modal, Row, Space, Spin, Tabs, Upload, type UploadProps } from "antd";
+import { App, Button, Card, Col, Descriptions, Form, Image, Input, Modal, Row, Space, Spin, Tabs, Tag, Upload, type UploadProps } from "antd";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from "@ant-design/icons";
 import { ModalForm, PageContainer, ProFormList, ProFormSelect, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
 import type { HomeContent, IconKey, NavItem, NewsItem, PartnerItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
 
-export type AdminContentResourceName = "site" | "home" | "solutions" | "products" | "proof" | "pages";
+export type AdminContentResourceName = "site" | "menu" | "home" | "solutions" | "products" | "proof" | "pages";
 type RowItem = { id: string };
 type MenuRow = NavItem & RowItem;
 type NewsRow = NewsItem & RowItem;
@@ -16,16 +16,19 @@ type TimelineRow = HomeContent["timeline"][number] & RowItem;
 type ProductRow = HomeContent["products"][number] & RowItem;
 type CertificateRow = { id: string; image: string };
 type PartnerRow = PartnerItem & RowItem;
-type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }> };
+type PageRow = Omit<Subpage, "media"> & RowItem & { exists: boolean; mediaEntries: Array<{ key: string; path: string }> };
 
 const copy: Record<AdminContentResourceName, { title: string; description: string }> = {
-  site: { title: "基础设置", description: "维护品牌、导航、联系信息、能力标签与页脚。" },
+  site: { title: "基础设置", description: "维护品牌、联系信息、能力标签与页脚。" },
+  menu: { title: "菜单管理", description: "维护官网主导航、二级菜单与跳转链接。" },
   home: { title: "首页编排", description: "维护首页横幅、公司介绍与能力路径。" },
   solutions: { title: "解决方案与动态", description: "解决方案和资讯内容分表管理。" },
   products: { title: "产品中心", description: "管理产品卡片及其前台跳转链接。" },
   proof: { title: "资质与伙伴", description: "管理资质证书和合作伙伴，未配置时前台保留空白。" },
   pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" }
 };
+
+const studioResources: AdminContentResourceName[] = ["site", "home", "solutions", "products", "proof"];
 
 function MediaPreview({ src, alt, width = 96, height = 64 }: { src?: string; alt: string; width?: number; height?: number }) {
   if (!src) return <div style={{ width, height, display: "grid", placeItems: "center", gap: 2, color: "#8c8c8c", border: "1px dashed #d9d9d9", borderRadius: 6, fontSize: 12 }}><PictureOutlined /><span>未上传</span></div>;
@@ -61,7 +64,7 @@ function ImageUploadField({ name, label, required = false, hint = "支持 JPG、
   return <><Form.Item name={name} hidden rules={required ? [{ required: true, message: `请上传${label}` }] : []}><Input /></Form.Item><Form.Item label={label} required={required} extra={hint} validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space align="start" size="middle"><MediaPreview src={imagePath} alt={label} width={128} height={84} /><Space direction="vertical" size={8}><Upload accept="image/jpeg,image/png,image/webp,image/gif" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{imagePath ? "更换图片" : "上传图片"}</Button></Upload>{imagePath ? <Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除图片</Button> : null}</Space></Space></Form.Item></>;
 }
 
-function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCreate, onUpdate, onDelete, children, busy }: {
+function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCreate, onUpdate, onDelete, children, busy, allowCreate = true, canDelete = () => true }: {
   title: string;
   rows: T[];
   columns: ProColumns<T>[];
@@ -71,15 +74,17 @@ function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCrea
   onDelete: (item: T) => Promise<void>;
   children: React.ReactNode;
   busy: boolean;
+  allowCreate?: boolean;
+  canDelete?: (item: T) => boolean;
 }) {
   const [editing, setEditing] = useState<T | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<T | null>(null);
-  const actionColumn: ProColumns<T> = { title: "操作", valueType: "option", width: 120, render: (_, record) => [<Button key="edit" type="link" size="small" icon={<EditOutlined />} onClick={() => { setEditing(record); setIsNew(false); }}>编辑</Button>, <Button key="delete" type="link" danger size="small" icon={<DeleteOutlined />} onClick={() => setDeleteTarget(record)}>删除</Button>] };
-  return <><ProTable<T> rowKey="id" headerTitle={title} dataSource={rows} loading={busy} search={false} columns={[...columns, actionColumn]} options={{ density: true, fullScreen: true, reload: false, setting: true }} pagination={{ pageSize: 10, showSizeChanger: true }} toolBarRender={() => [<Button key="create" type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(createItem()); setIsNew(true); }}>新增</Button>]} /><ModalForm<T> key={`${isNew}-${editing?.id ?? "closed"}`} title={isNew ? `新增${title}` : `编辑${title}`} open={Boolean(editing)} initialValues={editing ?? undefined} modalProps={{ destroyOnHidden: true, onCancel: () => setEditing(null) }} submitter={{ searchConfig: { submitText: "保存" }, submitButtonProps: { loading: busy } }} onFinish={async (values) => { if (!editing) return false; const next = { ...editing, ...values } as T; if (isNew) await onCreate(next); else await onUpdate(next); setEditing(null); return true; }}>{children}</ModalForm><Modal title="确认删除" open={Boolean(deleteTarget)} okText="删除" okButtonProps={{ danger: true, loading: busy }} cancelText="取消" onCancel={() => setDeleteTarget(null)} onOk={async () => { if (!deleteTarget) return; await onDelete(deleteTarget); setDeleteTarget(null); }}>删除后会立即同步到前台，此操作不可撤销。</Modal></>;
+  const actionColumn: ProColumns<T> = { title: "操作", valueType: "option", width: 120, render: (_, record) => [<Button key="edit" type="link" size="small" icon={<EditOutlined />} onClick={() => { setEditing(record); setIsNew(false); }}>编辑</Button>, canDelete(record) ? <Button key="delete" type="link" danger size="small" icon={<DeleteOutlined />} onClick={() => setDeleteTarget(record)}>删除</Button> : null] };
+  return <><ProTable<T> rowKey="id" headerTitle={title} dataSource={rows} loading={busy} search={false} columns={[...columns, actionColumn]} options={{ density: true, fullScreen: true, reload: false, setting: true }} pagination={{ pageSize: 10, showSizeChanger: true }} toolBarRender={allowCreate ? () => [<Button key="create" type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(createItem()); setIsNew(true); }}>新增</Button>] : undefined} /><ModalForm<T> key={`${isNew}-${editing?.id ?? "closed"}`} title={isNew ? `新增${title}` : `编辑${title}`} open={Boolean(editing)} initialValues={editing ?? undefined} modalProps={{ destroyOnHidden: true, onCancel: () => setEditing(null) }} submitter={{ searchConfig: { submitText: "保存" }, submitButtonProps: { loading: busy } }} onFinish={async (values) => { if (!editing) return false; const next = { ...editing, ...values } as T; if (isNew) await onCreate(next); else await onUpdate(next); setEditing(null); return true; }}>{children}</ModalForm><Modal title="确认删除" open={Boolean(deleteTarget)} okText="删除" okButtonProps={{ danger: true, loading: busy }} cancelText="取消" onCancel={() => setDeleteTarget(null)} onOk={async () => { if (!deleteTarget) return; await onDelete(deleteTarget); setDeleteTarget(null); }}>删除后会立即同步到前台，此操作不可撤销。</Modal></>;
 }
 
-export function AdminContentResource({ resource, initialContent }: { resource?: AdminContentResourceName; initialContent: SiteContentBundle }) {
+export function AdminContentResource({ resource, initialContent, pageSlugs, title, description }: { resource?: AdminContentResourceName; initialContent: SiteContentBundle; pageSlugs?: string[]; title?: string; description?: string }) {
   const [activeResource, setActiveResource] = useState<AdminContentResourceName>(resource ?? "site");
   const [home, setHome] = useState(initialContent.home);
   const [subpages, setSubpages] = useState(initialContent.subpages);
@@ -119,19 +124,20 @@ export function AdminContentResource({ resource, initialContent }: { resource?: 
   const isStudio = resource === undefined;
   return (
     <PageContainer
-      title={isStudio ? "内容管理" : current.title}
-      content={isStudio ? "所有官网展示内容均在此处维护；保存后会同步到前台。" : current.description}
+      title={title ?? (isStudio ? "内容管理" : current.title)}
+      content={description ?? (isStudio ? "所有官网展示内容均在此处维护；保存后会同步到前台。" : current.description)}
       extra={[<Button key="reload" icon={<ReloadOutlined />} onClick={() => window.location.reload()} disabled={busy}>重新载入</Button>]}
     >
       <Spin spinning={busy} tip="正在保存内容">
         <Space direction="vertical" size="large" style={{ width: "100%" }}>
-          {isStudio ? <Tabs activeKey={selectedResource} onChange={(key) => setActiveResource(key as AdminContentResourceName)} items={Object.entries(copy).map(([key, item]) => ({ key, label: item.title }))} /> : null}
+          {isStudio ? <Tabs activeKey={selectedResource} onChange={(key) => setActiveResource(key as AdminContentResourceName)} items={studioResources.map((key) => ({ key, label: copy[key].title }))} /> : null}
           {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "menu" ? <MenuManager home={home} onCommit={changeHome} busy={busy} /> : null}
           {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
           {selectedResource === "solutions" ? <SolutionsManager home={home} onCommit={changeHome} busy={busy} /> : null}
           {selectedResource === "products" ? <ProductsManager home={home} onCommit={changeHome} busy={busy} /> : null}
           {selectedResource === "proof" ? <ProofManager home={home} onCommit={changeHome} busy={busy} /> : null}
-          {selectedResource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
+          {selectedResource === "pages" ? <PagesManager pages={subpages} visibleSlugs={pageSlugs} onCommit={changePages} busy={busy} /> : null}
         </Space>
       </Spin>
     </PageContainer>
@@ -149,7 +155,7 @@ function MenuManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (u
 }
 
 function SiteSettingsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
-  return <Tabs items={[{ key: "brand", label: "品牌与主页", children: <BrandManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "navigation", label: "导航菜单", children: <MenuManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "metadata", label: "站点标题与描述", children: <SiteMetadataManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "site-copy", label: "全站文案", children: <HomeSettings home={home} onCommit={onCommit} busy={busy} /> }]} />;
+  return <Tabs items={[{ key: "brand", label: "品牌与主页", children: <BrandManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "metadata", label: "站点标题与描述", children: <SiteMetadataManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "site-copy", label: "全站文案", children: <HomeSettings home={home} onCommit={onCommit} busy={busy} /> }]} />;
 }
 
 function SiteMetadataManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
@@ -206,25 +212,30 @@ function ProofManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (
   return <Tabs items={[{ key: "certificates", label: "资质证书", children: <CrudTable title="证书" rows={certificates} busy={busy} columns={[{ title: "证书预览", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt="资质证书" width={72} height={96} /> }]} createItem={() => ({ id: crypto.randomUUID(), image: "" })} onCreate={(item) => onCommit((current) => ({ ...current, certificateImages: [...current.certificateImages, item.image] }))} onUpdate={(item) => onCommit((current) => ({ ...current, certificateImages: current.certificateImages.map((image, index) => String(index) === item.id ? item.image : image) }))} onDelete={(item) => onCommit((current) => ({ ...current, certificateImages: current.certificateImages.filter((_, index) => String(index) !== item.id) }))}><ImageUploadField name="image" label="证书图片" required hint="建议使用竖版证书扫描件或清晰电子证书。" /></CrudTable> }, { key: "partners", label: "合作伙伴", children: <CrudTable title="合作伙伴" rows={partners} busy={busy} columns={[{ title: "伙伴名称", dataIndex: "name" }, { title: "Logo 预览", dataIndex: "logo", render: (_, record) => <MediaPreview src={record.logo} alt={record.name || "伙伴 Logo"} width={144} height={58} /> }]} createItem={() => ({ id: crypto.randomUUID(), name: "", logo: "" })} onCreate={(item) => onCommit((current) => ({ ...current, partners: [...current.partners, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, partners: current.partners.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, partners: current.partners.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="name" label="伙伴名称" rules={[{ required: true }]} /><ImageUploadField name="logo" label="伙伴 Logo" hint="未上传 Logo 时，前台会显示伙伴名称。" /></CrudTable> }]} />;
 }
 
-function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<void>; busy: boolean }) {
-  const rows: PageRow[] = pages.map((page, index) => ({ ...page, id: String(index), mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }));
+function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[]; visibleSlugs?: string[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<void>; busy: boolean }) {
+  const pageBySlug = new Map(pages.map((page) => [page.slug, page]));
+  const managedPages = visibleSlugs ? visibleSlugs.map((slug) => pageBySlug.get(slug)) : pages;
+  const rows: PageRow[] = managedPages.map((page, index) => page ? ({ ...page, id: page.slug, exists: true, mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }) : ({ id: visibleSlugs?.[index] ?? crypto.randomUUID(), exists: false, slug: visibleSlugs?.[index] ?? "new-page", layout: "training", navLabel: "未配置页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart", metrics: [], features: [], steps: [], sections: [], mediaEntries: [] }));
   return <CrudTable
     title="业务子页面"
     rows={rows}
     busy={busy}
+    allowCreate={!visibleSlugs}
+    canDelete={(item) => item.exists}
     columns={[
+      { title: "配置状态", dataIndex: "exists", render: (_, record) => <Tag color={record.exists ? "blue" : "gold"}>{record.exists ? "已配置" : "待配置"}</Tag> },
       { title: "页面名称", dataIndex: "navLabel" },
       { title: "版式", dataIndex: "layout" },
       { title: "URL 标识", dataIndex: "slug" },
       { title: "页面标题", dataIndex: "title" },
       { title: "页面配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || record.navLabel} /> }
     ]}
-    createItem={() => ({ id: crypto.randomUUID(), slug: "new-page", layout: "training" as const, navLabel: "新页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart" as IconKey, metrics: [], features: [], steps: [], sections: [], mediaEntries: [] })}
+    createItem={() => ({ id: crypto.randomUUID(), exists: false, slug: "new-page", layout: "training" as const, navLabel: "新页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart" as IconKey, metrics: [], features: [], steps: [], sections: [], mediaEntries: [] })}
     onCreate={(item) => onCommit((current) => [...current, toSubpage(item)])}
-    onUpdate={(item) => onCommit((current) => current.map((entry, index) => String(index) === item.id ? toSubpage(item) : entry))}
-    onDelete={(item) => onCommit((current) => current.filter((_, index) => String(index) !== item.id))}
+    onUpdate={(item) => onCommit((current) => item.exists ? current.map((entry) => entry.slug === item.id ? toSubpage(item) : entry) : [...current, toSubpage(item)])}
+    onDelete={(item) => onCommit((current) => current.filter((entry) => entry.slug !== item.id))}
   >
-    <ProFormText name="slug" label="URL 标识" rules={[{ required: true, pattern: /^[a-z0-9-]+$/, message: "仅可使用小写字母、数字和连字符" }]} />
+    <ProFormText name="slug" label="URL 标识" disabled={Boolean(visibleSlugs)} rules={[{ required: true, pattern: /^[a-z0-9-]+$/, message: "仅可使用小写字母、数字和连字符" }]} />
     <ProFormSelect name="layout" label="页面版式" rules={[{ required: true }]} options={[
       { label: "培训课程", value: "training" }, { label: "核算实战", value: "practical" },
       { label: "集团咨询", value: "consulting" }, { label: "数字化方案", value: "solution-platform" },
@@ -265,7 +276,7 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
   </CrudTable>;
 }
 
-function toSubpage({ id: _, mediaEntries, ...page }: PageRow): Subpage {
+function toSubpage({ id: _, exists: __, mediaEntries, ...page }: PageRow): Subpage {
   return {
     ...page,
     media: Object.fromEntries(mediaEntries.filter((entry) => entry.key && entry.path).map((entry) => [entry.key, entry.path]))
