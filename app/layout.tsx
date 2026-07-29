@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import { getHomeContent } from "@/lib/cms-content";
 
-export const metadata: Metadata = {
-  title: "峰行智成｜企业碳管理数字化服务商",
-  description: "新疆峰行智成数据科技有限责任公司，提供温室气体核算、碳管理体系建设、Excel 核算工具与企业碳管理数字化服务。"
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await getHomeContent();
+  return { title: content.site.title, description: content.site.description };
+}
 
 export default function RootLayout({
   children

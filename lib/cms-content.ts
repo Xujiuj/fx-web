@@ -3,7 +3,7 @@ export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "s
 
 export type NavChild = { label: string; href: string; group?: string };
 export type NavItem = { label: string; href: string; children?: NavChild[] };
-export type HeroSlide = { eyebrow: string; title: string; description: string; image: string; cta: string };
+export type HeroSlide = { eyebrow: string; title: string; description: string; image: string; cta: string; href?: string; secondaryCta?: string; secondaryHref?: string };
 export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string; image?: string; imageAlt?: string };
 export type TimelineEntry = { year: string; items: string[] };
 export type NewsItem = { title: string; action: string; image: string; href: string; summary?: string; subtitle?: string };
@@ -15,6 +15,7 @@ export type FooterContent = { copyright: string; icpText: string; icpHref: strin
 export type ContactContent = { title: string; description: string; namePlaceholder: string; companyPlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; submitLabel: string; successLabel: string; errorLabel: string };
 
 export type HomeContent = {
+  site: { title: string; description: string };
   brand: { name: string; logo: string; href: string };
   navItems: NavItem[];
   heroSlides: HeroSlide[];
@@ -124,12 +125,19 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
 
   return {
     ...content,
+    site: { ...defaultHomeContent.site, ...content.site },
     footer: {
       ...(content.footer ?? standardFooter),
       icpText: standardFooter.icpText,
       icpHref: standardFooter.icpHref
     },
-    heroSlides: content.heroSlides.map((slide) => ({ ...slide, image: heroMedia(slide.image) })),
+    heroSlides: content.heroSlides.map((slide, index) => ({
+      ...slide,
+      image: heroMedia(slide.image),
+      href: slide.href ?? (index === 0 ? "/solution-standard" : "/#contact"),
+      secondaryCta: slide.secondaryCta ?? (index === 0 ? "预约产品演示" : undefined),
+      secondaryHref: slide.secondaryHref ?? "/#contact"
+    })),
     aboutTabs: content.aboutTabs.map((tab) => {
       const fallback = defaultHomeContent.aboutTabs.find((entry) => entry.value === tab.value);
       return {
@@ -262,6 +270,10 @@ function normalizeSubpagesContent(content: StoredSubpage[]): Subpage[] {
 }
 
 export const defaultHomeContent: HomeContent = {
+  site: {
+    title: "峰行智成｜企业碳管理数字化服务商",
+    description: "新疆峰行智成数据科技有限责任公司，提供温室气体核算、碳管理体系建设、Excel 核算工具与企业碳管理数字化服务。"
+  },
   brand: {
     name: "峰行智成",
     logo: "/media/fengxing-logo.png",
@@ -293,8 +305,8 @@ export const defaultHomeContent: HomeContent = {
     ] },
   ],
   heroSlides: [
-    { eyebrow: "企业碳管理数字化服务商", title: "让碳数据从“算得出”走向“管得好、用得上、可价值化”", description: "专注企业温室气体核算与碳管理数字化建设，帮助企业建立从核算、管理到价值释放的长期能力体系。", image: heroVisual, cta: "了解解决方案" },
-    { eyebrow: "一次维护，多口径核算", title: "构建可持续运行的企业碳管理能力", description: "以统一数据体系和集中核算引擎为核心，实现一次数据维护、多标准核算与多维分析。", image: heroPlatform, cta: "预约产品演示" }
+    { eyebrow: "企业碳管理数字化服务商", title: "让碳数据从“算得出”走向“管得好、用得上、可价值化”", description: "专注企业温室气体核算与碳管理数字化建设，帮助企业建立从核算、管理到价值释放的长期能力体系。", image: heroVisual, cta: "了解解决方案", href: "/solution-standard", secondaryCta: "预约产品演示", secondaryHref: "/#contact" },
+    { eyebrow: "一次维护，多口径核算", title: "构建可持续运行的企业碳管理能力", description: "以统一数据体系和集中核算引擎为核心，实现一次数据维护、多标准核算与多维分析。", image: heroPlatform, cta: "预约产品演示", href: "/#contact" }
   ],
   aboutTabs: [
     { value: "about", label: "公司介绍", title: "新疆峰行智成数据科技有限责任公司", kicker: "ABOUT US", body: "专注于为各类组织提供温室气体核算与碳管理数字化解决方案。通过统一数据体系与集中核算引擎，推动温室气体核算由“年度填报”向“持续管理”转变。", image: "/media/about-company-generated.png", imageAlt: "峰行智成团队协作场景" },

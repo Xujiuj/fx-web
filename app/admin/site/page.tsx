@@ -1,5 +1,3 @@
 import { redirect } from "next/navigation";
 
-export default function SiteAdminIndexPage() {
-  redirect("/admin/site/brand");
-}
+export default function SiteAdminIndexPage() { redirect("/admin/content"); }

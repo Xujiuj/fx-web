@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Alert, Button, Card, Col, Descriptions, Form, Image, Input, Modal, Row, Space, Tabs, Typography, Upload, type UploadProps } from "antd";
+import { App, Button, Card, Col, Descriptions, Form, Image, Input, Modal, Row, Space, Spin, Tabs, Upload, type UploadProps } from "antd";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from "@ant-design/icons";
-import { ModalForm, ProFormList, ProFormSelect, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
+import { ModalForm, PageContainer, ProFormList, ProFormSelect, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
 import type { HomeContent, IconKey, NavItem, NewsItem, PartnerItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
 
-type Resource = "brand" | "menu" | "home" | "solutions" | "products" | "proof" | "pages";
+export type AdminContentResourceName = "site" | "home" | "solutions" | "products" | "proof" | "pages";
 type RowItem = { id: string };
 type MenuRow = NavItem & RowItem;
 type NewsRow = NewsItem & RowItem;
@@ -18,10 +18,9 @@ type CertificateRow = { id: string; image: string };
 type PartnerRow = PartnerItem & RowItem;
 type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }> };
 
-const copy: Record<Resource, { title: string; description: string }> = {
-  brand: { title: "品牌信息", description: "维护站点名称、Logo 与品牌主页链接。" },
-  menu: { title: "菜单管理", description: "通过数据表管理前台主导航和二级菜单。" },
-  home: { title: "首页内容", description: "各首页区块分别以数据表方式维护。" },
+const copy: Record<AdminContentResourceName, { title: string; description: string }> = {
+  site: { title: "基础设置", description: "维护品牌、导航、联系信息、能力标签与页脚。" },
+  home: { title: "首页编排", description: "维护首页横幅、公司介绍与能力路径。" },
   solutions: { title: "解决方案与动态", description: "解决方案和资讯内容分表管理。" },
   products: { title: "产品中心", description: "管理产品卡片及其前台跳转链接。" },
   proof: { title: "资质与伙伴", description: "管理资质证书和合作伙伴，未配置时前台保留空白。" },
@@ -80,25 +79,63 @@ function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCrea
   return <><ProTable<T> rowKey="id" headerTitle={title} dataSource={rows} loading={busy} search={false} columns={[...columns, actionColumn]} options={{ density: true, fullScreen: true, reload: false, setting: true }} pagination={{ pageSize: 10, showSizeChanger: true }} toolBarRender={() => [<Button key="create" type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(createItem()); setIsNew(true); }}>新增</Button>]} /><ModalForm<T> key={`${isNew}-${editing?.id ?? "closed"}`} title={isNew ? `新增${title}` : `编辑${title}`} open={Boolean(editing)} initialValues={editing ?? undefined} modalProps={{ destroyOnHidden: true, onCancel: () => setEditing(null) }} submitter={{ searchConfig: { submitText: "保存" }, submitButtonProps: { loading: busy } }} onFinish={async (values) => { if (!editing) return false; const next = { ...editing, ...values } as T; if (isNew) await onCreate(next); else await onUpdate(next); setEditing(null); return true; }}>{children}</ModalForm><Modal title="确认删除" open={Boolean(deleteTarget)} okText="删除" okButtonProps={{ danger: true, loading: busy }} cancelText="取消" onCancel={() => setDeleteTarget(null)} onOk={async () => { if (!deleteTarget) return; await onDelete(deleteTarget); setDeleteTarget(null); }}>删除后会立即同步到前台，此操作不可撤销。</Modal></>;
 }
 
-export function AdminContentResource({ resource, initialContent }: { resource: Resource; initialContent: SiteContentBundle }) {
+export function AdminContentResource({ resource, initialContent }: { resource?: AdminContentResourceName; initialContent: SiteContentBundle }) {
+  const [activeResource, setActiveResource] = useState<AdminContentResourceName>(resource ?? "site");
   const [home, setHome] = useState(initialContent.home);
   const [subpages, setSubpages] = useState(initialContent.subpages);
   const [versions, setVersions] = useState(initialContent.versions);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState("");
-  const [error, setError] = useState("");
+  const { message } = App.useApp();
   async function persist(nextHome: HomeContent, nextSubpages: Subpage[]) {
-    setBusy(true); setMessage(""); setError("");
-    const response = await fetch("/api/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ home: nextHome, subpages: nextSubpages, versions }) });
-    const result = await response.json();
-    if (response.status === 409 && result.current) { setHome(result.current.home); setSubpages(result.current.subpages); setVersions(result.current.versions); setError("内容已被其他管理员更新，已重新载入最新版本。"); setBusy(false); return; }
-    if (!response.ok) { setError(result.error || "保存失败"); setBusy(false); return; }
-    setHome(nextHome); setSubpages(nextSubpages); setVersions(result.versions); setMessage("操作已保存。"); setBusy(false);
+    setBusy(true);
+    try {
+      const response = await fetch("/api/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ home: nextHome, subpages: nextSubpages, versions }) });
+      const result = await response.json();
+      if (response.status === 409 && result.current) {
+        setHome(result.current.home);
+        setSubpages(result.current.subpages);
+        setVersions(result.current.versions);
+        message.warning("内容已被其他管理员更新，已重新载入最新版本。");
+        return;
+      }
+      if (!response.ok) {
+        message.error(result.error || "保存失败");
+        return;
+      }
+      setHome(nextHome);
+      setSubpages(nextSubpages);
+      setVersions(result.versions);
+      message.success("操作已保存。");
+    } catch {
+      message.error("网络异常，未能保存内容。");
+    } finally {
+      setBusy(false);
+    }
   }
   const changeHome = (update: (current: HomeContent) => HomeContent) => persist(update(home), subpages);
   const changePages = (update: (current: Subpage[]) => Subpage[]) => persist(home, update(subpages));
-  const current = copy[resource];
-  return <Space direction="vertical" size="large" style={{ width: "100%", padding: "24px 24px 56px" }}><Space direction="vertical" size={0}><Typography.Title level={2} style={{ margin: 0 }}>{current.title}</Typography.Title><Typography.Text type="secondary">{current.description}</Typography.Text></Space><Button icon={<ReloadOutlined />} onClick={() => window.location.reload()} disabled={busy}>重新载入</Button>{message ? <Alert type="success" message={message} showIcon /> : null}{error ? <Alert type="error" message={error} showIcon /> : null}{resource === "brand" ? <BrandManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "menu" ? <MenuManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "solutions" ? <SolutionsManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "products" ? <ProductsManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "proof" ? <ProofManager home={home} onCommit={changeHome} busy={busy} /> : null}{resource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}</Space>;
+  const selectedResource = resource ?? activeResource;
+  const current = copy[selectedResource];
+  const isStudio = resource === undefined;
+  return (
+    <PageContainer
+      title={isStudio ? "内容管理" : current.title}
+      content={isStudio ? "所有官网展示内容均在此处维护；保存后会同步到前台。" : current.description}
+      extra={[<Button key="reload" icon={<ReloadOutlined />} onClick={() => window.location.reload()} disabled={busy}>重新载入</Button>]}
+    >
+      <Spin spinning={busy} tip="正在保存内容">
+        <Space direction="vertical" size="large" style={{ width: "100%" }}>
+          {isStudio ? <Tabs activeKey={selectedResource} onChange={(key) => setActiveResource(key as AdminContentResourceName)} items={Object.entries(copy).map(([key, item]) => ({ key, label: item.title }))} /> : null}
+          {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "solutions" ? <SolutionsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "products" ? <ProductsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "proof" ? <ProofManager home={home} onCommit={changeHome} busy={busy} /> : null}
+          {selectedResource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
+        </Space>
+      </Spin>
+    </PageContainer>
+  );
 }
 
 function BrandManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
@@ -111,8 +148,17 @@ function MenuManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (u
   return <CrudTable title="主导航" rows={rows} busy={busy} columns={[{ title: "菜单名称", dataIndex: "label" }, { title: "链接", dataIndex: "href" }, { title: "二级菜单", dataIndex: "children", renderText: (children) => children?.length ?? 0 }]} createItem={() => ({ id: crypto.randomUUID(), label: "", href: "/", children: [] })} onCreate={(item) => onCommit((current) => ({ ...current, navItems: [...current.navItems, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="label" label="菜单名称" rules={[{ required: true }]} /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormList name="children" label="二级菜单" creatorButtonProps={{ creatorButtonText: "新增二级菜单" }}><Row gutter={12}><Col span={8}><ProFormText name="label" label="名称" rules={[{ required: true }]} /></Col><Col span={8}><ProFormText name="href" label="链接" rules={[{ required: true }]} /></Col><Col span={8}><ProFormText name="group" label="下拉分组" /></Col></Row></ProFormList></CrudTable>;
 }
 
+function SiteSettingsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
+  return <Tabs items={[{ key: "brand", label: "品牌与主页", children: <BrandManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "navigation", label: "导航菜单", children: <MenuManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "metadata", label: "站点标题与描述", children: <SiteMetadataManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "site-copy", label: "全站文案", children: <HomeSettings home={home} onCommit={onCommit} busy={busy} /> }]} />;
+}
+
+function SiteMetadataManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
+  const [open, setOpen] = useState(false);
+  return <Card title="站点标题与描述"><Descriptions column={1} items={[{ key: "title", label: "站点标题", children: home.site.title }, { key: "description", label: "站点描述", children: home.site.description }]} /><Button type="primary" icon={<EditOutlined />} onClick={() => setOpen(true)}>编辑站点信息</Button><ModalForm open={open} initialValues={home.site} modalProps={{ destroyOnHidden: true, onCancel: () => setOpen(false) }} submitter={{ submitButtonProps: { loading: busy } }} onFinish={async (values) => { await onCommit((current) => ({ ...current, site: { ...current.site, ...values } })); setOpen(false); return true; }}><ProFormText name="title" label="站点标题" rules={[{ required: true }]} /><ProFormTextArea name="description" label="站点描述" rules={[{ required: true }]} /></ModalForm></Card>;
+}
+
 function HomeManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
-  return <Tabs items={[{ key: "general", label: "基础信息", children: <HomeSettings home={home} onCommit={onCommit} busy={busy} /> }, { key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "about", label: "公司介绍", children: <AboutTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
+  return <Tabs items={[{ key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "hero-actions", label: "横幅按钮与链接", children: <HeroActionTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "about", label: "公司介绍", children: <AboutTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
 }
 
 function HomeSettings({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
@@ -123,6 +169,11 @@ function HomeSettings({ home, onCommit, busy }: { home: HomeContent; onCommit: (
 function HeroTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
   const rows: HeroRow[] = home.heroSlides.map((item, index) => ({ ...item, id: String(index) }));
   return <CrudTable title="轮播图" rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "按钮", dataIndex: "cta" }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || "轮播图"} /> }]} createItem={() => ({ id: crypto.randomUUID(), eyebrow: "", title: "", description: "", image: "/media/fengxing-hero-accounting.png", cta: "了解更多" })} onCreate={(item) => onCommit((current) => ({ ...current, heroSlides: [...current.heroSlides, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="eyebrow" label="副标题" /><ProFormText name="title" label="主标题" rules={[{ required: true }]} /><ProFormTextArea name="description" label="描述" rules={[{ required: true }]} /><ProFormText name="cta" label="按钮文字" /><ImageUploadField name="image" label="轮播配图" required hint="建议使用横向企业场景图，推荐比例 16:9。" /></CrudTable>;
+}
+
+function HeroActionTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
+  const rows: HeroRow[] = home.heroSlides.map((item, index) => ({ ...item, id: String(index) }));
+  return <CrudTable title="横幅按钮与链接" rows={rows} busy={busy} columns={[{ title: "横幅标题", dataIndex: "title" }, { title: "主按钮", dataIndex: "cta" }, { title: "主链接", dataIndex: "href" }, { title: "次按钮", dataIndex: "secondaryCta" }]} createItem={() => ({ id: crypto.randomUUID(), eyebrow: "", title: "新横幅", description: "", image: "/media/fengxing-hero-accounting.png", cta: "了解更多", href: "/#contact", secondaryCta: "", secondaryHref: "/#contact" })} onCreate={(item) => onCommit((current) => ({ ...current, heroSlides: [...current.heroSlides, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="title" label="横幅标题" rules={[{ required: true }]} /><ProFormText name="cta" label="主按钮文字" rules={[{ required: true }]} /><ProFormText name="href" label="主按钮链接" rules={[{ required: true }]} /><ProFormText name="secondaryCta" label="次按钮文字（选填）" /><ProFormText name="secondaryHref" label="次按钮链接" /></CrudTable>;
 }
 
 function AboutTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {

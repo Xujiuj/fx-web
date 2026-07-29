@@ -166,11 +166,11 @@ function HeroCarousel({ slides }: { slides: HomeContent["heroSlides"] }) {
                 <div className="hero-copy-title"><HeroTitle title={slide.title} /></div>
                 <span className="hero-description hero-copy-body">{slide.description}</span>
                 <div className="hero-actions hero-copy-actions">
-                  <Link className="outline-button" href={index === 0 ? "/solution-standard" : "/#contact"}>
+                  <Link className="outline-button" href={slide.href ?? "/#contact"}>
                     {slide.cta}
                     <ArrowRight size={16} />
                   </Link>
-                  {index === 0 ? <Link className="hero-secondary-link" href="/#contact">预约产品演示</Link> : null}
+                  {slide.secondaryCta ? <Link className="hero-secondary-link" href={slide.secondaryHref ?? "/#contact"}>{slide.secondaryCta}</Link> : null}
                 </div>
               </div>
             ) : null}

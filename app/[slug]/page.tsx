@@ -12,10 +12,10 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const page = await getSubpageContent(slug);
+  const [home, page] = await Promise.all([getHomeContent(), getSubpageContent(slug)]);
   if (!page) notFound();
   return {
-    title: page.title + " - 峰行智成",
+    title: `${page.title} - ${home.brand.name}`,
     description: page.summary
   };
 }

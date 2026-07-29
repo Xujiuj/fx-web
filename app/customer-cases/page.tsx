@@ -5,10 +5,11 @@ import { SiteFooter } from "@/components/site-footer";
 import { getHomeContent, getSubpageContent } from "@/lib/cms-content";
 import { notFound } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "制造行业案例｜峰行智成",
-  description: "峰行智成为制造企业建设温室气体核算、碳数据治理与持续运营能力。"
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [content, page] = await Promise.all([getHomeContent(), getSubpageContent("customer-cases")]);
+  if (!page) return { title: content.site.title, description: content.site.description };
+  return { title: `${page.title}｜${content.brand.name}`, description: page.summary };
+}
 
 export default async function CustomerCasesPage() {
   const [content, page] = await Promise.all([getHomeContent(), getSubpageContent("customer-cases")]);
