@@ -16,6 +16,7 @@ import {
   Waypoints,
   Warehouse,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./editorial-pages.module.css";
@@ -238,6 +239,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
 }
 
 export function CompanyPage({ page }: EditorialPageProps) {
+  const isVisionPage = page.slug.includes("vision") || page.title.includes("愿景");
   const mission = page.metrics[0];
   const positioning = page.metrics[1];
   const serviceMode = page.metrics[2];
@@ -254,14 +256,11 @@ export function CompanyPage({ page }: EditorialPageProps) {
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
-          <div className={`${styles.companyPrinciples} page-reveal`}>
-            {page.metrics.map((metric) => (
-              <div key={metric.label}>
-                <span>{metric.label}</span>
-                <strong>{metric.value}</strong>
-              </div>
-            ))}
-          </div>
+          {isVisionPage ? (
+            <figure className={`${styles.companyVisionVisual} page-reveal`}>
+              <Image src={page.image} alt="企业愿景" width={1200} height={660} sizes="(max-width: 720px) 100vw, 1120px" />
+            </figure>
+          ) : null}
         </div>
       </section>
 

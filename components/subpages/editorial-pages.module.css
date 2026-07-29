@@ -823,20 +823,19 @@
 }
 
 .companyHeroInner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 74px;
-  min-height: 560px;
-  padding: 74px 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  padding: 74px 0;
 }
 
 .companyHeroTop {
-  grid-column: 1 / -1;
+  width: 100%;
 }
 
 .companyHeroStatement {
-  align-self: center;
-  padding-bottom: 60px;
+  padding-bottom: 0;
 }
 
 .companyHeroStatement h1 {
@@ -855,31 +854,20 @@
   line-height: 1.9;
 }
 
-.companyPrinciples {
-  display: grid;
-  align-self: end;
-  border-top: 3px solid #bb5c20;
-  background: #fff;
+.companyVisionVisual {
+  width: 100%;
+  margin: 48px 0 0;
+  overflow: hidden;
+  border: 1px solid #d8e2dc;
+  background: #dfe9e3;
 }
 
-.companyPrinciples > div {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 18px;
-  align-items: center;
-  min-height: 86px;
-  padding: 17px 24px;
-  border-bottom: 1px solid #dbe3de;
-}
-
-.companyPrinciples span {
-  color: #748078;
-  font-size: 13px;
-}
-
-.companyPrinciples strong {
-  color: #284638;
-  font-size: 19px;
+.companyVisionVisual img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
 }
 
 .companyBelief {
@@ -1210,10 +1198,6 @@
 
   .companyHeroStatement {
     padding-bottom: 10px;
-  }
-
-  .companyPrinciples {
-    width: min(100%, 520px);
   }
 
   .companyBeliefGrid,

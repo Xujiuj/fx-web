@@ -5,10 +5,8 @@ import {
   Check,
   CheckCircle2,
   ClipboardCheck,
-  Database,
   FileCheck2,
   FileSpreadsheet,
-  GraduationCap,
   Layers3,
   Network,
   RefreshCw,
@@ -78,43 +76,7 @@ export function TrainingPage({ page }: SolutionPageProps) {
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
-          <aside className={`${styles.courseBrief} page-reveal`} aria-label="培训成果概览">
-            <div className={styles.courseBriefTitle}>
-              <GraduationCap aria-hidden="true" size={28} />
-              <div>
-              <span>培训收获</span>
-              <strong>让核算方法进入企业日常工作</strong>
-              </div>
-            </div>
-            <dl>
-              {page.metrics.map((metric) => (
-                <div key={metric.label}>
-                  <dt>{metric.label}</dt>
-                  <dd>{metric.value}</dd>
-                </div>
-              ))}
-            </dl>
-          </aside>
         </div>
-      </section>
-
-      <section className={`${styles.standardPath} page-reveal`} aria-labelledby="standard-path-title">
-        <header>
-          <span>培训安排</span>
-          <h2 id="standard-path-title">把培训内容落到实际工作</h2>
-          <p>围绕企业组织边界、活动数据和核算口径开展讲解与演练，帮助参与人员明确后续工作的做法。</p>
-        </header>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <strong>{step}</strong>
-                <p>{index === 0 ? "明确参与人员、现有基础和本次培训范围。" : index === 1 ? "结合适用标准梳理组织边界、排放源和数据来源。" : index === 2 ? "用企业实际场景完成数据维护、因子匹配和结果复核。" : "形成后续核算可直接使用的工作清单和台账要求。"}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
       </section>
 
       <ReferenceDiagram
@@ -158,21 +120,6 @@ export function PracticalPage({ page }: SolutionPageProps) {
             <span className={styles.kicker}>首次核算实施</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
-          </div>
-          <div className={`${styles.workbench} page-reveal`} aria-label="实战营工作流概览">
-            <div className={styles.workbenchSheet}>
-              <FileSpreadsheet aria-hidden="true" size={30} />
-              <span>活动数据台账</span>
-              <i />
-              <i />
-              <i />
-            </div>
-            <ArrowRight className={styles.workbenchArrow} aria-hidden="true" size={24} />
-            <div className={styles.workbenchResult}>
-              <ClipboardCheck aria-hidden="true" size={30} />
-              <span>核算成果</span>
-              <strong>结果可复核</strong>
-            </div>
           </div>
         </div>
       </section>
@@ -241,14 +188,6 @@ export function ConsultingPage({ page }: SolutionPageProps) {
           <span className={styles.kicker}>集团核算建设</span>
           <h1>{page.title}</h1>
           <p>{page.summary}</p>
-          <dl>
-            {page.metrics.map((metric) => (
-              <div key={metric.label}>
-                <dt>{metric.label}</dt>
-                <dd>{metric.value}</dd>
-              </div>
-            ))}
-          </dl>
         </div>
       </section>
 
@@ -328,18 +267,6 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
             <span className={styles.kicker}>碳数据管理平台</span>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
-          </div>
-          <div className={`${styles.operationsHub} page-reveal`} aria-label="企业碳数据持续运营闭环">
-            <div className={styles.hubCore}>
-              <Database aria-hidden="true" size={30} />
-              <span>统一数据体系</span>
-            </div>
-            {page.features.map((feature, index) => (
-              <div className={styles[`hubNode${index + 1}`]} key={feature}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{feature}</strong>
-              </div>
-            ))}
           </div>
         </div>
       </section>
