@@ -8,14 +8,15 @@ import { ProLayout, type MenuDataItem } from "@ant-design/pro-components";
 import {
   FileTextOutlined,
   LogoutOutlined,
+  MessageOutlined,
   MenuOutlined,
   TeamOutlined
 } from "@ant-design/icons";
 
 const menuData: MenuDataItem[] = [
   { path: "/admin/content", name: "站点内容", icon: <FileTextOutlined /> },
-  { path: "/admin/content/menu", name: "菜单管理", icon: <MenuOutlined /> },
-  { path: "/admin/content/pages", name: "页面管理", icon: <FileTextOutlined /> },
+  { path: "/admin/content/pages", name: "导航与页面", icon: <MenuOutlined /> },
+  { path: "/admin/system/leads", name: "咨询记录", icon: <MessageOutlined /> },
   { path: "/admin/system/users", name: "账号管理", icon: <TeamOutlined /> }
 ];
 

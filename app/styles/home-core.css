@@ -845,6 +845,46 @@
   cursor: pointer;
 }
 
+.contact-section button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.contact-success-dialog {
+  width: min(420px, calc(100vw - 32px));
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 0;
+  color: var(--text);
+  background: var(--surface);
+}
+
+.contact-success-dialog::backdrop {
+  background: rgba(20, 31, 25, 0.46);
+}
+
+.contact-success-dialog-content {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+}
+
+.contact-success-dialog-content svg {
+  color: #23805a;
+}
+
+.contact-success-dialog-content h3,
+.contact-success-dialog-content p {
+  margin: 0;
+}
+
+.contact-success-dialog-content p {
+  color: #69736b;
+  line-height: 1.7;
+}
+
 .form-state {
   display: inline-flex;
   align-items: center;

@@ -515,23 +515,29 @@ function ThinkingSection({ eyebrow, title, text, capabilities }: { eyebrow: stri
 }
 
 function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
-  const [status, setStatus] = useState<"idle" | "sent" | "error">("idle");
+  const [hasError, setHasError] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const successDialogRef = useRef<HTMLDialogElement>(null);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;
     const formData = new FormData(form);
-    const response = await fetch("/api/leads", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(Object.fromEntries(formData))
-    });
-
-    if (response.ok) {
-      setStatus("sent");
+    setSubmitting(true);
+    setHasError(false);
+    try {
+      const response = await fetch("/api/leads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(Object.fromEntries(formData))
+      });
+      if (!response.ok) throw new Error("提交失败");
       form.reset();
-    } else {
-      setStatus("error");
+      successDialogRef.current?.showModal();
+    } catch {
+      setHasError(true);
+    } finally {
+      setSubmitting(false);
     }
   }
 
@@ -547,18 +553,20 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
         <input name="company" placeholder={contact.companyPlaceholder} />
         <input name="email" type="email" placeholder={contact.emailPlaceholder} required />
         <textarea name="message" placeholder={contact.messagePlaceholder} required />
-        <button type="submit">
+        <button type="submit" disabled={submitting}>
           {contact.submitLabel}
           <Send size={15} />
         </button>
-        {status === "sent" ? (
-          <p className="form-state success">
-            <CheckCircle2 size={15} />
-            {contact.successLabel}
-          </p>
-        ) : null}
-        {status === "error" ? <p className="form-state">{contact.errorLabel}</p> : null}
+        {hasError ? <p className="form-state">{contact.errorLabel}</p> : null}
       </form>
+      <dialog ref={successDialogRef} className="contact-success-dialog" aria-labelledby="contact-success-title">
+        <div className="contact-success-dialog-content">
+          <CheckCircle2 size={32} aria-hidden="true" />
+          <h3 id="contact-success-title">已收到您的咨询</h3>
+          <p>{contact.successLabel}</p>
+          <button type="button" autoFocus onClick={() => successDialogRef.current?.close()}>知道了</button>
+        </div>
+      </dialog>
     </section>
   );
 }

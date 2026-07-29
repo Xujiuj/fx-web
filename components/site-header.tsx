@@ -10,7 +10,8 @@ import type { HomeContent } from "@/lib/cms-content";
 
 export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "navItems"> }) {
   const [activeNav, setActiveNav] = useState("");
-  const activeIndex = content.navItems.findIndex((item) => item.label === activeNav);
+  const visibleNavItems = content.navItems.filter((item) => !item.hidden);
+  const activeIndex = visibleNavItems.findIndex((item) => item.label === activeNav);
 
   return (
     <header className="site-header">
@@ -29,7 +30,7 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
         onPointerLeave={() => setActiveNav("")}
       >
         <NavigationMenu.List className="nav-list">
-          {content.navItems.map((item) => (
+          {visibleNavItems.map((item) => (
             <NavigationItem item={item} key={item.label} onActivate={setActiveNav} />
           ))}
         </NavigationMenu.List>
@@ -45,7 +46,7 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content className="mobile-menu" sideOffset={10}>
-              {content.navItems.map((item) => (
+              {visibleNavItems.map((item) => (
                 <DropdownMenu.Item asChild key={item.label}>
                   <a href={item.href}>{item.label}</a>
                 </DropdownMenu.Item>
@@ -60,9 +61,10 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
 }
 
 function NavigationItem({ item, onActivate }: { item: HomeContent["navItems"][number]; onActivate: (value: string) => void }) {
+  const visibleChildren = item.children?.filter((child) => !child.hidden) ?? [];
   return (
     <NavigationMenu.Item value={item.label}>
-      {item.children?.length ? (
+      {visibleChildren.length ? (
         <>
           <NavigationMenu.Trigger className="nav-trigger" onPointerEnter={() => onActivate(item.label)} onFocus={() => onActivate(item.label)}>
             {item.label}
@@ -70,7 +72,7 @@ function NavigationItem({ item, onActivate }: { item: HomeContent["navItems"][nu
           </NavigationMenu.Trigger>
           <NavigationMenu.Content className="nav-content" onPointerEnter={() => onActivate(item.label)}>
             <motion.div className="nav-panel" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
-              {item.children.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>)}
+              {visibleChildren.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>)}
             </motion.div>
           </NavigationMenu.Content>
         </>

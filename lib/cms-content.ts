@@ -1,8 +1,8 @@
 ﻿import { prisma } from "@/lib/prisma";
 export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "shield" | "sparkles" | "users" | "workflow";
 
-export type NavChild = { label: string; href: string; group?: string };
-export type NavItem = { label: string; href: string; children?: NavChild[] };
+export type NavChild = { label: string; href: string; hidden?: boolean; group?: string };
+export type NavItem = { label: string; href: string; hidden?: boolean; children?: NavChild[] };
 export type HeroSlide = { eyebrow: string; title: string; description: string; image: string; cta: string; href?: string; secondaryCta?: string; secondaryHref?: string };
 export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string; image?: string; imageAlt?: string };
 export type TimelineEntry = { year: string; items: string[] };

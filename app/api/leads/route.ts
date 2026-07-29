@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { prisma } from "@/lib/prisma";
 import { createFixedWindowLimiter, getClientIp, readJsonBody } from "@/lib/request-security";
 
@@ -7,6 +8,25 @@ const MAX_NAME_LENGTH = 80;
 const MAX_COMPANY_LENGTH = 120;
 const MAX_MESSAGE_LENGTH = 4_000;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function parsePositiveInteger(value: string | null, fallback: number, maximum: number) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? Math.min(parsed, maximum) : fallback;
+}
+
+export async function GET(request: Request) {
+  if (!(await isAdminAuthenticated())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const { searchParams } = new URL(request.url);
+  const page = parsePositiveInteger(searchParams.get("page"), 1, 10_000);
+  const pageSize = parsePositiveInteger(searchParams.get("pageSize"), 20, 100);
+  const [total, leads] = await prisma.$transaction([
+    prisma.contactLead.count(),
+    prisma.contactLead.findMany({ orderBy: { createdAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize })
+  ]);
+
+  return NextResponse.json({ leads, page, pageSize, total });
+}
 
 export async function POST(request: Request) {
   if (!leadLimiter.allow(getClientIp(request))) {
