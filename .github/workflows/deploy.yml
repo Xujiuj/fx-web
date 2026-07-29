@@ -73,6 +73,9 @@ jobs:
             service=fx-web.service
             target=/opt/fx-web/apps/website/current
             legacy_target=/opt/fx/apps/website/current
+            data_dir=/opt/fx-web/data
+            database="$data_dir/site.db"
+            legacy_database="$target/prisma/site.db"
             archive=/tmp/fx-web-release.tgz
             unit=/tmp/deploy/fx-web.service
 
@@ -88,11 +91,21 @@ jobs:
               chown fx-web:fx-web "$target/.env"
             fi
 
+            install -d -o fx-web -g fx-web "$data_dir"
+            if [ ! -f "$database" ] && [ -f "$legacy_database" ]; then
+              mv "$legacy_database" "$database"
+            fi
+            if grep -q '^DATABASE_URL=' "$target/.env"; then
+              sed -i 's#^DATABASE_URL=.*#DATABASE_URL="file:/opt/fx-web/data/site.db"#' "$target/.env"
+            else
+              printf '%s\n' 'DATABASE_URL="file:/opt/fx-web/data/site.db"' >> "$target/.env"
+            fi
+
             systemctl stop "$service"
-            find "$target" -mindepth 1 -maxdepth 1 ! -name .env ! -name site.db -exec rm -rf -- {} +
+            find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
             tar -xzf "$archive" -C "$target"
-            /opt/fx/runtime/node/bin/node "$target/scripts/ensure-sqlite-schema.mjs" "$target/site.db" "$target/prisma/sqlite-bootstrap.sql"
-            chown -R fx-web:fx-web "$target"
+            /opt/fx/runtime/node/bin/node --no-warnings "$target/scripts/ensure-sqlite-schema.mjs" "$database" "$target/prisma/sqlite-bootstrap.sql"
+            chown -R fx-web:fx-web "$target" "$data_dir"
             rm -f "$archive"
 
             install -m 0644 "$unit" /etc/systemd/system/fx-web.service
