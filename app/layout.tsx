@@ -12,8 +12,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="zh-CN">
-      <body>{children}</body>
+    <html lang="zh-CN" suppressHydrationWarning>
+      <body suppressHydrationWarning>
+        {children}
+        <noscript>
+          <style>{".reference-page .page-reveal { visibility: visible !important; opacity: 1 !important; transform: none !important; }"}</style>
+        </noscript>
+      </body>
     </html>
   );
 }

@@ -10,6 +10,11 @@ import {
   KnowledgePage
 } from "./subpages/editorial-pages";
 import {
+  ContactPage,
+  HonorsPage,
+  PartnersPage
+} from "./subpages/about-pages";
+import {
   ExcelProductPage,
   PlatformProductPage
 } from "./subpages/product-pages";
@@ -19,6 +24,7 @@ import {
   PracticalPage,
   TrainingPage
 } from "./subpages/solution-pages";
+import { ServicePage } from "./subpages/service-page";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
@@ -31,7 +37,11 @@ const pageComponents: Record<SubpageLayout, React.ComponentType<{ page: Subpage 
   "product-platform": PlatformProductPage,
   cases: CasesPage,
   knowledge: KnowledgePage,
-  company: CompanyPage
+  company: CompanyPage,
+  honors: HonorsPage,
+  partners: PartnersPage,
+  contact: ContactPage,
+  service: ServicePage
 };
 
 export function SubpageShell({ page }: { page: Subpage }) {
@@ -44,9 +54,12 @@ export function SubpageShell({ page }: { page: Subpage }) {
       gsap.utils.toArray<HTMLElement>(".reference-page .page-reveal").forEach((element) => {
         const isMajorModule = element.matches("section, aside") || element.querySelector("h1");
 
-        gsap.from(element, {
+        gsap.fromTo(element, {
           autoAlpha: 0,
-          y: isMajorModule ? 24 : 16,
+          y: isMajorModule ? 24 : 16
+        }, {
+          autoAlpha: 1,
+          y: 0,
           duration: isMajorModule ? 1.6 : 1.05,
           ease: "power2.out",
           scrollTrigger: {

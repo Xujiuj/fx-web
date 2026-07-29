@@ -108,7 +108,7 @@ function BrandManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (
 
 function MenuManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
   const rows: MenuRow[] = home.navItems.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title="主导航" rows={rows} busy={busy} columns={[{ title: "菜单名称", dataIndex: "label" }, { title: "链接", dataIndex: "href" }, { title: "二级菜单", dataIndex: "children", renderText: (children) => children?.length ?? 0 }]} createItem={() => ({ id: crypto.randomUUID(), label: "", href: "/", children: [] })} onCreate={(item) => onCommit((current) => ({ ...current, navItems: [...current.navItems, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="label" label="菜单名称" rules={[{ required: true }]} /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormList name="children" label="二级菜单" creatorButtonProps={{ creatorButtonText: "新增二级菜单" }}><Row gutter={12}><Col span={12}><ProFormText name="label" label="名称" rules={[{ required: true }]} /></Col><Col span={12}><ProFormText name="href" label="链接" rules={[{ required: true }]} /></Col></Row></ProFormList></CrudTable>;
+  return <CrudTable title="主导航" rows={rows} busy={busy} columns={[{ title: "菜单名称", dataIndex: "label" }, { title: "链接", dataIndex: "href" }, { title: "二级菜单", dataIndex: "children", renderText: (children) => children?.length ?? 0 }]} createItem={() => ({ id: crypto.randomUUID(), label: "", href: "/", children: [] })} onCreate={(item) => onCommit((current) => ({ ...current, navItems: [...current.navItems, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="label" label="菜单名称" rules={[{ required: true }]} /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormList name="children" label="二级菜单" creatorButtonProps={{ creatorButtonText: "新增二级菜单" }}><Row gutter={12}><Col span={8}><ProFormText name="label" label="名称" rules={[{ required: true }]} /></Col><Col span={8}><ProFormText name="href" label="链接" rules={[{ required: true }]} /></Col><Col span={8}><ProFormText name="group" label="下拉分组" /></Col></Row></ProFormList></CrudTable>;
 }
 
 function HomeManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
@@ -136,7 +136,7 @@ function SolutionsManager({ home, onCommit, busy }: { home: HomeContent; onCommi
 
 function NewsTable({ title, items, image, onCommit, busy }: { title: string; items: NewsItem[]; image: string; onCommit: (items: NewsItem[]) => Promise<void>; busy: boolean }) {
   const rows: NewsRow[] = items.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title={title} rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "分类", dataIndex: "action" }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || title} /> }, { title: "链接", dataIndex: "href" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", action: "", image, href: "/", summary: "" })} onCreate={(item) => onCommit([...items, omitId(item)])} onUpdate={(item) => onCommit(items.map((entry, index) => String(index) === item.id ? omitId(item) : entry))} onDelete={(item) => onCommit(items.filter((_, index) => String(index) !== item.id))}><ProFormText name="title" label="标题" rules={[{ required: true }]} /><ProFormText name="action" label="分类" /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormTextArea name="summary" label="摘要" /><ImageUploadField name="image" label="内容配图" required hint="建议使用明亮、无人像的企业业务场景图。" /></CrudTable>;
+  return <CrudTable title={title} rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "副标题", dataIndex: "subtitle", renderText: (_, record) => record.subtitle ?? record.summary ?? record.action }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || title} /> }, { title: "链接", dataIndex: "href" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", action: "", subtitle: "", image, href: "/", summary: "" })} onCreate={(item) => onCommit([...items, omitId(item)])} onUpdate={(item) => onCommit(items.map((entry, index) => String(index) === item.id ? omitId(item) : entry))} onDelete={(item) => onCommit(items.filter((_, index) => String(index) !== item.id))}><ProFormText name="title" label="标题" rules={[{ required: true }]} /><ProFormText name="subtitle" label="副标题" /><ProFormText name="action" label="分类（选填）" /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormTextArea name="summary" label="摘要（兼容旧内容）" /><ImageUploadField name="image" label="内容配图" required hint="建议使用清晰的横向或竖向活动照片。" /></CrudTable>;
 }
 
 function ProductsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
@@ -173,7 +173,9 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
       { label: "集团咨询", value: "consulting" }, { label: "数字化方案", value: "solution-platform" },
       { label: "Excel 产品", value: "excel" }, { label: "平台产品", value: "product-platform" },
       { label: "客户案例", value: "cases" }, { label: "知识课堂", value: "knowledge" },
-      { label: "公司介绍", value: "company" }
+      { label: "企业介绍", value: "company" }, { label: "企业荣誉", value: "honors" },
+      { label: "合作伙伴", value: "partners" }, { label: "联系我们", value: "contact" },
+      { label: "实施服务", value: "service" }
     ]} />
     <ProFormText name="navLabel" label="导航名称" rules={[{ required: true }]} />
     <ProFormText name="title" label="页面标题" rules={[{ required: true }]} />
@@ -184,7 +186,7 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
     <ProFormList name="sections" label="页面专属模块" creatorButtonProps={{ creatorButtonText: "新增模块" }}>
       <Row gutter={12}>
         <Col span={8}><ProFormText name="id" label="模块标识" rules={[{ required: true }]} /></Col>
-        <Col span={8}><ProFormSelect name="kind" label="模块类型" rules={[{ required: true }]} options={["metrics", "capabilities", "process", "resources", "timeline"].map((value) => ({ label: value, value }))} /></Col>
+        <Col span={8}><ProFormSelect name="kind" label="模块类型" rules={[{ required: true }]} options={["metrics", "capabilities", "process", "resources", "timeline", "gallery", "contacts"].map((value) => ({ label: value, value }))} /></Col>
         <Col span={8}><ProFormText name="title" label="模块标题" rules={[{ required: true }]} /></Col>
       </Row>
       <ProFormTextArea name="description" label="模块说明" />
@@ -194,6 +196,7 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
           <Col span={8}><ProFormText name="description" label="条目说明" /></Col>
           <Col span={8}><ProFormText name="value" label="指标值" /></Col>
         </Row>
+        <ImageUploadField name="image" label="条目图片或二维码" hint="荣誉页上传证书，伙伴页上传 Logo，联系页可上传二维码。" />
       </ProFormList>
     </ProFormList>
   </CrudTable>;

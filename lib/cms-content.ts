@@ -1,12 +1,12 @@
 ﻿import { prisma } from "@/lib/prisma";
 export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "shield" | "sparkles" | "users" | "workflow";
 
-export type NavChild = { label: string; href: string };
+export type NavChild = { label: string; href: string; group?: string };
 export type NavItem = { label: string; href: string; children?: NavChild[] };
 export type HeroSlide = { eyebrow: string; title: string; description: string; image: string; cta: string };
 export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string };
 export type TimelineEntry = { year: string; items: string[] };
-export type NewsItem = { title: string; action: string; image: string; href: string; summary?: string };
+export type NewsItem = { title: string; action: string; image: string; href: string; summary?: string; subtitle?: string };
 export type ProductItem = { name: string; summary: string; icon: IconKey; href: string };
 export type CapabilityItem = { label: string; icon: IconKey };
 export type PartnerItem = { name: string; logo?: string };
@@ -31,13 +31,13 @@ export type HomeContent = {
   footer: FooterContent;
 };
 
-export type SubpageLayout = "training" | "practical" | "consulting" | "solution-platform" | "excel" | "product-platform" | "cases" | "knowledge" | "company";
+export type SubpageLayout = "training" | "practical" | "consulting" | "solution-platform" | "excel" | "product-platform" | "cases" | "knowledge" | "company" | "honors" | "partners" | "contact" | "service";
 export type SubpageSection = {
   id: string;
-  kind: "metrics" | "capabilities" | "process" | "resources" | "timeline";
+  kind: "metrics" | "capabilities" | "process" | "resources" | "timeline" | "gallery" | "contacts";
   title: string;
   description?: string;
-  items: Array<{ title: string; description?: string; value?: string }>;
+  items: Array<{ title: string; description?: string; value?: string; image?: string }>;
 };
 
 export type Subpage = {
@@ -62,6 +62,12 @@ const heroPlatform = "/media/fengxing-hero-management.png";
 const platformImage = heroVisual;
 const dataImage = heroPlatform;
 const excelImage = "/media/about-philosophy-generated.png";
+const standardFooter: FooterContent = {
+  copyright: "© 新疆峰行智成数据科技有限责任公司 版权所有",
+  icpText: "新ICP备2026004234号-1",
+  icpHref: "https://beian.miit.gov.cn/",
+  ipv6Text: "邮箱：gongyafeng@fengxingdata.com"
+};
 
 const legacyB2BMedia: Record<string, string> = {
   "/media/candidate-team-1.jpg": excelImage,
@@ -97,14 +103,21 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
   const storedNews = content.newsItems ?? [];
   const storedPartners: unknown[] = Array.isArray(content.partners) ? content.partners : [];
   const hasLegacySolutionItems = storedNews.length > 0 && storedNews.every((item) => item.href.startsWith("/solution-"));
-  const hasLegacyNavigation = content.navItems?.some((item) => ["产品中心", "客户案例", "知识课堂"].includes(item.label));
 
   return {
     ...content,
-    navItems: hasLegacyNavigation ? defaultNavItems : content.navItems,
+    footer: {
+      ...(content.footer ?? standardFooter),
+      icpText: standardFooter.icpText,
+      icpHref: standardFooter.icpHref
+    },
     heroSlides: content.heroSlides.map((slide) => ({ ...slide, image: heroMedia(slide.image) })),
     solutionItems: (content.solutionItems?.length ? content.solutionItems : defaultSolutionItems).map((item) => ({ ...item, image: b2bMedia(item.image) })),
-    newsItems: (hasLegacySolutionItems || storedNews.length === 0 ? defaultLatestUpdates : storedNews).map((item) => ({ ...item, image: b2bMedia(item.image) })),
+    newsItems: (hasLegacySolutionItems || storedNews.length === 0 ? defaultLatestUpdates : storedNews).map((item) => ({
+      ...item,
+      image: b2bMedia(item.image),
+      subtitle: item.subtitle ?? item.summary ?? item.action
+    })),
     certificateImages: (content.certificateImages ?? []).filter((src) => !legacyCertificateImages.has(src)),
     partners: storedPartners.flatMap((partner) => {
       if (typeof partner === "string") return legacyPartnerLabels.has(partner) ? [] : [{ name: partner }];
@@ -116,7 +129,9 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
     sectionTitles: {
       ...content.sectionTitles,
       solutions: content.sectionTitles?.solutions ?? "全阶段解决方案",
-      news: hasLegacySolutionItems ? "最新动态" : content.sectionTitles?.news ?? "最新动态"
+      news: hasLegacySolutionItems ? "最新动态" : content.sectionTitles?.news ?? "最新动态",
+      thinkingEyebrow: content.sectionTitles?.thinkingEyebrow === "CORE CAPABILITIES" ? "" : content.sectionTitles?.thinkingEyebrow ?? "",
+      thinkingTitle: content.sectionTitles?.thinkingTitle === "从核算走向持续碳管理" ? "THINKING" : content.sectionTitles?.thinkingTitle ?? "THINKING"
     }
   };
 }
@@ -129,9 +144,10 @@ const defaultSolutionItems: NewsItem[] = [
 ];
 
 const defaultLatestUpdates: NewsItem[] = [
-  { title: "温室气体核算边界如何确定？", action: "核算方法", image: dataImage, href: "/knowledge-center", summary: "从组织边界、运营边界到排放源识别，建立一致的核算口径。" },
-  { title: "集团企业如何实现碳数据统一汇总？", action: "集团管理", image: dataImage, href: "/knowledge-center", summary: "以统一数据结构和核算规则支撑分子公司协同与集团汇总。" },
-  { title: "从年度填报走向持续碳管理", action: "数字化实践", image: dataImage, href: "/knowledge-center", summary: "让数据采集、核算分析与管理决策形成可持续运行的闭环。" }
+  { title: "温室气体核算边界如何确定？", action: "核算方法", subtitle: "从组织边界、运营边界到排放源识别，建立一致的核算口径。", image: "/media/manufacturing-carbon-accounting.png", href: "/knowledge-center", summary: "从组织边界、运营边界到排放源识别，建立一致的核算口径。" },
+  { title: "集团企业如何实现碳数据统一汇总？", action: "集团管理", subtitle: "以统一数据结构和核算规则支撑分子公司协同与集团汇总。", image: "/media/manufacturing-carbon-governance.png", href: "/knowledge-center", summary: "以统一数据结构和核算规则支撑分子公司协同与集团汇总。" },
+  { title: "从年度填报走向持续碳管理", action: "数字化实践", subtitle: "让数据采集、核算分析与管理决策形成可持续运行的闭环。", image: "/media/manufacturing-carbon-analytics.png", href: "/knowledge-center", summary: "让数据采集、核算分析与管理决策形成可持续运行的闭环。" },
+  { title: "企业碳管理如何形成持续运营机制？", action: "管理实践", subtitle: "从数据采集到分析决策，让每一项碳管理工作能够持续沉淀。", image: "/media/manufacturing-carbon-operations.png", href: "/knowledge-center", summary: "从数据采集到分析决策，让每一项碳管理工作能够持续沉淀。" }
 ];
 
 const defaultNavItems: NavItem[] = [
@@ -147,15 +163,16 @@ const defaultNavItems: NavItem[] = [
     { label: "平台版（平台管理）", href: "/solution-platform" }
   ] },
   { label: "实施服务", href: "/#path", children: [
-    { label: "能力建设路径", href: "/#path" },
-    { label: "培训与咨询实施", href: "/solution-standard" },
-    { label: "数字化平台实施", href: "/solution-platform" }
+    { label: "能力建设路径", href: "/service-capability-path", group: "项目实施" },
+    { label: "培训与咨询实施", href: "/service-training-consulting", group: "项目实施" },
+    { label: "数字化平台实施", href: "/service-platform-delivery", group: "项目实施" }
   ] },
   { label: "行业案例", href: "/customer-cases" },
   { label: "关于我们", href: "/company-profile", children: [
-    { label: "公司介绍", href: "/company-profile" },
-    { label: "知识课堂", href: "/knowledge-center" },
-    { label: "联系我们", href: "/#contact" }
+    { label: "企业介绍", href: "/company-profile" },
+    { label: "企业荣誉", href: "/company-honors" },
+    { label: "合作伙伴", href: "/company-partners" },
+    { label: "联系我们", href: "/company-contact" }
   ] }
 ];
 
@@ -168,7 +185,13 @@ const subpageLayouts: Record<string, SubpageLayout> = {
   "carbon-management-platform": "product-platform",
   "customer-cases": "cases",
   "knowledge-center": "knowledge",
-  "company-profile": "company"
+  "company-profile": "company",
+  "company-honors": "honors",
+  "company-partners": "partners",
+  "company-contact": "contact",
+  "service-capability-path": "service",
+  "service-training-consulting": "service",
+  "service-platform-delivery": "service"
 };
 
 function buildStructuredSections(page: StoredSubpage): SubpageSection[] {
@@ -226,15 +249,16 @@ export const defaultHomeContent: HomeContent = {
       { label: "平台版（平台管理）", href: "/solution-platform" }
     ] },
     { label: "实施服务", href: "/#path", children: [
-      { label: "能力建设路径", href: "/#path" },
-      { label: "培训与咨询实施", href: "/solution-standard" },
-      { label: "数字化平台实施", href: "/solution-platform" }
+      { label: "能力建设路径", href: "/service-capability-path", group: "项目实施" },
+      { label: "培训与咨询实施", href: "/service-training-consulting", group: "项目实施" },
+      { label: "数字化平台实施", href: "/service-platform-delivery", group: "项目实施" }
     ] },
     { label: "行业案例", href: "/customer-cases" },
     { label: "关于我们", href: "/company-profile", children: [
-      { label: "公司介绍", href: "/company-profile" },
-      { label: "知识课堂", href: "/knowledge-center" },
-      { label: "联系我们", href: "/#contact" }
+      { label: "企业介绍", href: "/company-profile" },
+      { label: "企业荣誉", href: "/company-honors" },
+      { label: "合作伙伴", href: "/company-partners" },
+      { label: "联系我们", href: "/company-contact" }
     ] },
   ],
   heroSlides: [
@@ -268,10 +292,10 @@ export const defaultHomeContent: HomeContent = {
   ],
   certificateImages: [],
   partners: [],
-  sectionTitles: { timeline: "企业碳管理能力建设路径", solutions: "全阶段解决方案", news: "最新动态", products: "产品中心", certificates: "资质荣誉", partners: "合作伙伴", thinkingEyebrow: "CORE CAPABILITIES", thinkingTitle: "从核算走向持续碳管理", contact: "联系峰行智成" },
+  sectionTitles: { timeline: "企业碳管理能力建设路径", solutions: "全阶段解决方案", news: "最新动态", products: "产品中心", certificates: "资质荣誉", partners: "合作伙伴", thinkingEyebrow: "", thinkingTitle: "THINKING", contact: "联系峰行智成" },
   thinkingText: "以温室气体核算为起点，通过数据采集、数据治理、核算分析、管理决策和持续运营，推动企业沉淀可追溯、可复用的碳数据资产。",
   contact: { title: "联系峰行智成", description: "业务咨询：15099663016｜gongyafeng@fengxingdata.com", namePlaceholder: "联系人", companyPlaceholder: "企业名称", emailPlaceholder: "联系邮箱", messagePlaceholder: "企业需求", submitLabel: "提交咨询", successLabel: "咨询已提交", errorLabel: "提交失败，请稍后重试。" },
-  footer: { copyright: "版权所有 新疆峰行智成数据科技有限责任公司", icpText: "电话：15099663016", icpHref: "tel:15099663016", ipv6Text: "gongyafeng@fengxingdata.com" }
+  footer: standardFooter
 };
 
 export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
@@ -280,11 +304,28 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "solution-consulting", navLabel: "咨询版（Excel 集团版）", eyebrow: "SOLUTION 03", title: "建立集团温室气体核算体系", summary: "面向多法人、多层级组织，建立集团统一的核算口径、数据模板和汇总规则，支持成员企业分别维护和集团统一复核。", image: dataImage, icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"] },
   { slug: "solution-platform", navLabel: "平台版（数字化管理）", eyebrow: "SOLUTION 04", title: "建设企业碳数据管理平台", summary: "统一管理活动数据、核算规则和结果分析，支持多组织、多年度的温室气体核算与管理数据查询。", image: platformImage, icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"] },
   { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力，兼顾单公司与集团两类组织场景。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版与集团版", "多年数据横向积累", "核算口径统一", "结果自动更新与清晰追溯"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"] },
-  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系，实现一次数据维护、多口径核算、多维分析与长期持续管理。", image: platformImage, icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "集中" }, { label: "数据链路", value: "可追溯" }], features: ["排放边界、排放源、活动数据与排放因子统一管理", "CO2e总量、活动数据、七种温室气体与排放强度分析", "多组织、多年度、多口径灵活切换", "基准年、趋势、强度和工厂对标分析"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"] },
+  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系，实现一次数据维护、多口径核算、多维分析与长期持续管理。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "集中" }, { label: "数据链路", value: "可追溯" }], features: ["排放边界、排放源、活动数据与排放因子统一管理", "CO2e总量、活动数据、七种温室气体与排放强度分析", "多组织、多年度、多口径灵活切换", "基准年、趋势、强度和工厂对标分析"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"] },
   { slug: "customer-cases", navLabel: "行业案例", eyebrow: "INDUSTRY CASES", title: "行业案例", summary: "面向制造、能源、园区和供应链等业务场景，围绕数据基础、核算边界和管理目标开展碳管理建设。", image: dataImage, icon: "building", metrics: [{ label: "覆盖场景", value: "4类" }, { label: "工作起点", value: "业务数据" }, { label: "管理目标", value: "长期使用" }], features: ["制造业", "能源与公用事业", "园区与多组织管理", "供应链与品牌企业"], steps: ["明确业务边界与管理目标", "梳理数据来源与责任分工", "统一核算口径与复核方式", "形成可持续更新的管理成果"] },
   { slug: "knowledge-center", navLabel: "知识课堂", eyebrow: "KNOWLEDGE", title: "企业碳管理学习与能力提升平台", summary: "围绕双碳政策、温室气体核算、ESG、CDP、CBAM和碳市场动态，提供专栏、课程与资料。", image: dataImage, icon: "sparkles", metrics: [{ label: "内容栏目", value: "3类" }, { label: "课程方向", value: "5类" }, { label: "服务对象", value: "企业" }], features: ["双碳政策与碳市场解读", "温室气体核算与Excel实战", "集团核算体系与数字化平台培训", "ESG、CDP与CBAM基础内容"], steps: ["双碳专栏", "视频课程", "产品与解决方案资料", "核算工具下载"] },
-  { slug: "company-profile", navLabel: "公司介绍", eyebrow: "ABOUT", title: "新疆峰行智成数据科技有限责任公司", summary: "企业碳管理数字化服务商，专注为各类组织提供温室气体核算、碳管理体系建设和数字化平台服务。", image: platformImage, icon: "users", metrics: [{ label: "企业使命", value: "智慧驱动" }, { label: "能力定位", value: "碳管理" }, { label: "服务方式", value: "全周期" }], features: ["温室气体核算", "碳管理咨询", "数字化平台", "培训、实施与持续运营"], steps: ["识别企业所处阶段", "匹配能力建设路径", "交付工具与平台", "支持长期运营"] }
+  { slug: "company-profile", navLabel: "企业介绍", eyebrow: "ABOUT", title: "新疆峰行智成数据科技有限责任公司", summary: "企业碳管理数字化服务商，专注为各类组织提供温室气体核算、碳管理体系建设和数字化平台服务。", image: platformImage, icon: "users", metrics: [{ label: "企业使命", value: "智慧驱动" }, { label: "能力定位", value: "碳管理" }, { label: "服务方式", value: "全周期" }], features: ["温室气体核算", "碳管理咨询", "数字化平台", "培训、实施与持续运营"], steps: ["识别企业所处阶段", "匹配能力建设路径", "交付工具与平台", "支持长期运营"] },
+  { slug: "company-honors", layout: "honors", navLabel: "企业荣誉", eyebrow: "HONORS", title: "企业荣誉", summary: "我们重视每一项可核验的专业认可，相关资质与荣誉将以有效文件为准持续更新。", image: heroPlatform, icon: "shield", metrics: [], features: [], steps: [], sections: [{ id: "honors", kind: "gallery", title: "荣誉展示", description: "已公开展示的证书、资质和荣誉，均可在后台独立维护。", items: [] }] },
+  { slug: "company-partners", layout: "partners", navLabel: "合作伙伴", eyebrow: "PARTNERS", title: "合作伙伴", summary: "与客户及生态伙伴的合作，以项目实际需求和双方确认的信息为基础。", image: heroVisual, icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "partners", kind: "gallery", title: "合作伙伴", description: "感谢每一位与峰行智成共同推进企业碳管理建设的伙伴。", items: [] }] },
+  { slug: "company-contact", layout: "contact", navLabel: "联系我们", eyebrow: "CONTACT", title: "联系我们", summary: "围绕温室气体核算、碳管理咨询和数字化建设，欢迎与我们沟通您的业务需求。", image: heroVisual, icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "contact", kind: "contacts", title: "联系信息", description: "我们将在收到信息后尽快与您沟通。", items: [{ title: "业务咨询", value: "15099663016", description: "工作日可通过电话联系" }, { title: "电子邮箱", value: "gongyafeng@fengxingdata.com", description: "可发送项目资料或合作需求" }] }] },
+  { slug: "service-capability-path", layout: "service", navLabel: "能力建设路径", eyebrow: "IMPLEMENTATION", title: "能力建设路径", summary: "从核算基础、数据治理到持续运营，结合企业实际阶段建立可持续使用的碳管理能力。", image: "/media/service-capability-path-hero.png", icon: "workflow", metrics: [], features: [], steps: [], sections: [{ id: "capability-visual", kind: "gallery", title: "能力建设", items: [{ title: "企业碳数据治理路径", description: "围绕数据边界、责任分工、数据质量和持续更新，逐步沉淀可用于核算、分析和管理的碳数据基础。", image: "/media/service-capability-path-content.png" }] }] },
+  { slug: "service-training-consulting", layout: "service", navLabel: "培训与咨询实施", eyebrow: "IMPLEMENTATION", title: "培训与咨询实施", summary: "围绕企业温室气体核算与碳管理需求，提供培训、数据梳理、方法辅导和过程复核支持。", image: "/media/service-training-consulting-hero.png", icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "training-visual", kind: "gallery", title: "实施流程", items: [{ title: "核算培训与实操流程", description: "以统一方法、业务数据和过程复核为基础，将培训内容转化为企业可以延续使用的核算工作流程。", image: "/media/service-training-consulting-content.png" }] }] },
+  { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [{ id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/service-platform-delivery-content.png" }] }] }
 ]);
+
+function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
+  const stored = normalizeSubpagesContent(content).map((page) => {
+    const fallback = defaultSubpages.find((entry) => entry.slug === page.slug);
+    const withDefaultSections = page.layout === "service" && page.sections.length === 0 && fallback ? { ...page, sections: fallback.sections } : page;
+    return withDefaultSections.slug === "carbon-management-platform" && withDefaultSections.image === platformImage
+      ? { ...withDefaultSections, image: "/media/product-platform-hero.webp" }
+      : withDefaultSections;
+  });
+  return stored;
+}
 
 export type ContentVersions = { home: number; subpages: number };
 export type SiteContentBundle = { home: HomeContent; subpages: Subpage[]; versions: ContentVersions };
@@ -313,25 +354,22 @@ export async function getHomeContent(): Promise<HomeContent> {
   }
 }
 
-export async function getSubpagesContent(): Promise<Subpage[]> {
+async function loadSubpages(): Promise<Subpage[]> {
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "subpages" } });
-    return normalizeSubpagesContent(record ? parseConfig(record.value, defaultSubpages) : defaultSubpages);
+    return record ? normalizeStoredSubpages(parseConfig(record.value, defaultSubpages)) : defaultSubpages;
   } catch {
     return defaultSubpages;
   }
 }
 
-export async function getSubpageContent(slug: string): Promise<Subpage> {
-  const subpages = await getSubpagesContent();
-  return subpages.find((page) => page.slug === slug) ?? {
-    ...defaultSubpages[0],
-    slug,
-    navLabel: slug,
-    eyebrow: "FENGXING DATA",
-    title: "峰行智成业务页面",
-    summary: "该页面由后台内容配置生成，可在管理后台继续补充结构和文案。"
-  };
+export function getSubpagesContent(): Promise<Subpage[]> {
+  return loadSubpages();
+}
+
+export async function getSubpageContent(slug: string): Promise<Subpage | null> {
+  const subpages = await loadSubpages();
+  return subpages.find((page) => page.slug === slug) ?? null;
 }
 
 export async function getSiteContentBundle(): Promise<SiteContentBundle> {
@@ -341,7 +379,7 @@ export async function getSiteContentBundle(): Promise<SiteContentBundle> {
     const subpagesRecord = records.find((record) => record.key === "subpages");
     return {
       home: normalizeHomeContent(homeRecord ? parseConfig(homeRecord.value, defaultHomeContent) : defaultHomeContent),
-      subpages: normalizeSubpagesContent(subpagesRecord ? parseConfig(subpagesRecord.value, defaultSubpages) : defaultSubpages),
+      subpages: subpagesRecord ? normalizeStoredSubpages(parseConfig(subpagesRecord.value, defaultSubpages)) : defaultSubpages,
       versions: { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0 }
     };
   } catch {

@@ -140,7 +140,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.platformHero}>
-        <Image className={styles.heroBackdrop} src="/media/product-platform-hero.webp" alt="" fill priority sizes="100vw" />
+        <Image className={styles.heroBackdrop} src={page.image || "/media/product-platform-hero.webp"} alt="" fill priority sizes="100vw" />
         <div className={styles.container}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
             <p className={styles.eyebrow}>企业碳管理数字化平台</p>

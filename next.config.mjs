@@ -1,4 +1,6 @@
 /** @type {import("next").NextConfig} */
+const developmentScriptSource = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
+
 const nextConfig = {
   output: "standalone",
   allowedDevOrigins: ["127.0.0.1"],
@@ -7,7 +9,7 @@ const nextConfig = {
       {
         source: "/:path*",
         headers: [
-          { key: "Content-Security-Policy", value: "default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self'; font-src 'self' data:; object-src 'none'; upgrade-insecure-requests" },
+          { key: "Content-Security-Policy", value: `default-src 'self'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'${developmentScriptSource}; connect-src 'self'; font-src 'self' data:; object-src 'none'; upgrade-insecure-requests` },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "X-Content-Type-Options", value: "nosniff" },

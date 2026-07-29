@@ -95,12 +95,6 @@ jobs:
             if [ ! -f "$database" ] && [ -f "$legacy_database" ]; then
               mv "$legacy_database" "$database"
             fi
-            if grep -q '^DATABASE_URL=' "$target/.env"; then
-              sed -i 's#^DATABASE_URL=.*#DATABASE_URL="file:/opt/fx-web/data/site.db"#' "$target/.env"
-            else
-              printf '%s\n' 'DATABASE_URL="file:/opt/fx-web/data/site.db"' >> "$target/.env"
-            fi
-
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
             tar -xzf "$archive" -C "$target"
