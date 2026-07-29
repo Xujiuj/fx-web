@@ -45,7 +45,9 @@ jobs:
           mkdir -p release/.next/static release/public
           cp -R .next/static/. release/.next/static/
           cp -R public/. release/public/
-          DATABASE_URL="file:${GITHUB_WORKSPACE}/release/site.db" npx prisma db push --schema prisma/schema.prisma --skip-generate
+          mkdir -p release/prisma release/scripts
+          cp prisma/sqlite-bootstrap.sql release/prisma/
+          cp scripts/ensure-sqlite-schema.mjs release/scripts/
           tar -C release -czf fx-web-release.tgz .
 
       - name: Upload release archive
@@ -88,11 +90,8 @@ jobs:
 
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env ! -name site.db -exec rm -rf -- {} +
-            if [ -f "$target/site.db" ]; then
-              tar -xzf "$archive" -C "$target" --exclude=./site.db
-            else
-              tar -xzf "$archive" -C "$target"
-            fi
+            tar -xzf "$archive" -C "$target"
+            /opt/fx/runtime/node/bin/node "$target/scripts/ensure-sqlite-schema.mjs" "$target/site.db" "$target/prisma/sqlite-bootstrap.sql"
             chown -R fx-web:fx-web "$target"
             rm -f "$archive"
 
