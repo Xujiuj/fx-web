@@ -45,7 +45,7 @@ jobs:
           mkdir -p release/.next/static release/public
           cp -R .next/static/. release/.next/static/
           cp -R public/. release/public/
-          rm -f release/site.db
+          DATABASE_URL="file:${GITHUB_WORKSPACE}/release/site.db" npx prisma db push --schema prisma/schema.prisma --skip-generate
           tar -C release -czf fx-web-release.tgz .
 
       - name: Upload release archive
@@ -88,7 +88,11 @@ jobs:
 
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env ! -name site.db -exec rm -rf -- {} +
-            tar -xzf "$archive" -C "$target"
+            if [ -f "$target/site.db" ]; then
+              tar -xzf "$archive" -C "$target" --exclude=./site.db
+            else
+              tar -xzf "$archive" -C "$target"
+            fi
             chown -R fx-web:fx-web "$target"
             rm -f "$archive"
 
