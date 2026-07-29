@@ -40,27 +40,9 @@ const iconMap = {
 } satisfies Record<IconKey, typeof BarChart3>;
 
 const aboutPresentation = {
-  about: {
-    label: "关于我们",
-    kicker: "ABOUT US",
-    layout: "profile",
-    image: "/media/about-company-generated.png",
-    imageAlt: "企业碳数据治理的抽象层叠视觉"
-  },
-  mission: {
-    label: "公司理念",
-    kicker: "OUR PHILOSOPHY",
-    layout: "philosophy",
-    image: "/media/about-philosophy-generated.png",
-    imageAlt: "可追溯碳管理方法的抽象层叠视觉"
-  },
-  vision: {
-    label: "公司愿景",
-    kicker: "COMPANY VISION",
-    layout: "vision",
-    image: "/media/about-vision-generated.png",
-    imageAlt: "低碳转型愿景的全景抽象视觉"
-  }
+  about: { layout: "profile" },
+  mission: { layout: "philosophy" },
+  vision: { layout: "vision" }
 } as const;
 
 export function HomePage({ content }: { content: HomeContent }) {
@@ -69,7 +51,7 @@ export function HomePage({ content }: { content: HomeContent }) {
       <SectionOrchestrator />
       <HeroCarousel slides={content.heroSlides} />
       <AboutSection tabs={content.aboutTabs} />
-      <AnimatedTimeline title={content.sectionTitles.timeline} timeline={content.timeline} />
+      <AnimatedTimeline title={content.sectionTitles.timeline} timeline={content.timeline} image={content.timelineImage} />
       <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
       <ProductSection title={content.sectionTitles.products} products={content.products} />
       <CertificateSection title={content.sectionTitles.certificates} images={content.certificateImages} />
@@ -287,13 +269,9 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
 
   if (!activeTab) return null;
 
-  const presentation = aboutPresentation[activeTab.value as keyof typeof aboutPresentation] ?? {
-    label: activeTab.label,
-    kicker: activeTab.kicker,
-    layout: "profile" as const,
-    image: "/media/about-company-generated.png",
-    imageAlt: activeTab.title
-  };
+  const presentation = aboutPresentation[activeTab.value as keyof typeof aboutPresentation] ?? { layout: "profile" as const };
+  const image = activeTab.image ?? "/media/about-company-generated.png";
+  const imageAlt = activeTab.imageAlt ?? activeTab.title;
 
   return (
     <section className="about-section" id="about">
@@ -301,7 +279,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
         <Tabs.List className="about-tab-list" aria-label="公司介绍">
           {tabs.map((tab) => (
             <Tabs.Trigger value={tab.value} key={tab.value} id={`about-tab-${tab.value}`}>
-              {aboutPresentation[tab.value as keyof typeof aboutPresentation]?.label ?? tab.label}
+              {tab.label}
             </Tabs.Trigger>
           ))}
         </Tabs.List>
@@ -323,7 +301,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <p className="about-kicker">{presentation.kicker}</p>
+                    <p className="about-kicker">{activeTab.kicker}</p>
                     <span className="about-rule" aria-hidden="true" />
                     <h2>{activeTab.title}</h2>
                     <p>{activeTab.body}</p>
@@ -335,7 +313,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 46vw" />
+                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 46vw" />
                     <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
                     <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
                   </motion.figure>
@@ -350,7 +328,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 34vw" />
+                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 34vw" />
                     <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
                     <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
                   </motion.figure>
@@ -360,7 +338,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <p className="about-kicker">{presentation.kicker}</p>
+                    <p className="about-kicker">{activeTab.kicker}</p>
                     <span className="about-rule" aria-hidden="true" />
                     <h2>{activeTab.title}</h2>
                     <p>{activeTab.body}</p>
@@ -376,7 +354,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <Image className="about-artwork-image" src={presentation.image} alt={presentation.imageAlt} fill sizes="(max-width: 720px) 100vw, 72vw" />
+                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 72vw" />
                     <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
                     <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
                   </motion.figure>
@@ -386,7 +364,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
                   >
-                    <p className="about-kicker">{presentation.kicker}</p>
+                    <p className="about-kicker">{activeTab.kicker}</p>
                     <span className="about-rule" aria-hidden="true" />
                     <h2>{activeTab.title}</h2>
                     <p>{activeTab.body}</p>
@@ -442,11 +420,8 @@ function ProductSection({ title, products }: { title: string; products: HomeCont
                 className="product-card"
                 href={product.href}
                 key={product.name}
-                initial={false}
-                whileInView={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4 }}
-                viewport={{ once: true, amount: 0.5 }}
-                transition={{ duration: 0.62, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
               >
                 <Icon size={42} />
                 <h3>{product.name}</h3>

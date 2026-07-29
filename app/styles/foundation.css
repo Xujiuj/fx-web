@@ -205,32 +205,6 @@ img {
   box-shadow: 0 22px 50px rgba(32, 61, 48, 0.16);
 }
 
-.nav-panel-grouped {
-  display: flex;
-  gap: 36px;
-}
-
-.nav-group {
-  display: grid;
-  min-width: 210px;
-}
-
-.nav-group > p {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 0 0 8px;
-  padding: 0 8px 12px;
-  border-bottom: 1px solid var(--line);
-  color: var(--primary-strong);
-  font-size: 15px;
-  font-weight: 700;
-}
-
-.nav-group > p svg {
-  color: var(--primary);
-}
-
 .nav-panel a {
   padding: 14px 16px;
   border-radius: 4px;

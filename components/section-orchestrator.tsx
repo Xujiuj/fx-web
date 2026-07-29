@@ -14,7 +14,6 @@ export function SectionOrchestrator() {
       const groups = [
         { trigger: ".news-section", targets: ".news-card", y: 22, scale: 0.992, duration: 0.95 },
         { trigger: ".latest-updates-section", targets: ".latest-update", y: 20, scale: 0.998, duration: 0.95 },
-        { trigger: ".product-section", targets: ".product-card", y: 28, scale: 0.995, duration: 0.95 },
         { trigger: ".certificate-section", targets: ".certificate-card", y: 20, scale: 0.995, duration: 0.95 },
         { trigger: ".partner-section", targets: ".partner-logo", y: 10, scale: 0.998, duration: 0.95 },
         { trigger: ".thinking-section", targets: ".capability-node", y: 18, scale: 0.995, duration: 0.95 },

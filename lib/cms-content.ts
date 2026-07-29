@@ -4,12 +4,13 @@ export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "s
 export type NavChild = { label: string; href: string; group?: string };
 export type NavItem = { label: string; href: string; children?: NavChild[] };
 export type HeroSlide = { eyebrow: string; title: string; description: string; image: string; cta: string };
-export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string };
+export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string; image?: string; imageAlt?: string };
 export type TimelineEntry = { year: string; items: string[] };
 export type NewsItem = { title: string; action: string; image: string; href: string; summary?: string; subtitle?: string };
 export type ProductItem = { name: string; summary: string; icon: IconKey; href: string };
 export type CapabilityItem = { label: string; icon: IconKey };
 export type PartnerItem = { name: string; logo?: string };
+export type PageMedia = Record<string, string>;
 export type FooterContent = { copyright: string; icpText: string; icpHref: string; ipv6Text: string };
 export type ContactContent = { title: string; description: string; namePlaceholder: string; companyPlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; submitLabel: string; successLabel: string; errorLabel: string };
 
@@ -19,6 +20,7 @@ export type HomeContent = {
   heroSlides: HeroSlide[];
   aboutTabs: AboutTab[];
   timeline: TimelineEntry[];
+  timelineImage?: string;
   solutionItems: NewsItem[];
   newsItems: NewsItem[];
   products: ProductItem[];
@@ -53,6 +55,7 @@ export type Subpage = {
   features: string[];
   steps: string[];
   sections: SubpageSection[];
+  media?: PageMedia;
 };
 
 type StoredSubpage = Omit<Subpage, "layout" | "sections"> & Partial<Pick<Subpage, "layout" | "sections">>;
@@ -90,6 +93,21 @@ const legacyCertificateImages = new Set([
   "/media/cert-5.png"
 ]);
 const legacyPartnerLabels = new Set(["制造企业", "集团企业", "园区平台", "咨询机构", "产业链伙伴"]);
+const defaultPageMedia: Record<string, PageMedia> = {
+  "solution-standard": { hero: "/media/solution-training-generated.png", diagram: "/media/reference-diagrams/data-modeling-flow.svg" },
+  "solution-practical": { hero: "/media/solution-platform-generated.png", diagram: "/media/reference-diagrams/agile-implementation.svg" },
+  "solution-consulting": { hero: "/media/solution-consulting-generated.png", diagram: "/media/reference-diagrams/group-implementation.svg" },
+  "solution-platform": { hero: "/media/solution-practical-generated.png", diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
+  "excel-accounting-tool": { hero: "/media/product-excel-hero.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
+  "carbon-management-platform": { hero: "/media/product-platform-hero.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
+  "customer-cases": {
+    hero: "/media/manufacturing-carbon-case-hero-warm.png",
+    accounting: "/media/manufacturing-carbon-accounting.png",
+    governance: "/media/manufacturing-carbon-governance.png",
+    analytics: "/media/manufacturing-carbon-analytics.png",
+    operations: "/media/manufacturing-carbon-operations.png"
+  }
+};
 
 function b2bMedia(src: string) {
   return legacyB2BMedia[src] ?? src;
@@ -112,6 +130,15 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
       icpHref: standardFooter.icpHref
     },
     heroSlides: content.heroSlides.map((slide) => ({ ...slide, image: heroMedia(slide.image) })),
+    aboutTabs: content.aboutTabs.map((tab) => {
+      const fallback = defaultHomeContent.aboutTabs.find((entry) => entry.value === tab.value);
+      return {
+        ...tab,
+        image: tab.image ?? fallback?.image,
+        imageAlt: tab.imageAlt ?? fallback?.imageAlt ?? tab.title
+      };
+    }),
+    timelineImage: content.timelineImage ?? defaultHomeContent.timelineImage,
     solutionItems: (content.solutionItems?.length ? content.solutionItems : defaultSolutionItems).map((item) => ({ ...item, image: b2bMedia(item.image) })),
     newsItems: (hasLegacySolutionItems || storedNews.length === 0 ? defaultLatestUpdates : storedNews).map((item) => ({
       ...item,
@@ -222,7 +249,11 @@ function normalizeSubpage(page: StoredSubpage): Subpage {
     ...page,
     layout: page.layout ?? subpageLayouts[page.slug] ?? "training",
     sections: page.sections?.length ? page.sections : buildStructuredSections(page),
-    image: b2bMedia(page.image)
+    image: b2bMedia(page.image),
+    media: Object.fromEntries(
+      Object.entries({ ...(defaultPageMedia[page.slug] ?? {}), ...(page.media ?? {}) })
+        .map(([key, value]) => [key, b2bMedia(value)])
+    )
   };
 }
 
@@ -266,9 +297,9 @@ export const defaultHomeContent: HomeContent = {
     { eyebrow: "一次维护，多口径核算", title: "构建可持续运行的企业碳管理能力", description: "以统一数据体系和集中核算引擎为核心，实现一次数据维护、多标准核算与多维分析。", image: heroPlatform, cta: "预约产品演示" }
   ],
   aboutTabs: [
-    { value: "about", label: "公司介绍", title: "新疆峰行智成数据科技有限责任公司", kicker: "ABOUT US", body: "专注于为各类组织提供温室气体核算与碳管理数字化解决方案。通过统一数据体系与集中核算引擎，推动温室气体核算由“年度填报”向“持续管理”转变。" },
-    { value: "mission", label: "企业使命", title: "以智慧驱动业务增长", kicker: "MISSION", body: "从培训赋能、咨询实施到数字化平台和持续运营，以标准化方法、可追溯数据与数字工具支撑企业长期碳管理。" },
-    { value: "vision", label: "企业愿景", title: "成为企业绿色低碳转型可信赖的长期合作伙伴", kicker: "VISION", body: "帮助企业建立从核算、管理到价值释放的长期能力体系，为监管履约、信息披露、供应链协同与低碳决策提供稳定的数据基础。" }
+    { value: "about", label: "公司介绍", title: "新疆峰行智成数据科技有限责任公司", kicker: "ABOUT US", body: "专注于为各类组织提供温室气体核算与碳管理数字化解决方案。通过统一数据体系与集中核算引擎，推动温室气体核算由“年度填报”向“持续管理”转变。", image: "/media/about-company-generated.png", imageAlt: "峰行智成团队协作场景" },
+    { value: "mission", label: "企业使命", title: "以智慧驱动业务增长", kicker: "MISSION", body: "从培训赋能、咨询实施到数字化平台和持续运营，以标准化方法、可追溯数据与数字工具支撑企业长期碳管理。", image: "/media/about-philosophy-generated.png", imageAlt: "企业碳管理方法与数据模型" },
+    { value: "vision", label: "企业愿景", title: "成为企业绿色低碳转型可信赖的长期合作伙伴", kicker: "VISION", body: "帮助企业建立从核算、管理到价值释放的长期能力体系，为监管履约、信息披露、供应链协同与低碳决策提供稳定的数据基础。", image: "/media/about-vision-generated.png", imageAlt: "企业绿色低碳转型愿景" }
   ],
   timeline: [
     { year: "01", items: ["标准版", "核算培训", "建立温室气体核算基础"] },
@@ -276,6 +307,7 @@ export const defaultHomeContent: HomeContent = {
     { year: "03", items: ["咨询版", "Excel 集团版", "建立集团温室气体核算体系"] },
     { year: "04", items: ["平台版", "平台管理", "建设企业碳数据管理平台"] }
   ],
+  timelineImage: "/media/path-carbon-warm.jpg",
   solutionItems: defaultSolutionItems,
   newsItems: defaultLatestUpdates,
   products: [
@@ -298,6 +330,19 @@ export const defaultHomeContent: HomeContent = {
   footer: standardFooter
 };
 
+const defaultCustomerCaseSections: SubpageSection[] = [{
+  id: "applications",
+  kind: "gallery",
+  title: "围绕碳管理，连接关键业务数据",
+  description: "应用场景",
+  items: [
+    { title: "温室气体核算", description: "围绕固定燃烧、外购电力和生产过程数据，明确组织与运营边界，形成可复核的温室气体核算基础。", image: "/media/manufacturing-carbon-accounting.png" },
+    { title: "活动数据治理", description: "梳理能源、原辅料、生产与运输等活动数据的来源、责任人和维护频率，建立统一的数据口径。", image: "/media/manufacturing-carbon-governance.png" },
+    { title: "碳数据分析", description: "通过总量、强度、基准年和趋势分析，帮助企业识别重点排放环节，为减排管理和披露准备提供依据。", image: "/media/manufacturing-carbon-analytics.png" },
+    { title: "持续运营管理", description: "以 Excel 核算工具或数字化平台支持多年度更新、集团汇总和过程追溯，让碳管理成为持续可用的业务能力。", image: "/media/manufacturing-carbon-operations.png" }
+  ]
+}];
+
 export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "solution-standard", navLabel: "标准版（核算培训）", eyebrow: "SOLUTION 01", title: "建立企业温室气体核算基础", summary: "面向准备开展温室气体核算的企业，围绕核算边界、数据收集、排放因子和结果复核开展培训。", image: excelImage, icon: "users", metrics: [{ label: "服务形式", value: "专项培训" }, { label: "培训重点", value: "核算方法" }, { label: "适用阶段", value: "启动准备" }], features: ["GHG Protocol 核算方法", "ISO 14064-1 核算要求", "GB/T 32150 核算规范", "企业场景实操演练"], steps: ["明确培训范围与参与人员", "梳理核算对象与数据来源", "结合企业场景进行演练", "形成后续核算工作清单"] },
   { slug: "solution-practical", navLabel: "实战营（Excel 单公司版）", eyebrow: "SOLUTION 02", title: "完成企业首次温室气体核算", summary: "通过梳理活动数据、配置核算工具、开展过程复核，形成可用于内部管理和对外填报的温室气体核算结果。", image: excelImage, icon: "chart", metrics: [{ label: "适用组织", value: "单一法人" }, { label: "交付工具", value: "Excel 模板" }, { label: "交付成果", value: "核算报告" }], features: ["活动数据台账梳理", "Excel 单公司版配置", "历史年度数据整理", "范围一、范围二及适用范围三核算"], steps: ["梳理核算边界", "收集并复核活动数据", "配置排放因子与计算规则", "交付核算报告和工作底稿"] },
@@ -305,7 +350,7 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "solution-platform", navLabel: "平台版（数字化管理）", eyebrow: "SOLUTION 04", title: "建设企业碳数据管理平台", summary: "统一管理活动数据、核算规则和结果分析，支持多组织、多年度的温室气体核算与管理数据查询。", image: platformImage, icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"] },
   { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力，兼顾单公司与集团两类组织场景。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版与集团版", "多年数据横向积累", "核算口径统一", "结果自动更新与清晰追溯"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"] },
   { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系，实现一次数据维护、多口径核算、多维分析与长期持续管理。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "集中" }, { label: "数据链路", value: "可追溯" }], features: ["排放边界、排放源、活动数据与排放因子统一管理", "CO2e总量、活动数据、七种温室气体与排放强度分析", "多组织、多年度、多口径灵活切换", "基准年、趋势、强度和工厂对标分析"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"] },
-  { slug: "customer-cases", navLabel: "行业案例", eyebrow: "INDUSTRY CASES", title: "行业案例", summary: "面向制造、能源、园区和供应链等业务场景，围绕数据基础、核算边界和管理目标开展碳管理建设。", image: dataImage, icon: "building", metrics: [{ label: "覆盖场景", value: "4类" }, { label: "工作起点", value: "业务数据" }, { label: "管理目标", value: "长期使用" }], features: ["制造业", "能源与公用事业", "园区与多组织管理", "供应链与品牌企业"], steps: ["明确业务边界与管理目标", "梳理数据来源与责任分工", "统一核算口径与复核方式", "形成可持续更新的管理成果"] },
+  { slug: "customer-cases", layout: "cases", navLabel: "企业碳管理数字化", eyebrow: "INDUSTRY CASE", title: "制造行业", summary: "我们面向制造企业提供温室气体核算、碳管理体系建设与数字化平台服务，围绕生产环节、能源消耗和工厂边界建立清晰的数据基础，支持企业开展核算、分析与持续管理。", image: dataImage, icon: "building", metrics: [{ label: "覆盖场景", value: "4类" }, { label: "工作起点", value: "业务数据" }, { label: "管理目标", value: "长期使用" }], features: ["制造业", "能源与公用事业", "园区与多组织管理", "供应链与品牌企业"], steps: ["明确业务边界与管理目标", "梳理数据来源与责任分工", "统一核算口径与复核方式", "形成可持续更新的管理成果"], sections: defaultCustomerCaseSections },
   { slug: "knowledge-center", navLabel: "知识课堂", eyebrow: "KNOWLEDGE", title: "企业碳管理学习与能力提升平台", summary: "围绕双碳政策、温室气体核算、ESG、CDP、CBAM和碳市场动态，提供专栏、课程与资料。", image: dataImage, icon: "sparkles", metrics: [{ label: "内容栏目", value: "3类" }, { label: "课程方向", value: "5类" }, { label: "服务对象", value: "企业" }], features: ["双碳政策与碳市场解读", "温室气体核算与Excel实战", "集团核算体系与数字化平台培训", "ESG、CDP与CBAM基础内容"], steps: ["双碳专栏", "视频课程", "产品与解决方案资料", "核算工具下载"] },
   { slug: "company-profile", navLabel: "企业介绍", eyebrow: "ABOUT", title: "新疆峰行智成数据科技有限责任公司", summary: "企业碳管理数字化服务商，专注为各类组织提供温室气体核算、碳管理体系建设和数字化平台服务。", image: platformImage, icon: "users", metrics: [{ label: "企业使命", value: "智慧驱动" }, { label: "能力定位", value: "碳管理" }, { label: "服务方式", value: "全周期" }], features: ["温室气体核算", "碳管理咨询", "数字化平台", "培训、实施与持续运营"], steps: ["识别企业所处阶段", "匹配能力建设路径", "交付工具与平台", "支持长期运营"] },
   { slug: "company-honors", layout: "honors", navLabel: "企业荣誉", eyebrow: "HONORS", title: "企业荣誉", summary: "我们重视每一项可核验的专业认可，相关资质与荣誉将以有效文件为准持续更新。", image: heroPlatform, icon: "shield", metrics: [], features: [], steps: [], sections: [{ id: "honors", kind: "gallery", title: "荣誉展示", description: "已公开展示的证书、资质和荣誉，均可在后台独立维护。", items: [] }] },
@@ -319,7 +364,7 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
 function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
   const stored = normalizeSubpagesContent(content).map((page) => {
     const fallback = defaultSubpages.find((entry) => entry.slug === page.slug);
-    const withDefaultSections = page.layout === "service" && page.sections.length === 0 && fallback ? { ...page, sections: fallback.sections } : page;
+    const withDefaultSections = page.sections.length === 0 && fallback?.sections.length ? { ...page, sections: fallback.sections } : page;
     return withDefaultSections.slug === "carbon-management-platform" && withDefaultSections.image === platformImage
       ? { ...withDefaultSections, image: "/media/product-platform-hero.webp" }
       : withDefaultSections;

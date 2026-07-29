@@ -1285,3 +1285,32 @@
   .about-philosophy-media .about-artwork-grid,
   .about-vision-media .about-artwork-grid { right: -20px; bottom: -20px; }
 }
+
+/* The dot matrix is a shared accent, not a layout-specific decoration. */
+.about-profile-media .about-artwork-grid,
+.about-philosophy-media .about-artwork-grid,
+.about-vision-media .about-artwork-grid {
+  inset: auto -32px -28px auto;
+  width: 168px;
+  height: 120px;
+  opacity: 1;
+  background-image: radial-gradient(circle, var(--accent) 1.2px, transparent 1.6px);
+  background-size: 12px 12px;
+  transform: none;
+}
+
+.about-profile-media .about-artwork-marker,
+.about-philosophy-media .about-artwork-marker,
+.about-vision-media .about-artwork-marker {
+  inset: auto -9px -9px auto;
+}
+
+@media (max-width: 720px) {
+  .about-profile-media .about-artwork-grid,
+  .about-philosophy-media .about-artwork-grid,
+  .about-vision-media .about-artwork-grid {
+    inset: auto -18px -18px auto;
+    width: 132px;
+    height: 96px;
+  }
+}

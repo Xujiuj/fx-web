@@ -9,9 +9,7 @@ import {
   FileSpreadsheet,
   Layers3,
   Network,
-  RefreshCw,
-  ShieldCheck,
-  Waypoints
+  RefreshCw
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -40,12 +38,12 @@ const solutionHeroArt = {
   }
 } as const;
 
-function SolutionHeroArt({ variant }: { variant: keyof typeof solutionHeroArt }) {
+function SolutionHeroArt({ variant, src }: { variant: keyof typeof solutionHeroArt; src?: string }) {
   const art = solutionHeroArt[variant];
 
   return (
     <figure className={styles.solutionHeroVisual}>
-      <Image src={art.src} alt={art.alt} fill priority sizes="100vw" />
+      <Image src={src ?? art.src} alt={art.alt} fill priority sizes="100vw" />
     </figure>
   );
 }
@@ -69,7 +67,7 @@ export function TrainingPage({ page }: SolutionPageProps) {
   return (
     <>
       <section className={`${styles.standardHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="training" />
+        <SolutionHeroArt variant="training" src={page.media?.hero} />
         <div className={styles.standardHeroInner}>
           <div className={`${styles.standardHeroCopy} page-reveal`}>
             <span className={styles.kicker}>温室气体核算培训</span>
@@ -83,7 +81,7 @@ export function TrainingPage({ page }: SolutionPageProps) {
         eyebrow="核算方法"
         title="温室气体核算的数据建模流程"
         description="以活动数据、排放因子、计算规则和核算结果为主线，说明企业开展核算时需要建立的数据关系。"
-        src="/media/reference-diagrams/data-modeling-flow.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/data-modeling-flow.svg"}
         alt="企业温室气体核算数据建模流程图"
       />
 
@@ -114,7 +112,7 @@ export function PracticalPage({ page }: SolutionPageProps) {
   return (
     <>
       <section className={`${styles.practicalHero} ${styles.solutionHero} ${styles.solutionHeroDark}`}>
-        <SolutionHeroArt variant="practical" />
+        <SolutionHeroArt variant="practical" src={page.media?.hero} />
         <div className={styles.practicalHeroInner}>
           <div className={`${styles.practicalHeroCopy} page-reveal`}>
             <span className={styles.kicker}>首次核算实施</span>
@@ -144,7 +142,7 @@ export function PracticalPage({ page }: SolutionPageProps) {
         eyebrow="实施流程"
         title="首次核算的实施步骤"
         description="从项目准备、数据建模到成果交付，明确各阶段的工作事项和交付结果。"
-        src="/media/reference-diagrams/agile-implementation.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/agile-implementation.svg"}
         alt="企业温室气体核算实施流程图"
       />
 
@@ -183,7 +181,7 @@ export function ConsultingPage({ page }: SolutionPageProps) {
   return (
     <>
       <section className={`${styles.consultingHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="consulting" />
+        <SolutionHeroArt variant="consulting" src={page.media?.hero} />
         <div className={`${styles.consultingHeroInner} page-reveal`}>
           <span className={styles.kicker}>集团核算建设</span>
           <h1>{page.title}</h1>
@@ -218,7 +216,7 @@ export function ConsultingPage({ page }: SolutionPageProps) {
         eyebrow="集团协同"
         title="集团与成员企业的核算实施路径"
         description="呈现集团与成员企业在口径制定、数据报送、汇总复核中的协同关系。"
-        src="/media/reference-diagrams/group-implementation.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/group-implementation.svg"}
         alt="集团与成员企业温室气体核算实施路径图"
       />
 
@@ -240,18 +238,6 @@ export function ConsultingPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.consultingStages} page-reveal`} aria-labelledby="consulting-stages-title">
-        <h2 id="consulting-stages-title">体系落地阶段</h2>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{step}</strong>
-            </li>
-          ))}
-        </ol>
-      </section>
-
       <ContactAction title="建立适合集团组织方式的核算体系" />
     </>
   );
@@ -261,7 +247,7 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
   return (
     <>
       <section className={`${styles.platformHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="platform" />
+        <SolutionHeroArt variant="platform" src={page.media?.hero} />
         <div className={styles.platformHeroInner}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
             <span className={styles.kicker}>碳数据管理平台</span>
@@ -290,25 +276,9 @@ export function PlatformSolutionPage({ page }: SolutionPageProps) {
         eyebrow="数据治理"
         title="企业碳数据治理框架"
         description="将数据标准、核算规则和管理应用纳入统一体系，为日常维护和管理分析提供清晰基础。"
-        src="/media/reference-diagrams/carbon-data-governance.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/carbon-data-governance.svg"}
         alt="企业碳数据治理框架图"
       />
-
-      <section className={`${styles.platformRoadmap} page-reveal`} aria-labelledby="platform-roadmap-title">
-        <div>
-          <Waypoints aria-hidden="true" size={32} />
-          <h2 id="platform-roadmap-title">建设与运营阶段</h2>
-        </div>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{step}</strong>
-              {index === page.steps.length - 1 ? <ShieldCheck aria-hidden="true" size={20} /> : <ArrowRight aria-hidden="true" size={20} />}
-            </li>
-          ))}
-        </ol>
-      </section>
 
       <ContactAction title="为企业建设可持续使用的碳数据管理平台" />
     </>

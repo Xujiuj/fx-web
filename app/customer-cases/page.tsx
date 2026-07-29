@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import { ManufacturingCasePage } from "@/components/manufacturing-case-page";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { getHomeContent } from "@/lib/cms-content";
+import { getHomeContent, getSubpageContent } from "@/lib/cms-content";
+import { notFound } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "制造行业案例｜峰行智成",
@@ -10,12 +11,13 @@ export const metadata: Metadata = {
 };
 
 export default async function CustomerCasesPage() {
-  const content = await getHomeContent();
+  const [content, page] = await Promise.all([getHomeContent(), getSubpageContent("customer-cases")]);
+  if (!page) notFound();
 
   return (
     <>
       <SiteHeader content={content} />
-      <ManufacturingCasePage />
+      <ManufacturingCasePage page={page} />
       <SiteFooter footer={content.footer} />
     </>
   );

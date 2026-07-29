@@ -1,8 +1,17 @@
+"use client";
+
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { BarChart3, Boxes, ChartNoAxesCombined, UsersRound } from "lucide-react";
 import Image from "next/image";
+import { useRef } from "react";
+import type { Subpage, SubpageSection } from "@/lib/cms-content";
 import styles from "./manufacturing-case-page.module.css";
 
-const caseModules = [
+gsap.registerPlugin(ScrollTrigger, useGSAP);
+
+const defaultCaseModules = [
   {
     title: "温室气体核算",
     description: "围绕固定燃烧、外购电力和生产过程数据，明确组织与运营边界，形成可复核的温室气体核算基础。",
@@ -29,11 +38,11 @@ const caseModules = [
   }
 ];
 
-function HeroArtwork() {
+function HeroArtwork({ image }: { image?: string }) {
   return (
     <div className={styles.heroArtwork} aria-hidden="true">
       <Image
-        src="/media/manufacturing-carbon-case-hero-warm.png"
+        src={image ?? "/media/manufacturing-carbon-case-hero-warm.png"}
         alt=""
         fill
         priority
@@ -43,7 +52,7 @@ function HeroArtwork() {
   );
 }
 
-function CaseArtwork({ image, title }: Pick<(typeof caseModules)[number], "image" | "title">) {
+function CaseArtwork({ image, title }: Pick<(typeof defaultCaseModules)[number], "image" | "title">) {
   return (
     <div className={styles.caseArtwork}>
       <Image src={image} alt={title} fill sizes="(max-width: 760px) calc(100vw - 32px), 650px" />
@@ -51,30 +60,128 @@ function CaseArtwork({ image, title }: Pick<(typeof caseModules)[number], "image
   );
 }
 
-export function ManufacturingCasePage() {
+function configuredModules(page: Subpage) {
+  const section = page.sections.find((entry) => entry.id === "applications") as SubpageSection | undefined;
+  if (!section?.items.length) return defaultCaseModules;
+  return section.items.map((item, index) => ({
+    title: item.title,
+    description: item.description ?? "",
+    image: item.image ?? defaultCaseModules[index % defaultCaseModules.length].image,
+    icon: defaultCaseModules[index % defaultCaseModules.length].icon
+  }));
+}
+
+export function ManufacturingCasePage({ page }: { page: Subpage }) {
+  const applications = page.sections.find((entry) => entry.id === "applications");
+  const caseModules = configuredModules(page);
+  const pageRef = useRef<HTMLElement>(null);
+
+  useGSAP(() => {
+    const pageElement = pageRef.current;
+    if (!pageElement) return;
+
+    const query = gsap.utils.selector(pageElement);
+    const media = gsap.matchMedia();
+
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      gsap.timeline()
+        .fromTo(query(`.${styles.heroCopy}`), {
+          autoAlpha: 0,
+          y: 28
+        }, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out"
+        })
+        .fromTo(query(`.${styles.heroArtwork} img`), {
+          autoAlpha: 0,
+          scale: 1.06
+        }, {
+          autoAlpha: 1,
+          scale: 1,
+          duration: 1.25,
+          ease: "power2.out"
+        }, 0.1);
+
+      gsap.utils.toArray<HTMLElement>(query(`.${styles.introduction} p`)).forEach((element) => {
+        gsap.fromTo(element, {
+          autoAlpha: 0,
+          y: 18
+        }, {
+          autoAlpha: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 88%",
+            once: true
+          }
+        });
+      });
+
+      const sectionHeading = query(`.${styles.sectionHeading}`);
+      gsap.fromTo(sectionHeading, {
+        autoAlpha: 0,
+        y: 22
+      }, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.85,
+        ease: "power2.out",
+        scrollTrigger: {
+          trigger: sectionHeading,
+          start: "top 88%",
+          once: true
+        }
+      });
+
+      gsap.utils.toArray<HTMLElement>(query(`.${styles.caseItem}`)).forEach((element, index) => {
+        gsap.fromTo(element, {
+          autoAlpha: 0,
+          x: index % 2 === 0 ? -30 : 30,
+          y: 18
+        }, {
+          autoAlpha: 1,
+          x: 0,
+          y: 0,
+          duration: 0.9,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: element,
+            start: "top 88%",
+            once: true
+          }
+        });
+      });
+    });
+
+    return () => media.revert();
+  }, { scope: pageRef });
+
   return (
-    <main className={styles.page}>
+    <main ref={pageRef} className={styles.page}>
       <section className={styles.hero} aria-labelledby="manufacturing-case-title">
         <div className={styles.heroContent}>
           <div className={styles.heroCopy}>
-            <p>INDUSTRY CASE</p>
-            <h1 id="manufacturing-case-title">制造行业</h1>
-            <span>企业碳管理数字化</span>
+            <p>{page.eyebrow}</p>
+            <h1 id="manufacturing-case-title">{page.title}</h1>
+            <span>{page.navLabel}</span>
           </div>
-          <HeroArtwork />
+          <HeroArtwork image={page.media?.hero} />
         </div>
       </section>
 
       <section className={styles.introduction} aria-labelledby="manufacturing-introduction-title">
         <h2 id="manufacturing-introduction-title" className="sr-only">制造企业碳管理服务</h2>
-        <p>我们面向制造企业提供温室气体核算、碳管理体系建设与数字化平台服务，围绕生产环节、能源消耗和工厂边界建立清晰的数据基础，支持企业开展核算、分析与持续管理。</p>
-        <p>方案以统一的数据模型、核算规则和分析体系为基础，整合活动数据与排放因子，实现一次维护、多口径核算和多维度分析；同时保留数据来源与计算过程，确保结果可追溯、可复核。</p>
+        <p>{page.summary}</p>
       </section>
 
       <section className={styles.applications} aria-labelledby="manufacturing-applications-title">
         <div className={styles.sectionHeading}>
-          <p>应用场景</p>
-          <h2 id="manufacturing-applications-title">围绕碳管理，连接关键业务数据</h2>
+          <p>{applications?.description ?? "应用场景"}</p>
+          <h2 id="manufacturing-applications-title">{applications?.title ?? "围绕碳管理，连接关键业务数据"}</h2>
         </div>
         <div className={styles.caseList}>
           {caseModules.map(({ title, description, icon: Icon, image }, index) => (

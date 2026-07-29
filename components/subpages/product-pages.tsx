@@ -45,7 +45,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.excelHero}>
-        <Image className={styles.heroBackdrop} src="/media/product-excel-hero.webp" alt="" fill priority sizes="100vw" />
+        <Image className={styles.heroBackdrop} src={page.media?.hero ?? page.image} alt="" fill priority sizes="100vw" />
         <div className={styles.container}>
           <div className={`${styles.excelHeroCopy} page-reveal`}>
             <p className={styles.eyebrow}>Excel 温室气体核算工具</p>
@@ -127,7 +127,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         eyebrow="核算方法"
         title="Excel 工具的数据维护与核算关系"
         description="说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"
-        src="/media/reference-diagrams/excel-standard-flow.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
         alt="Excel 温室气体核算工具的数据维护与核算关系图"
       />
 
@@ -140,7 +140,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.platformHero}>
-        <Image className={styles.heroBackdrop} src={page.image || "/media/product-platform-hero.webp"} alt="" fill priority sizes="100vw" />
+        <Image className={styles.heroBackdrop} src={page.media?.hero ?? page.image} alt="" fill priority sizes="100vw" />
         <div className={styles.container}>
           <div className={`${styles.platformHeroCopy} page-reveal`}>
             <p className={styles.eyebrow}>企业碳管理数字化平台</p>
@@ -205,30 +205,9 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         eyebrow="平台架构"
         title="企业碳管理平台功能架构"
         description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
-        src="/media/reference-diagrams/platform-architecture.svg"
+        src={page.media?.diagram ?? "/media/reference-diagrams/platform-architecture.svg"}
         alt="企业碳管理平台功能架构图"
       />
-
-      <section className={styles.dataFlow} aria-labelledby="platform-flow-title">
-        <div className={styles.container}>
-          <div className={`${styles.flowHeading} page-reveal`}>
-            <span>DATA FLOW</span>
-            <h2 id="platform-flow-title">让数据沿着统一链路持续流动</h2>
-            <p>每一步都围绕企业已有管理基础展开，形成可复核、可追溯、可持续运营的数据闭环。</p>
-          </div>
-          <ol className="page-reveal">
-            {page.steps.map((step, index) => (
-              <li key={step}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <div>
-                  <strong>{step}</strong>
-                  <small>{index === 0 ? "边界 · 排放源 · 数据结构" : index === 1 ? "标准 · 口径 · 排放因子" : index === 2 ? "组织协同 · 数据维护" : "核算 · 分析 · 管理应用"}</small>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </section>
 
       <section className={`${styles.analysisSection} ${styles.container} page-reveal`} aria-labelledby="platform-analysis-title">
         <header>

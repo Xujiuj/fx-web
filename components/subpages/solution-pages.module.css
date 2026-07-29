@@ -230,11 +230,11 @@
 }
 
 .flowHeading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 30px;
+  display: grid;
+  justify-items: center;
+  gap: 12px;
   margin-bottom: 44px;
+  text-align: center;
 }
 
 .flowHeading h2 {
@@ -787,7 +787,7 @@
   }
 
   .flowHeading {
-    display: block;
+    display: grid;
   }
 
   .flowHeading h2 {

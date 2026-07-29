@@ -2,7 +2,7 @@
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import { BriefcaseBusiness, ChevronDown, Menu } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
@@ -60,14 +60,6 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
 }
 
 function NavigationItem({ item, onActivate }: { item: HomeContent["navItems"][number]; onActivate: (value: string) => void }) {
-  const groups = item.children?.reduce<Array<{ label?: string; children: NonNullable<typeof item.children> }>>((result, child) => {
-    const group = result.find((entry) => entry.label === child.group);
-    if (group) group.children.push(child);
-    else result.push({ label: child.group, children: [child] });
-    return result;
-  }, []) ?? [];
-  const hasGroups = groups.some((group) => group.label);
-
   return (
     <NavigationMenu.Item value={item.label}>
       {item.children?.length ? (
@@ -77,13 +69,8 @@ function NavigationItem({ item, onActivate }: { item: HomeContent["navItems"][nu
             <ChevronDown size={14} />
           </NavigationMenu.Trigger>
           <NavigationMenu.Content className="nav-content" onPointerEnter={() => onActivate(item.label)}>
-            <motion.div className={`nav-panel${hasGroups ? " nav-panel-grouped" : ""}`} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
-              {groups.map((group) => group.label ? (
-                <section className="nav-group" key={group.label}>
-                  <p><BriefcaseBusiness size={17} aria-hidden="true" />{group.label}</p>
-                  {group.children.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>)}
-                </section>
-              ) : group.children.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>))}
+            <motion.div className="nav-panel" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
+              {item.children.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>)}
             </motion.div>
           </NavigationMenu.Content>
         </>
