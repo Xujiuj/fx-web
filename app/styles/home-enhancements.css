@@ -1123,6 +1123,7 @@
 .about-panel--vision {
   display: grid;
   grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  grid-template-rows: minmax(0, 1fr);
   align-items: center;
   gap: 48px;
   overflow: hidden;
