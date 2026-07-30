@@ -6,6 +6,7 @@ type ContactLead = {
   id: string;
   name: string;
   company: string | null;
+  contact: string;
   email: string;
   message: string;
   createdAt: string | Date;
@@ -16,6 +17,7 @@ export function AdminLeadManager() {
     { title: "提交时间", dataIndex: "createdAt", valueType: "dateTime", width: 180 },
     { title: "联系人", dataIndex: "name", width: 120 },
     { title: "企业", dataIndex: "company", renderText: (company) => company || "-", width: 160 },
+    { title: "手机号/微信号", dataIndex: "contact", width: 180 },
     { title: "邮箱", dataIndex: "email", width: 220 },
     { title: "咨询内容", dataIndex: "message", ellipsis: true }
   ];

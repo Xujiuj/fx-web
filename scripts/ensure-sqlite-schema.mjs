@@ -11,6 +11,11 @@ const database = new DatabaseSync(databasePath);
 
 try {
   database.exec(readFileSync(schemaPath, "utf8"));
+
+  const columns = database.prepare('PRAGMA table_info("ContactLead")').all();
+  if (!columns.some((column) => column.name === "contact")) {
+    database.exec('ALTER TABLE "ContactLead" ADD COLUMN "contact" TEXT NOT NULL DEFAULT \'\'');
+  }
 } finally {
   database.close();
 }

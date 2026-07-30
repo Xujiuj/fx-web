@@ -1,18 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import Image from "next/image";
 import type { TimelineEntry } from "@/lib/cms-content";
 import { SectionHeading } from "./section-heading";
 
-export function AnimatedTimeline({ title, timeline, image }: { title: string; timeline: TimelineEntry[]; image?: string }) {
+export function AnimatedTimeline({ title, timeline }: { title: string; timeline: TimelineEntry[] }) {
   if (timeline.length === 0) return null;
 
   return <section className="timeline-section timeline-landscape-section" id="path">
     <SectionHeading title={title} />
     <div className="timeline-landscape">
-      <Image src={image ?? "/media/path-carbon-warm.jpg"} alt="企业碳管理能力建设路径" fill sizes="(max-width: 1200px) 100vw, 1200px" className="timeline-landscape-image" />
-      <span className="timeline-landscape-shade" aria-hidden="true" />
       <ol className="timeline-horizontal">
         {timeline.map((entry, index) => {
           const isTop = index % 2 === 0;

@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { ReferenceDiagram } from "@/components/reference-diagram";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./service-page.module.css";
@@ -9,7 +8,6 @@ export function ServicePage({ page }: { page: Subpage }) {
   return (
     <>
       <section className={`${styles.hero} page-reveal`}>
-        <Image src={page.image} alt="" fill priority sizes="100vw" className={styles.heroImage} />
         <div className={styles.heroShade} />
         <div className={styles.heroTitle}>
           <p>{page.eyebrow}</p>

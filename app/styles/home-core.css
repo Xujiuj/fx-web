@@ -816,6 +816,17 @@
   gap: 12px;
 }
 
+.contact-field {
+  display: grid;
+  gap: 6px;
+}
+
+.contact-field label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 650;
+}
+
 .contact-section input,
 .contact-section textarea {
   width: 100%;

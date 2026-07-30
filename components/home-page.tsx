@@ -20,7 +20,7 @@ import {
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
-import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import type { HomeContent, IconKey } from "@/lib/cms-content";
 import { AnimatedTimeline } from "./animated-timeline";
 import { SectionHeading } from "./section-heading";
@@ -39,19 +39,13 @@ const iconMap = {
   users: Building2
 } satisfies Record<IconKey, typeof BarChart3>;
 
-const aboutPresentation = {
-  about: { layout: "profile" },
-  mission: { layout: "philosophy" },
-  vision: { layout: "vision" }
-} as const;
-
 export function HomePage({ content }: { content: HomeContent }) {
   return (
     <main>
       <SectionOrchestrator />
       <HeroCarousel slides={content.heroSlides} />
       <AboutSection tabs={content.aboutTabs} />
-      <AnimatedTimeline title={content.sectionTitles.timeline} timeline={content.timeline} image={content.timelineImage} />
+      <AnimatedTimeline title={content.sectionTitles.timeline} timeline={content.timeline} />
       <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
       <ProductSection title={content.sectionTitles.products} products={content.products} />
       <CertificateSection title={content.sectionTitles.certificates} images={content.certificateImages} />
@@ -70,177 +64,42 @@ export function HomePage({ content }: { content: HomeContent }) {
 
 function HeroCarousel({ slides }: { slides: HomeContent["heroSlides"] }) {
   const [selected, setSelected] = useState(0);
-  const [copyIndex, setCopyIndex] = useState<number | null>(0);
-  const [copyExiting, setCopyExiting] = useState(false);
-  const [transitioning, setTransitioning] = useState(false);
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const [firstImageLoaded, setFirstImageLoaded] = useState(false);
-  const exitTimer = useRef<number | null>(null);
-  const transitionTimer = useRef<number | null>(null);
+  const slide = slides[selected];
 
-  const clearTransitionTimers = useCallback(() => {
-    if (exitTimer.current !== null) window.clearTimeout(exitTimer.current);
-    if (transitionTimer.current !== null) window.clearTimeout(transitionTimer.current);
-    exitTimer.current = null;
-    transitionTimer.current = null;
-  }, []);
-
-  const selectSlide = useCallback((nextIndex: number) => {
-    if (nextIndex === selected || transitioning) return;
-
-    clearTransitionTimers();
-    if (reducedMotion) {
-      setSelected(nextIndex);
-      setCopyIndex(nextIndex);
-      setCopyExiting(false);
-      return;
-    }
-
-    setSelected(nextIndex);
-    setCopyExiting(true);
-    setTransitioning(true);
-    exitTimer.current = window.setTimeout(() => setCopyIndex(null), 320);
-    transitionTimer.current = window.setTimeout(() => {
-      setCopyIndex(nextIndex);
-      setCopyExiting(false);
-      setTransitioning(false);
-    }, 2000);
-  }, [clearTransitionTimers, reducedMotion, selected, transitioning]);
-
-  useEffect(() => {
-    const media = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const syncPreference = () => {
-      setReducedMotion(media.matches);
-      if (media.matches) {
-        clearTransitionTimers();
-        setCopyIndex(selected);
-        setCopyExiting(false);
-        setTransitioning(false);
-      }
-    };
-
-    syncPreference();
-    media.addEventListener("change", syncPreference);
-    return () => media.removeEventListener("change", syncPreference);
-  }, [clearTransitionTimers, selected]);
-
-  useEffect(() => {
-    if (slides.length < 2 || reducedMotion || transitioning) return;
-    const timer = window.setTimeout(
-      () => selectSlide((selected + 1) % slides.length),
-      12000
-    );
-    return () => window.clearTimeout(timer);
-  }, [reducedMotion, selectSlide, selected, slides.length, transitioning]);
-
-  useEffect(() => () => clearTransitionTimers(), [clearTransitionTimers]);
-
-  useEffect(() => {
-    if (!firstImageLoaded || slides.length < 2) return;
-    const nextSlide = slides[(selected + 1) % slides.length];
-    const source = heroMediaSource(nextSlide.image, 1280, "avif") ?? nextSlide.image;
-    const prefetch = new window.Image();
-    prefetch.decoding = "async";
-    prefetch.src = source;
-  }, [firstImageLoaded, selected, slides]);
-
-  if (!slides[selected]) return null;
+  if (!slide) return null;
 
   return (
     <section className="hero" id="home">
+      <div className="hero-gradient" aria-hidden="true" />
       <div className="hero-fade-stage">
-        {slides.map((slide, index) => (
-          <article
-            className={index === selected ? "hero-slide is-active" : "hero-slide"}
-            key={slide.title}
-            aria-hidden={index !== selected}
-          >
-            <ResponsiveHeroImage
-              src={slide.image}
-              priority={index === 0}
-              onLoad={index === 0 ? () => setFirstImageLoaded(true) : undefined}
-            />
-            {copyIndex === index ? (
-              <div className={copyExiting ? "hero-copy is-exiting" : "hero-copy"} aria-live="polite">
-                <p className="hero-copy-eyebrow">{slide.eyebrow}</p>
-                <div className="hero-copy-title"><HeroTitle title={slide.title} /></div>
-                <span className="hero-description hero-copy-body">{slide.description}</span>
-                <div className="hero-actions hero-copy-actions">
-                  <Link className="outline-button" href={slide.href ?? "/#contact"}>
-                    {slide.cta}
-                    <ArrowRight size={16} />
-                  </Link>
-                  {slide.secondaryCta ? <Link className="hero-secondary-link" href={slide.secondaryHref ?? "/#contact"}>{slide.secondaryCta}</Link> : null}
-                </div>
-              </div>
-            ) : null}
-          </article>
-        ))}
+        <article className="hero-slide is-active" key={slide.title}>
+          <div className="hero-copy" aria-live="polite">
+            <p className="hero-copy-eyebrow">{slide.eyebrow}</p>
+            <div className="hero-copy-title"><HeroTitle title={slide.title} /></div>
+            <span className="hero-description hero-copy-body">{slide.description}</span>
+            <div className="hero-actions hero-copy-actions">
+              <Link className="outline-button" href={slide.href ?? "/#contact"}>
+                {slide.cta}
+                <ArrowRight size={16} />
+              </Link>
+              {slide.secondaryCta ? <Link className="hero-secondary-link" href={slide.secondaryHref ?? "/#contact"}>{slide.secondaryCta}</Link> : null}
+            </div>
+          </div>
+        </article>
       </div>
-      <div className="hero-dots" aria-label="轮播导航">
-        {slides.map((slide, index) => (
+      {slides.length > 1 ? <div className="hero-dots" aria-label="轮播导航">
+        {slides.map((entry, index) => (
           <button
-            key={slide.title}
+            key={entry.title}
             className={selected === index ? "is-active" : ""}
-            onClick={() => selectSlide(index)}
+            onClick={() => setSelected(index)}
             aria-label={"切换到第 " + (index + 1) + " 张"}
             aria-current={selected === index ? "true" : undefined}
-            disabled={transitioning}
           />
         ))}
-      </div>
+      </div> : null}
     </section>
   );
-}
-
-type HeroMedia = { key: string; width: number; height: number; widths: number[] };
-
-const heroMedia: Record<string, HeroMedia> = {
-  "/media/fengxing-hero-accounting.png": { key: "fengxing-hero-accounting", width: 1672, height: 941, widths: [480, 768, 1280, 1672] },
-  "/media/fengxing-hero-management.png": { key: "fengxing-hero-management", width: 1672, height: 941, widths: [480, 768, 1280, 1672] }
-};
-
-function heroMediaSource(src: string, width: number, format: "avif" | "webp" | "jpg") {
-  const media = heroMedia[src];
-  if (!media) return null;
-  return `/media/optimized/${media.key}/${media.key}-${width}.${format}`;
-}
-
-function heroSrcSet(media: HeroMedia, format: "avif" | "webp" | "jpg") {
-  return media.widths
-    .map((width) => `${heroMediaSource(`/media/${media.key}.png`, width, format)} ${width}w`)
-    .join(", ");
-}
-
-function ResponsiveHeroImage({ src, priority, onLoad }: { src: string; priority: boolean; onLoad?: () => void }) {
-  const media = heroMedia[src];
-
-  /* Native picture sources are required here for AVIF/WebP fallback and explicit preload priority. */
-  /* eslint-disable @next/next/no-img-element */
-  if (!media) {
-    return <img className="hero-bg" src={src} alt="" loading={priority ? "eager" : "lazy"} decoding="async" onLoad={onLoad} />;
-  }
-
-  return (
-    <picture className="hero-picture">
-      <source type="image/avif" srcSet={heroSrcSet(media, "avif")} sizes="100vw" />
-      <source type="image/webp" srcSet={heroSrcSet(media, "webp")} sizes="100vw" />
-      <img
-        className="hero-bg"
-        src={heroMediaSource(src, media.width, "jpg") ?? src}
-        srcSet={heroSrcSet(media, "jpg")}
-        sizes="100vw"
-        width={media.width}
-        height={media.height}
-        alt=""
-        loading={priority ? "eager" : "lazy"}
-        fetchPriority={priority ? "high" : "auto"}
-        decoding="async"
-        onLoad={onLoad}
-      />
-    </picture>
-  );
-  /* eslint-enable @next/next/no-img-element */
 }
 
 function HeroTitle({ title }: { title: string }) {
@@ -269,9 +128,7 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
 
   if (!activeTab) return null;
 
-  const presentation = aboutPresentation[activeTab.value as keyof typeof aboutPresentation] ?? { layout: "profile" as const };
-  const image = activeTab.image ?? "/media/about-company-generated.png";
-  const imageAlt = activeTab.imageAlt ?? activeTab.title;
+  const activeIndex = tabs.findIndex((tab) => tab.value === activeTab.value) + 1;
 
   return (
     <section className="about-section" id="about">
@@ -286,91 +143,34 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
         <div className="about-content" role="tabpanel" aria-labelledby={`about-tab-${activeTab.value}`}>
           <AnimatePresence mode="wait">
             <motion.div
-              className={`about-panel about-panel--${presentation.layout}`}
+              className="about-panel"
               key={activeTab.value}
               initial={shouldReduceMotion ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -18, transition: { duration: 0.2 } }}
               transition={{ duration: shouldReduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
             >
-              {presentation.layout === "profile" ? (
-                <>
-                  <motion.div
-                    className="about-profile-copy"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <p className="about-kicker">{activeTab.kicker}</p>
-                    <span className="about-rule" aria-hidden="true" />
-                    <h2>{activeTab.title}</h2>
-                    <p>{activeTab.body}</p>
-                  </motion.div>
-                  <motion.figure
-                    className="about-profile-media about-artwork"
-                    aria-label="企业碳数据治理抽象视觉"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: -28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 46vw" />
-                    <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
-                    <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
-                  </motion.figure>
-                </>
-              ) : null}
-              {presentation.layout === "philosophy" ? (
-                <>
-                  <motion.figure
-                    className="about-philosophy-media about-artwork"
-                    aria-label="可追溯碳管理方法抽象视觉"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: -28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 34vw" />
-                    <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
-                    <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
-                  </motion.figure>
-                  <motion.div
-                    className="about-philosophy-copy"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <p className="about-kicker">{activeTab.kicker}</p>
-                    <span className="about-rule" aria-hidden="true" />
-                    <h2>{activeTab.title}</h2>
-                    <p>{activeTab.body}</p>
-                  </motion.div>
-                </>
-              ) : null}
-              {presentation.layout === "vision" ? (
-                <>
-                  <motion.figure
-                    className="about-vision-media about-artwork"
-                    aria-label="低碳转型愿景抽象视觉"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: -28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.08, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <Image className="about-artwork-image" src={image} alt={imageAlt} fill sizes="(max-width: 720px) 100vw, 72vw" />
-                    <motion.span className="about-artwork-grid" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.76 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.3 }} />
-                    <motion.span className="about-artwork-marker" aria-hidden="true" initial={shouldReduceMotion ? false : { opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: shouldReduceMotion ? 0 : 0.3, delay: shouldReduceMotion ? 0 : 0.48 }} />
-                  </motion.figure>
-                  <motion.div
-                    className="about-vision-copy"
-                    initial={shouldReduceMotion ? false : { opacity: 0, x: 28 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: shouldReduceMotion ? 0 : 0.62, delay: shouldReduceMotion ? 0 : 0.22, ease: [0.22, 1, 0.36, 1] }}
-                  >
-                    <p className="about-kicker">{activeTab.kicker}</p>
-                    <span className="about-rule" aria-hidden="true" />
-                    <h2>{activeTab.title}</h2>
-                    <p>{activeTab.body}</p>
-                  </motion.div>
-                </>
-              ) : null}
+              <motion.div
+                className="about-copy"
+                initial={shouldReduceMotion ? false : { opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <p className="about-kicker">{activeTab.kicker}</p>
+                <span className="about-rule" aria-hidden="true" />
+                <h2>{activeTab.title}</h2>
+                <p>{activeTab.body}</p>
+              </motion.div>
+              <motion.aside
+                className="about-panel-mark"
+                aria-label={activeTab.label}
+                initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.12, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <span>{String(activeIndex).padStart(2, "0")}</span>
+                <strong>{activeTab.label}</strong>
+              </motion.aside>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -387,8 +187,7 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
         <div className="latest-updates-list">
           {items.map((item, index) => (
             <a className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
-              <Image src={item.image} alt="" fill sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 48vw" />
-              <span className="latest-update-shade" aria-hidden="true" />
+              <span className="latest-update-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
               <div className="latest-update-copy">
                 <h3>{item.title}</h3>
                 <p>{item.subtitle ?? item.summary ?? item.action}</p>
@@ -549,10 +348,26 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
         <p>{contact.description}</p>
       </div>
       <form onSubmit={handleSubmit}>
-        <input name="name" placeholder={contact.namePlaceholder} required />
-        <input name="company" placeholder={contact.companyPlaceholder} />
-        <input name="email" type="email" placeholder={contact.emailPlaceholder} required />
-        <textarea name="message" placeholder={contact.messagePlaceholder} required />
+        <div className="contact-field">
+          <label htmlFor="contact-name">联系人</label>
+          <input id="contact-name" name="name" placeholder={contact.namePlaceholder} required />
+        </div>
+        <div className="contact-field">
+          <label htmlFor="contact-company">企业名称（选填）</label>
+          <input id="contact-company" name="company" placeholder={contact.companyPlaceholder} />
+        </div>
+        <div className="contact-field">
+          <label htmlFor="contact-method">手机号 / 微信号</label>
+          <input id="contact-method" name="contact" placeholder={contact.contactPlaceholder} inputMode="tel" required />
+        </div>
+        <div className="contact-field">
+          <label htmlFor="contact-email">联系邮箱</label>
+          <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} required />
+        </div>
+        <div className="contact-field">
+          <label htmlFor="contact-message">咨询需求</label>
+          <textarea id="contact-message" name="message" placeholder={contact.messagePlaceholder} required />
+        </div>
         <button type="submit" disabled={submitting}>
           {contact.submitLabel}
           <Send size={15} />

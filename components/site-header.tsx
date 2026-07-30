@@ -46,11 +46,21 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
           </DropdownMenu.Trigger>
           <DropdownMenu.Portal>
             <DropdownMenu.Content className="mobile-menu" sideOffset={10}>
-              {visibleNavItems.map((item) => (
-                <DropdownMenu.Item asChild key={item.label}>
-                  <a href={item.href}>{item.label}</a>
-                </DropdownMenu.Item>
-              ))}
+              {visibleNavItems.map((item) => {
+                const visibleChildren = item.children?.filter((child) => !child.hidden) ?? [];
+                return (
+                  <DropdownMenu.Group key={item.label}>
+                    <DropdownMenu.Item asChild>
+                      <a className="mobile-menu-parent" href={item.href}>{item.label}</a>
+                    </DropdownMenu.Item>
+                    {visibleChildren.map((child) => (
+                      <DropdownMenu.Item asChild key={`${item.label}-${child.label}`}>
+                        <a className="mobile-menu-child" href={child.href}>{child.label}</a>
+                      </DropdownMenu.Item>
+                    ))}
+                  </DropdownMenu.Group>
+                );
+              })}
             </DropdownMenu.Content>
           </DropdownMenu.Portal>
         </DropdownMenu.Root>

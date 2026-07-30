@@ -6,6 +6,7 @@ import { createFixedWindowLimiter, getClientIp, readJsonBody } from "@/lib/reque
 const leadLimiter = createFixedWindowLimiter(5, 10 * 60 * 1000);
 const MAX_NAME_LENGTH = 80;
 const MAX_COMPANY_LENGTH = 120;
+const MAX_CONTACT_LENGTH = 80;
 const MAX_MESSAGE_LENGTH = 4_000;
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
   const body = await readJsonBody<{
     name?: string;
     company?: string;
+    contact?: string;
     email?: string;
     message?: string;
   }>(request, 8 * 1024);
@@ -43,17 +45,19 @@ export async function POST(request: Request) {
 
   const name = body.value.name?.trim();
   const company = body.value.company?.trim();
+  const contact = body.value.contact?.trim();
   const email = body.value.email?.trim().toLowerCase();
   const message = body.value.message?.trim();
 
   if (
     !name || name.length > MAX_NAME_LENGTH ||
+    !contact || contact.length > MAX_CONTACT_LENGTH ||
     !email || email.length > 254 || !emailPattern.test(email) ||
     !message || message.length > MAX_MESSAGE_LENGTH ||
     (company !== undefined && company.length > MAX_COMPANY_LENGTH)
   ) {
     return NextResponse.json(
-      { error: "请填写有效的姓名、邮箱和留言内容。" },
+      { error: "请填写有效的联系人、手机号或微信号、邮箱和留言内容。" },
       { status: 400 }
     );
   }
@@ -62,6 +66,7 @@ export async function POST(request: Request) {
     data: {
       name,
       company: company || null,
+      contact,
       email,
       message
     }

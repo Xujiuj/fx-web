@@ -12,6 +12,7 @@ model ContactLead {
   id        String   @id @default(cuid())
   name      String
   company   String?
+  contact   String
   email     String
   message   String
   createdAt DateTime @default(now())

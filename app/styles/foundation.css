@@ -1,15 +1,15 @@
 :root {
   --bg: #ffffff;
-  --surface: #f5f7f3;
-  --surface-strong: #f5eee6;
-  --text: #242a26;
-  --muted: #667066;
-  --line: #dfe5dc;
-  --primary: #d66a22;
-  --primary-strong: #b94e12;
-  --primary-deep: #315f46;
-  --accent: #88a88f;
-  --shadow: 0 18px 50px rgba(32, 61, 48, 0.13);
+  --surface: #fff8ee;
+  --surface-strong: #fff0d4;
+  --text: #2b2925;
+  --muted: #6e655a;
+  --line: #eadbca;
+  --primary: #e95513;
+  --primary-strong: #bf3f08;
+  --primary-deep: #9c3d0a;
+  --accent: #f7b52c;
+  --shadow: 0 18px 50px rgba(104, 48, 14, 0.13);
   --max: 1200px;
 }
 
@@ -69,7 +69,7 @@ img {
   top: 0;
   z-index: 50;
   height: 78px;
-  border-bottom: 1px solid rgba(213, 222, 212, 0.92);
+  border-bottom: 1px solid rgba(234, 219, 202, 0.92);
   background: rgba(255, 255, 255, 0.97);
   backdrop-filter: blur(18px);
 }
@@ -141,7 +141,7 @@ img {
 .nav-trigger:hover,
 .nav-trigger[data-state="open"] {
   color: var(--primary-strong);
-  background: rgba(239, 90, 24, 0.055);
+  background: rgba(233, 85, 19, 0.06);
 }
 
 .nav-link::after,
@@ -184,21 +184,21 @@ img {
 .nav-viewport {
   position: relative;
   width: var(--radix-navigation-menu-viewport-width);
-  min-width: 470px;
+  min-width: 310px;
   height: auto;
-  min-height: 168px;
+  min-height: 0;
   overflow: hidden;
   border-radius: 0 0 6px 6px;
   transition: width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-panel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(180px, 1fr));
-  gap: 8px;
-  min-width: 470px;
-  padding: 22px;
-  border: 1px solid rgba(213, 222, 212, 0.96);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 310px;
+  padding: 12px;
+  border: 1px solid rgba(234, 219, 202, 0.96);
   border-top: 2px solid var(--primary);
   border-radius: 0 0 6px 6px;
   background: rgba(255, 255, 255, 0.985);
@@ -206,14 +206,14 @@ img {
 }
 
 .nav-panel a {
-  padding: 14px 16px;
+  padding: 12px 14px;
   border-radius: 4px;
   color: #58625a;
   transition: color 320ms ease, background-color 320ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-panel a:hover {
-  background: var(--surface);
+  background: var(--surface-strong);
   color: var(--primary-strong);
   transform: translateX(4px);
 }
@@ -255,6 +255,8 @@ img {
   z-index: 80;
   min-width: 150px;
   padding: 8px;
+  max-height: min(70svh, 540px);
+  overflow-y: auto;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
@@ -268,6 +270,17 @@ img {
   border-radius: 6px;
   color: #58635a;
   cursor: pointer;
+}
+
+.mobile-menu-parent {
+  color: var(--text) !important;
+  font-weight: 800;
+}
+
+.mobile-menu-child {
+  padding-left: 28px !important;
+  color: var(--muted) !important;
+  font-size: 13px;
 }
 
 .language-item:hover,

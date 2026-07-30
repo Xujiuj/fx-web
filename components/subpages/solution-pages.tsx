@@ -1,286 +1,172 @@
 import {
   ArrowRight,
-  BookOpenCheck,
-  Building2,
   Check,
-  CheckCircle2,
-  ClipboardCheck,
   FileCheck2,
-  FileSpreadsheet,
-  Layers3,
-  Network,
-  RefreshCw
+  Target,
+  UsersRound,
+  Wrench,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
-import { ReferenceDiagram } from "@/components/reference-diagram";
 import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
 
-const solutionHeroArt = {
-  training: {
-    src: "/media/solution-training-generated.png",
-    alt: "企业碳核算方法的层叠抽象视觉"
-  },
-  practical: {
-    src: "/media/solution-platform-generated.png",
-    alt: "企业活动数据到核算成果的抽象流程视觉"
-  },
-  consulting: {
-    src: "/media/solution-consulting-generated.png",
-    alt: "集团多组织协同核算的抽象网络视觉"
-  },
-  platform: {
-    src: "/media/solution-practical-generated.png",
-    alt: "企业碳数据持续运营的抽象生态视觉"
-  }
-} as const;
+type SolutionFramework = {
+  sequence: string;
+  title: string;
+  summary: string;
+  suitableFor: string;
+  problem: string;
+  deliverable: string;
+  deliverableDescription: string;
+  services: string[];
+};
 
-function SolutionHeroArt({ variant, src }: { variant: keyof typeof solutionHeroArt; src?: string }) {
-  const art = solutionHeroArt[variant];
+const solutionFrameworks: Record<string, SolutionFramework> = {
+  "solution-standard": {
+    sequence: "01",
+    title: "标准版（培训赋能）",
+    summary: "帮助企业快速掌握温室气体核算方法。",
+    suitableFor: "初步启动温室气体核算工作，对核算方法及标准认知尚浅，希望快速建立核算认知并在内部形成方法论共识的企业。",
+    problem: "核算方法不清晰、标准理解不统一、核算边界与口径容易混乱。",
+    deliverable: "《企业温室气体核算实操课程》",
+    deliverableDescription: "帮助企业建立核算认知，掌握国家标准与核算方法，形成可延续的内部工作基础。",
+    services: ["温室气体核算方法培训", "GHG Protocol培训", "ISO14064培训", "国标培训", "Excel实战演练", "企业案例解析"],
+  },
+  "solution-practical": {
+    sequence: "02",
+    title: "实战营（Excel单公司版）",
+    summary: "帮助企业完成首次核算闭环。",
+    suitableFor: "已开展核算工作但数据采集与计算流程尚未打通，迫切需要产出可信核算成果并形成可交付物的企业。",
+    problem: "活动数据组织缺乏标准化，计算逻辑高度复杂，核算结果难以复核和持续更新。",
+    deliverable: "《企业温室气体核算报表（Excel单公司版）》",
+    deliverableDescription: "基于企业实际数据完成一次核算，形成可复用的核算成果、数据台账与工作模板。",
+    services: ["数据采集梳理", "Excel工具部署", "Excel实操辅导", "过程校核", "问题诊断与闭环", "成果交付"],
+  },
+  "solution-consulting": {
+    sequence: "03",
+    title: "咨询版（Excel集团版）",
+    summary: "建立集团统一核算管理体系。",
+    suitableFor: "涵盖多个子公司或业务单元的集团型企业，需要建立统一核算体系并支撑ESG披露、碳信息披露及合规要求。",
+    problem: "子公司核算口径不一致，集团层面无法有效汇总、复核与对标。",
+    deliverable: "《企业温室气体核算报表（Excel集团版）》",
+    deliverableDescription: "形成子公司独立核算、集团自动汇总的完整体系架构，为年度更新与披露准备提供统一基础。",
+    services: ["集团组织边界梳理", "统一核算口径与模板", "单体公司核算模型部署", "集团汇总模型设计", "核算口径规范", "实施方案制定"],
+  },
+  "solution-platform": {
+    sequence: "04",
+    title: "平台版（数字化升级）",
+    summary: "建设企业长期碳管理能力。",
+    suitableFor: "已建立基础核算体系且管理成熟度较高，寻求通过数字化转型提升管理效能并建立长期碳数据资产沉淀能力的企业。",
+    problem: "数据分散存储、人工维护成本高，缺乏自动化核算、持续分析与管理决策支持能力。",
+    deliverable: "《企业碳管理数字化平台》",
+    deliverableDescription: "构建统一数字化平台，实现碳数据集中管理、自动化核算、分析洞察与持续运营。",
+    services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
+  },
+};
 
-  return (
-    <figure className={styles.solutionHeroVisual}>
-      <Image src={src ?? art.src} alt={art.alt} fill priority sizes="100vw" />
-    </figure>
-  );
+function getFramework(page: Subpage): SolutionFramework {
+  return solutionFrameworks[page.slug] ?? {
+    sequence: page.eyebrow.replace(/\D/g, "") || "01",
+    title: page.title,
+    summary: page.summary,
+    suitableFor: "根据企业当前的核算阶段、数据基础与管理目标匹配服务范围。",
+    problem: "针对数据分散、核算复杂、结果难追溯与价值难释放等问题建立解决路径。",
+    deliverable: "企业温室气体核算与管理成果",
+    deliverableDescription: "形成可复核、可使用并可持续更新的工作成果。",
+    services: page.features,
+  };
 }
 
-function ContactAction({ title }: { title: string }) {
+function SolutionDetailPage({ page }: SolutionPageProps) {
+  const framework = getFramework(page);
+
   return (
-    <section className={`${styles.contactAction} page-reveal`} aria-label="业务咨询">
-      <div>
-        <span>下一步</span>
-        <h2>{title}</h2>
-      </div>
-      <Link href="/#contact">
-        联系顾问
-        <ArrowRight aria-hidden="true" size={17} />
-      </Link>
-    </section>
+    <>
+      <section className={styles.solutionDetailHero}>
+        <div className={styles.solutionDetailHeroInner}>
+          <div className={`${styles.solutionDetailHeroCopy} page-reveal`}>
+            <span>解决方案 {framework.sequence}</span>
+            <h1>{framework.title}</h1>
+            <p>{framework.summary}</p>
+          </div>
+          <strong aria-hidden="true">{framework.sequence}</strong>
+        </div>
+      </section>
+
+      <section className={`${styles.solutionFramework} page-reveal`} aria-labelledby="solution-framework-title">
+        <header>
+          <span>能力建设方案</span>
+          <h2 id="solution-framework-title">从企业当前阶段出发，形成可持续使用的碳管理能力</h2>
+        </header>
+        <div className={styles.frameworkGrid}>
+          <article>
+            <UsersRound aria-hidden="true" size={28} />
+            <h3>适用企业</h3>
+            <p>{framework.suitableFor}</p>
+          </article>
+          <article>
+            <Target aria-hidden="true" size={28} />
+            <h3>核心解决问题</h3>
+            <p>{framework.problem}</p>
+          </article>
+          <article className={styles.deliverableCard}>
+            <FileCheck2 aria-hidden="true" size={28} />
+            <h3>核心交付成果</h3>
+            <strong>{framework.deliverable}</strong>
+            <p>{framework.deliverableDescription}</p>
+          </article>
+        </div>
+      </section>
+
+      <section className={styles.serviceContents} aria-labelledby="service-contents-title">
+        <div className={`${styles.serviceContentsInner} page-reveal`}>
+          <header>
+            <Wrench aria-hidden="true" size={30} />
+            <div>
+              <span>服务内容</span>
+              <h2 id="service-contents-title">围绕成果交付组织实施工作</h2>
+            </div>
+          </header>
+          <ol>
+            {framework.services.map((service, index) => (
+              <li key={service}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{service}</strong>
+                <Check aria-hidden="true" size={18} />
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section className={`${styles.solutionCta} page-reveal`} aria-label="联系顾问">
+        <div>
+          <span>下一步</span>
+          <h2>讨论适合企业当前阶段的建设路径</h2>
+        </div>
+        <Link href="/#contact">
+          联系顾问
+          <ArrowRight aria-hidden="true" size={18} />
+        </Link>
+      </section>
+    </>
   );
 }
 
 export function TrainingPage({ page }: SolutionPageProps) {
-  return (
-    <>
-      <section className={`${styles.standardHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="training" src={page.media?.hero} />
-        <div className={styles.standardHeroInner}>
-          <div className={`${styles.standardHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>温室气体核算培训</span>
-            <h1>{page.title}</h1>
-            <p>{page.summary}</p>
-          </div>
-        </div>
-      </section>
-
-      <ReferenceDiagram
-        eyebrow="核算方法"
-        title="温室气体核算的数据建模流程"
-        description="以活动数据、排放因子、计算规则和核算结果为主线，说明企业开展核算时需要建立的数据关系。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/data-modeling-flow.svg"}
-        alt="企业温室气体核算数据建模流程图"
-      />
-
-      <section className={styles.curriculum} aria-labelledby="curriculum-title">
-        <div className={`${styles.curriculumIntro} page-reveal`}>
-          <BookOpenCheck aria-hidden="true" size={34} />
-          <span>课程目录</span>
-          <h2 id="curriculum-title">围绕企业实际工作的课程安排</h2>
-          <p>课程覆盖核算依据、数据准备和结果复核，并结合企业场景安排实操演练。</p>
-        </div>
-        <div className={styles.curriculumList}>
-          {page.features.map((feature, index) => (
-            <article className="page-reveal" key={feature}>
-              <span>课程 {String(index + 1).padStart(2, "0")}</span>
-              <h3>{feature}</h3>
-              <Check aria-hidden="true" size={18} />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <ContactAction title="为企业安排温室气体核算培训" />
-    </>
-  );
+  return <SolutionDetailPage page={page} />;
 }
 
 export function PracticalPage({ page }: SolutionPageProps) {
-  return (
-    <>
-      <section className={`${styles.practicalHero} ${styles.solutionHero} ${styles.solutionHeroDark}`}>
-        <SolutionHeroArt variant="practical" src={page.media?.hero} />
-        <div className={styles.practicalHeroInner}>
-          <div className={`${styles.practicalHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>首次核算实施</span>
-            <h1>{page.title}</h1>
-            <p>{page.summary}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className={`${styles.inventoryFlow} page-reveal`} aria-labelledby="inventory-flow-title">
-        <div className={styles.flowHeading}>
-          <span>实施步骤</span>
-          <h2 id="inventory-flow-title">完成首次核算的工作安排</h2>
-        </div>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <strong>{step}</strong>
-              <small>{index === 0 ? "确认组织范围和核算边界" : index === 1 ? "补齐数据来源与凭证信息" : index === 2 ? "核对排放因子与计算规则" : "交付可用于后续更新的核算结果"}</small>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <ReferenceDiagram
-        eyebrow="实施流程"
-        title="首次核算的实施步骤"
-        description="从项目准备、数据建模到成果交付，明确各阶段的工作事项和交付结果。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/agile-implementation.svg"}
-        alt="企业温室气体核算实施流程图"
-      />
-
-      <section className={styles.deliverySection} aria-labelledby="delivery-title">
-        <div className={`${styles.deliveryHeading} page-reveal`}>
-          <span>交付内容</span>
-          <h2 id="delivery-title">项目完成后可继续使用的核算基础</h2>
-          <p>除核算结果外，项目还会整理数据结构、计算规则和复核要求，便于企业后续年度更新。</p>
-        </div>
-        <div className={styles.deliveryRows}>
-          {page.features.map((feature, index) => (
-            <article className="page-reveal" key={feature}>
-              <div>
-                {index === 0 ? <ClipboardCheck aria-hidden="true" /> : index === 1 ? <FileSpreadsheet aria-hidden="true" /> : index === 2 ? <RefreshCw aria-hidden="true" /> : <FileCheck2 aria-hidden="true" />}
-                <h3>{feature}</h3>
-              </div>
-              <p>{index === 0 ? "明确数据责任、来源与维护频率。" : index === 1 ? "承载企业边界、因子与计算逻辑。" : index === 2 ? "支持后续年度沿用同一套数据结构。" : "覆盖范围一、范围二及适用的范围三排放。"}</p>
-              <CheckCircle2 aria-label="已包含" size={20} />
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <ContactAction title="从企业现有数据开始首次核算" />
-    </>
-  );
+  return <SolutionDetailPage page={page} />;
 }
 
 export function ConsultingPage({ page }: SolutionPageProps) {
-  const responsibilities = [
-    { role: "集团管理中心", duty: "制定组织边界、核算口径与汇总规则" },
-    { role: "分子公司", duty: "按统一模板维护活动数据并完成独立核算" },
-    { role: "复核与披露", duty: "完成集团汇总、数据复核与对外信息支撑" }
-  ];
-
-  return (
-    <>
-      <section className={`${styles.consultingHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="consulting" src={page.media?.hero} />
-        <div className={`${styles.consultingHeroInner} page-reveal`}>
-          <span className={styles.kicker}>集团核算建设</span>
-          <h1>{page.title}</h1>
-          <p>{page.summary}</p>
-        </div>
-      </section>
-
-      <section className={`${styles.organization} page-reveal`} aria-labelledby="organization-title">
-        <header>
-          <span>组织分工</span>
-          <h2 id="organization-title">集团与成员企业的核算分工</h2>
-          <p>集团负责统一规则和汇总要求，成员企业负责数据维护与本单位核算，共同形成可追溯的集团数据。</p>
-        </header>
-        <div className={styles.organizationTree}>
-          <div className={styles.organizationRoot}>
-            <Building2 aria-hidden="true" size={26} />
-            <span>集团管理中心</span>
-          </div>
-          <div className={styles.organizationTrunk} aria-hidden="true" />
-          <div className={styles.organizationBranches}>
-            {page.features.map((feature, index) => (
-              <article key={feature}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{feature}</h3>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <ReferenceDiagram
-        eyebrow="集团协同"
-        title="集团与成员企业的核算实施路径"
-        description="呈现集团与成员企业在口径制定、数据报送、汇总复核中的协同关系。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/group-implementation.svg"}
-        alt="集团与成员企业温室气体核算实施路径图"
-      />
-
-      <section className={styles.responsibilitySection} aria-labelledby="responsibility-title">
-        <div className={`${styles.responsibilityHeading} page-reveal`}>
-          <Network aria-hidden="true" size={34} />
-          <span>职责矩阵</span>
-          <h2 id="responsibility-title">每一级组织都清楚数据由谁维护、结果由谁负责</h2>
-        </div>
-        <div className={styles.responsibilityMatrix}>
-          {responsibilities.map((item, index) => (
-            <article className="page-reveal" key={item.role}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{item.role}</h3>
-              <p>{item.duty}</p>
-              <small>{page.steps[index] ?? page.steps.at(-1)}</small>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <ContactAction title="建立适合集团组织方式的核算体系" />
-    </>
-  );
+  return <SolutionDetailPage page={page} />;
 }
 
 export function PlatformSolutionPage({ page }: SolutionPageProps) {
-  return (
-    <>
-      <section className={`${styles.platformHero} ${styles.solutionHero} ${styles.solutionHeroLight}`}>
-        <SolutionHeroArt variant="platform" src={page.media?.hero} />
-        <div className={styles.platformHeroInner}>
-          <div className={`${styles.platformHeroCopy} page-reveal`}>
-            <span className={styles.kicker}>碳数据管理平台</span>
-            <h1>{page.title}</h1>
-            <p>{page.summary}</p>
-          </div>
-        </div>
-      </section>
-
-      <section className={styles.platformLayers} aria-labelledby="platform-layers-title">
-        <div className={`${styles.platformLayersIntro} page-reveal`}>
-          <Layers3 aria-hidden="true" size={36} />
-          <span>平台结构</span>
-          <h2 id="platform-layers-title">从业务数据到管理分析的四层结构</h2>
-          <p>企业统一维护基础数据，平台按照不同标准、组织和年度完成核算与分析。</p>
-        </div>
-        <div className={`${styles.layerStack} page-reveal`}>
-          <div><span>04</span><strong>管理应用层</strong><small>趋势、强度、基准年与经营决策</small></div>
-          <div><span>03</span><strong>核算分析层</strong><small>多标准核算与多维结果分析</small></div>
-          <div><span>02</span><strong>数据治理层</strong><small>边界、排放源、因子与校核规则</small></div>
-          <div><span>01</span><strong>业务数据层</strong><small>多组织、多年度活动数据持续沉淀</small></div>
-        </div>
-      </section>
-
-      <ReferenceDiagram
-        eyebrow="数据治理"
-        title="企业碳数据治理框架"
-        description="将数据标准、核算规则和管理应用纳入统一体系，为日常维护和管理分析提供清晰基础。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/carbon-data-governance.svg"}
-        alt="企业碳数据治理框架图"
-      />
-
-      <ContactAction title="为企业建设可持续使用的碳数据管理平台" />
-    </>
-  );
+  return <SolutionDetailPage page={page} />;
 }

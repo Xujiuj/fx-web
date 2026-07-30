@@ -4,7 +4,7 @@
   min-height: 390px;
   margin: 46px auto 0;
   overflow: hidden;
-  background: #244c3b;
+  background: linear-gradient(118deg, #bf3f08 0%, #e95513 48%, #f7b52c 100%);
 }
 
 .heroImage {
@@ -15,7 +15,7 @@
 .heroShade {
   position: absolute;
   inset: 0;
-  background: rgba(18, 45, 34, 0.58);
+  background: linear-gradient(90deg, rgba(70, 27, 3, 0.26), transparent);
 }
 
 .heroContent,
@@ -37,7 +37,7 @@
 
 .heroContent p {
   margin: 0 0 12px;
-  color: #f2b575;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;

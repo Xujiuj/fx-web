@@ -12,7 +12,7 @@ export type CapabilityItem = { label: string; icon: IconKey };
 export type PartnerItem = { name: string; logo?: string };
 export type PageMedia = Record<string, string>;
 export type FooterContent = { copyright: string; icpText: string; icpHref: string; ipv6Text: string };
-export type ContactContent = { title: string; description: string; namePlaceholder: string; companyPlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; submitLabel: string; successLabel: string; errorLabel: string };
+export type ContactContent = { title: string; description: string; namePlaceholder: string; companyPlaceholder: string; contactPlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; submitLabel: string; successLabel: string; errorLabel: string };
 
 export type HomeContent = {
   site: { title: string; description: string };
@@ -95,12 +95,12 @@ const legacyCertificateImages = new Set([
 ]);
 const legacyPartnerLabels = new Set(["制造企业", "集团企业", "园区平台", "咨询机构", "产业链伙伴"]);
 const defaultPageMedia: Record<string, PageMedia> = {
-  "solution-standard": { hero: "/media/solution-training-generated.png", diagram: "/media/reference-diagrams/data-modeling-flow.svg" },
-  "solution-practical": { hero: "/media/solution-platform-generated.png", diagram: "/media/reference-diagrams/agile-implementation.svg" },
-  "solution-consulting": { hero: "/media/solution-consulting-generated.png", diagram: "/media/reference-diagrams/group-implementation.svg" },
-  "solution-platform": { hero: "/media/solution-practical-generated.png", diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
-  "excel-accounting-tool": { hero: "/media/product-excel-hero.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
-  "carbon-management-platform": { hero: "/media/product-platform-hero.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
+  "solution-standard": {},
+  "solution-practical": {},
+  "solution-consulting": {},
+  "solution-platform": {},
+  "excel-accounting-tool": { screenshot: "/media/product-excel-report.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
+  "carbon-management-platform": { screenshot: "/media/product-platform-dashboard.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
   "customer-cases": {
     hero: "/media/manufacturing-carbon-case-hero-warm.png",
     accounting: "/media/manufacturing-carbon-accounting.png",
@@ -126,6 +126,8 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
   return {
     ...content,
     site: { ...defaultHomeContent.site, ...content.site },
+    navItems: cloneDefaultNavItems(),
+    contact: { ...defaultHomeContent.contact, ...content.contact },
     footer: {
       ...(content.footer ?? standardFooter),
       icpText: standardFooter.icpText,
@@ -187,29 +189,36 @@ const defaultLatestUpdates: NewsItem[] = [
 
 const defaultNavItems: NavItem[] = [
   { label: "首页", href: "/#home" },
-  { label: "产品", href: "/#products", children: [
+  { label: "解决方案", href: "/#solutions", children: [
+    { label: "标准版（培训赋能）", href: "/solution-standard" },
+    { label: "实战营（Excel单公司版）", href: "/solution-practical" },
+    { label: "咨询版（Excel集团版）", href: "/solution-consulting" },
+    { label: "平台版（数字化升级）", href: "/solution-platform" }
+  ] },
+  { label: "产品中心", href: "/#products", children: [
     { label: "Excel版温室气体核算工具", href: "/excel-accounting-tool" },
     { label: "企业碳管理数字化平台", href: "/carbon-management-platform" }
   ] },
-  { label: "解决方案", href: "/#solutions", children: [
-    { label: "标准版（核算培训）", href: "/solution-standard" },
-    { label: "实战营（Excel 单公司版）", href: "/solution-practical" },
-    { label: "咨询版（Excel 集团版）", href: "/solution-consulting" },
-    { label: "平台版（平台管理）", href: "/solution-platform" }
+  { label: "客户案例", href: "/customer-cases" },
+  { label: "知识课堂", href: "/knowledge-center", children: [
+    { label: "双碳专栏", href: "/knowledge-center#double-carbon" },
+    { label: "视频课程", href: "/knowledge-center#video-courses" },
+    { label: "资料下载", href: "/knowledge-center#downloads" }
   ] },
-  { label: "实施服务", href: "/#path", children: [
-    { label: "能力建设路径", href: "/service-capability-path", group: "项目实施" },
-    { label: "培训与咨询实施", href: "/service-training-consulting", group: "项目实施" },
-    { label: "数字化平台实施", href: "/service-platform-delivery", group: "项目实施" }
-  ] },
-  { label: "行业案例", href: "/customer-cases" },
   { label: "关于我们", href: "/company-profile", children: [
-    { label: "企业介绍", href: "/company-profile" },
-    { label: "企业荣誉", href: "/company-honors" },
-    { label: "合作伙伴", href: "/company-partners" },
+    { label: "公司介绍", href: "/company-profile" },
+    { label: "核心能力", href: "/company-profile#service-capability-title" },
+    { label: "资质荣誉", href: "/company-honors" },
     { label: "联系我们", href: "/company-contact" }
   ] }
 ];
+
+function cloneDefaultNavItems(): NavItem[] {
+  return defaultNavItems.map((item) => ({
+    ...item,
+    children: item.children?.map((child) => ({ ...child }))
+  }));
+}
 
 const subpageLayouts: Record<string, SubpageLayout> = {
   "solution-standard": "training",
@@ -279,31 +288,7 @@ export const defaultHomeContent: HomeContent = {
     logo: "/media/fengxing-logo.png",
     href: "/#home"
   },
-  navItems: [
-    { label: "首页", href: "/#home" },
-    { label: "产品", href: "/#products", children: [
-      { label: "Excel版温室气体核算工具", href: "/excel-accounting-tool" },
-      { label: "企业碳管理数字化平台", href: "/carbon-management-platform" }
-    ] },
-    { label: "解决方案", href: "/#solutions", children: [
-      { label: "标准版（核算培训）", href: "/solution-standard" },
-      { label: "实战营（Excel 单公司版）", href: "/solution-practical" },
-      { label: "咨询版（Excel 集团版）", href: "/solution-consulting" },
-      { label: "平台版（平台管理）", href: "/solution-platform" }
-    ] },
-    { label: "实施服务", href: "/#path", children: [
-      { label: "能力建设路径", href: "/service-capability-path", group: "项目实施" },
-      { label: "培训与咨询实施", href: "/service-training-consulting", group: "项目实施" },
-      { label: "数字化平台实施", href: "/service-platform-delivery", group: "项目实施" }
-    ] },
-    { label: "行业案例", href: "/customer-cases" },
-    { label: "关于我们", href: "/company-profile", children: [
-      { label: "企业介绍", href: "/company-profile" },
-      { label: "企业荣誉", href: "/company-honors" },
-      { label: "合作伙伴", href: "/company-partners" },
-      { label: "联系我们", href: "/company-contact" }
-    ] },
-  ],
+  navItems: cloneDefaultNavItems(),
   heroSlides: [
     { eyebrow: "企业碳管理数字化服务商", title: "让碳数据从“算得出”走向“管得好、用得上、可价值化”", description: "专注企业温室气体核算与碳管理数字化建设，帮助企业建立从核算、管理到价值释放的长期能力体系。", image: heroVisual, cta: "了解解决方案", href: "/solution-standard", secondaryCta: "预约产品演示", secondaryHref: "/#contact" },
     { eyebrow: "一次维护，多口径核算", title: "构建可持续运行的企业碳管理能力", description: "以统一数据体系和集中核算引擎为核心，实现一次数据维护、多标准核算与多维分析。", image: heroPlatform, cta: "预约产品演示", href: "/#contact" }
@@ -338,7 +323,7 @@ export const defaultHomeContent: HomeContent = {
   partners: [],
   sectionTitles: { timeline: "企业碳管理能力建设路径", solutions: "全阶段解决方案", news: "最新动态", products: "产品中心", certificates: "资质荣誉", partners: "合作伙伴", thinkingEyebrow: "", thinkingTitle: "THINKING", contact: "联系峰行智成" },
   thinkingText: "以温室气体核算为起点，通过数据采集、数据治理、核算分析、管理决策和持续运营，推动企业沉淀可追溯、可复用的碳数据资产。",
-  contact: { title: "联系峰行智成", description: "业务咨询：15099663016｜gongyafeng@fengxingdata.com", namePlaceholder: "联系人", companyPlaceholder: "企业名称", emailPlaceholder: "联系邮箱", messagePlaceholder: "企业需求", submitLabel: "提交咨询", successLabel: "咨询已提交", errorLabel: "提交失败，请稍后重试。" },
+  contact: { title: "联系峰行智成", description: "业务咨询：15099663016｜gongyafeng@fengxingdata.com", namePlaceholder: "联系人", companyPlaceholder: "企业名称", contactPlaceholder: "请输入手机号或微信号", emailPlaceholder: "联系邮箱", messagePlaceholder: "企业需求", submitLabel: "提交咨询", successLabel: "咨询已提交", errorLabel: "提交失败，请稍后重试。" },
   footer: standardFooter
 };
 
@@ -356,10 +341,10 @@ const defaultCustomerCaseSections: SubpageSection[] = [{
 }];
 
 export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
-  { slug: "solution-standard", navLabel: "标准版（核算培训）", eyebrow: "SOLUTION 01", title: "建立企业温室气体核算基础", summary: "面向准备开展温室气体核算的企业，围绕核算边界、数据收集、排放因子和结果复核开展培训。", image: excelImage, icon: "users", metrics: [{ label: "服务形式", value: "专项培训" }, { label: "培训重点", value: "核算方法" }, { label: "适用阶段", value: "启动准备" }], features: ["GHG Protocol 核算方法", "ISO 14064-1 核算要求", "GB/T 32150 核算规范", "企业场景实操演练"], steps: ["明确培训范围与参与人员", "梳理核算对象与数据来源", "结合企业场景进行演练", "形成后续核算工作清单"] },
-  { slug: "solution-practical", navLabel: "实战营（Excel 单公司版）", eyebrow: "SOLUTION 02", title: "完成企业首次温室气体核算", summary: "通过梳理活动数据、配置核算工具、开展过程复核，形成可用于内部管理和对外填报的温室气体核算结果。", image: excelImage, icon: "chart", metrics: [{ label: "适用组织", value: "单一法人" }, { label: "交付工具", value: "Excel 模板" }, { label: "交付成果", value: "核算报告" }], features: ["活动数据台账梳理", "Excel 单公司版配置", "历史年度数据整理", "范围一、范围二及适用范围三核算"], steps: ["梳理核算边界", "收集并复核活动数据", "配置排放因子与计算规则", "交付核算报告和工作底稿"] },
-  { slug: "solution-consulting", navLabel: "咨询版（Excel 集团版）", eyebrow: "SOLUTION 03", title: "建立集团温室气体核算体系", summary: "面向多法人、多层级组织，建立集团统一的核算口径、数据模板和汇总规则，支持成员企业分别维护和集团统一复核。", image: dataImage, icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"] },
-  { slug: "solution-platform", navLabel: "平台版（数字化管理）", eyebrow: "SOLUTION 04", title: "建设企业碳数据管理平台", summary: "统一管理活动数据、核算规则和结果分析，支持多组织、多年度的温室气体核算与管理数据查询。", image: platformImage, icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"] },
+  { slug: "solution-standard", navLabel: "标准版（培训赋能）", eyebrow: "SOLUTION 01", title: "标准版（培训赋能）", summary: "帮助企业快速掌握温室气体核算方法。", image: excelImage, icon: "users", metrics: [{ label: "服务形式", value: "专项培训" }, { label: "培训重点", value: "核算方法" }, { label: "适用阶段", value: "启动准备" }], features: ["GHG Protocol 核算方法", "ISO 14064-1 核算要求", "GB/T 32150 核算规范", "企业场景实操演练"], steps: ["明确培训范围与参与人员", "梳理核算对象与数据来源", "结合企业场景进行演练", "形成后续核算工作清单"] },
+  { slug: "solution-practical", navLabel: "实战营（Excel单公司版）", eyebrow: "SOLUTION 02", title: "实战营（Excel单公司版）", summary: "帮助企业完成首次核算闭环。", image: excelImage, icon: "chart", metrics: [{ label: "适用组织", value: "单一法人" }, { label: "交付工具", value: "Excel 模板" }, { label: "交付成果", value: "核算报告" }], features: ["活动数据台账梳理", "Excel 单公司版配置", "历史年度数据整理", "范围一、范围二及适用范围三核算"], steps: ["梳理核算边界", "收集并复核活动数据", "配置排放因子与计算规则", "交付核算报告和工作底稿"] },
+  { slug: "solution-consulting", navLabel: "咨询版（Excel集团版）", eyebrow: "SOLUTION 03", title: "咨询版（Excel集团版）", summary: "建立集团统一核算管理体系。", image: dataImage, icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"] },
+  { slug: "solution-platform", navLabel: "平台版（数字化升级）", eyebrow: "SOLUTION 04", title: "平台版（数字化升级）", summary: "建设企业长期碳管理能力。", image: platformImage, icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"] },
   { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力，兼顾单公司与集团两类组织场景。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版与集团版", "多年数据横向积累", "核算口径统一", "结果自动更新与清晰追溯"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"] },
   { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系，实现一次数据维护、多口径核算、多维分析与长期持续管理。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "集中" }, { label: "数据链路", value: "可追溯" }], features: ["排放边界、排放源、活动数据与排放因子统一管理", "CO2e总量、活动数据、七种温室气体与排放强度分析", "多组织、多年度、多口径灵活切换", "基准年、趋势、强度和工厂对标分析"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"] },
   { slug: "customer-cases", layout: "cases", navLabel: "企业碳管理数字化", eyebrow: "INDUSTRY CASE", title: "制造行业", summary: "我们面向制造企业提供温室气体核算、碳管理体系建设与数字化平台服务，围绕生产环节、能源消耗和工厂边界建立清晰的数据基础，支持企业开展核算、分析与持续管理。", image: dataImage, icon: "building", metrics: [{ label: "覆盖场景", value: "4类" }, { label: "工作起点", value: "业务数据" }, { label: "管理目标", value: "长期使用" }], features: ["制造业", "能源与公用事业", "园区与多组织管理", "供应链与品牌企业"], steps: ["明确业务边界与管理目标", "梳理数据来源与责任分工", "统一核算口径与复核方式", "形成可持续更新的管理成果"], sections: defaultCustomerCaseSections },
@@ -377,9 +362,12 @@ function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
   const stored = normalizeSubpagesContent(content).map((page) => {
     const fallback = defaultSubpages.find((entry) => entry.slug === page.slug);
     const withDefaultSections = page.sections.length === 0 && fallback?.sections.length ? { ...page, sections: fallback.sections } : page;
-    return withDefaultSections.slug === "carbon-management-platform" && withDefaultSections.image === platformImage
-      ? { ...withDefaultSections, image: "/media/product-platform-hero.webp" }
+    const withDefaultMedia = fallback?.media
+      ? { ...withDefaultSections, media: { ...fallback.media, ...withDefaultSections.media } }
       : withDefaultSections;
+    return withDefaultMedia.slug === "carbon-management-platform" && withDefaultMedia.image === platformImage
+      ? { ...withDefaultMedia, image: "/media/product-platform-hero.webp" }
+      : withDefaultMedia;
   });
   return stored;
 }

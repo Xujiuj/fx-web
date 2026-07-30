@@ -7,7 +7,6 @@ type AboutPageProps = { page: Subpage };
 function AboutPageHero({ page }: AboutPageProps) {
   return (
     <section className={`${styles.hero} page-reveal`}>
-      <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="100vw" />
       <div className={styles.heroShade} />
       <div className={styles.heroContent}>
         <p>{page.eyebrow}</p>

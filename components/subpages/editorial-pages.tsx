@@ -162,7 +162,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title">
+      <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title">
         <article className={styles.featuredTopic}>
           <div>
             <span>本期重点</span>
@@ -190,7 +190,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.learningSection} page-reveal`} aria-labelledby="learning-path-title">
+      <section id="video-courses" className={`${styles.learningSection} page-reveal`} aria-labelledby="learning-path-title">
         <div className={styles.wrap}>
           <div className={styles.learningHeading}>
             <SectionLabel>LEARNING PATH</SectionLabel>
@@ -209,7 +209,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.wrap} ${styles.resourceDesk} page-reveal`} aria-labelledby="resource-title">
+      <section id="downloads" className={`${styles.wrap} ${styles.resourceDesk} page-reveal`} aria-labelledby="resource-title">
         <div className={styles.resourceIntro}>
           <SectionLabel>RESOURCE DESK</SectionLabel>
           <h2 id="resource-title">课程、工具与方案资料</h2>
