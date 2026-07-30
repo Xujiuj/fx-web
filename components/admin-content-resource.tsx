@@ -30,13 +30,6 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" }
 };
 
-const studioMenuItems: MenuProps["items"] = [
-  { key: "site", label: "基础设置" },
-  { key: "home", label: "首页内容" },
-  { key: "business", label: "业务内容", children: [{ key: "solutions", label: "解决方案与动态" }, { key: "products", label: "产品中心" }] },
-  { key: "display", label: "展示内容", children: [{ key: "proof", label: "资质与伙伴" }] }
-];
-
 function MediaPreview({ src, alt, width = 96, height = 64 }: { src?: string; alt: string; width?: number; height?: number }) {
   if (!src) return <div style={{ width, height, display: "grid", placeItems: "center", gap: 2, color: "#8c8c8c", border: "1px dashed #d9d9d9", borderRadius: 6, fontSize: 12 }}><PictureOutlined /><span>未上传</span></div>;
   return <Image src={src} alt={alt} width={width} height={height} style={{ objectFit: "cover", borderRadius: 6, border: "1px solid #f0f0f0" }} preview={{ mask: "预览" }} />;
@@ -97,6 +90,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   const [subpages, setSubpages] = useState(initialContent.subpages);
   const [versions, setVersions] = useState(initialContent.versions);
   const [busy, setBusy] = useState(false);
+  const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const { message } = App.useApp();
   async function persist(nextHome: HomeContent, nextSubpages: Subpage[]) {
     setBusy(true);
@@ -127,10 +121,16 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   const changeHome = (update: (current: HomeContent) => HomeContent) => persist(update(home), subpages);
   const changePages = (update: (current: Subpage[]) => Subpage[]) => persist(home, update(subpages));
   const selectedResource = resource ?? activeResource;
-  const current = copy[selectedResource];
   const isStudio = resource === undefined;
+  const selectedMenu = activeMenuIndex === null ? undefined : home.navItems[activeMenuIndex];
+  const current = selectedMenu ? { title: `${selectedMenu.label}内容`, description: `维护“${selectedMenu.label}”栏目对应的首页区块与独立页面。` } : copy[selectedResource];
+  const studioMenuItems: MenuProps["items"] = [
+    { key: "site", label: "基础设置" },
+    { key: "website-menu", label: "官网栏目", children: home.navItems.map((item, index) => ({ key: `menu-${index}`, label: item.label })) }
+  ];
   const resourceContent = <>
-    {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+    {isStudio && selectedMenu ? <MenuContentManager menuIndex={activeMenuIndex!} menu={selectedMenu} home={home} pages={subpages} onHomeCommit={changeHome} onPagesCommit={changePages} busy={busy} /> : null}
+    {(!isStudio || !selectedMenu) && selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "navigation" ? <NavigationManager home={home} pages={subpages} onHomeCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "solutions" ? <SolutionsManager home={home} onCommit={changeHome} busy={busy} /> : null}
@@ -145,7 +145,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
       extra={[<Button key="reload" icon={<ReloadOutlined />} onClick={() => window.location.reload()} disabled={busy}>重新载入</Button>]}
     >
       <Spin spinning={busy} tip="正在保存内容">
-        {isStudio ? <Row gutter={24}><Col xs={24} lg={5} xl={4}><Menu mode="inline" defaultOpenKeys={["business", "display"]} selectedKeys={[selectedResource]} items={studioMenuItems} onClick={({ key }) => setActiveResource(key as AdminContentResourceName)} /></Col><Col xs={24} lg={19} xl={20}>{resourceContent}</Col></Row> : <Space direction="vertical" size="large" style={{ width: "100%" }}>{resourceContent}</Space>}
+        {isStudio ? <Row gutter={24}><Col xs={24} lg={5} xl={4}><Menu mode="inline" defaultOpenKeys={["website-menu"]} selectedKeys={[selectedMenu ? `menu-${activeMenuIndex}` : selectedResource]} items={studioMenuItems} onClick={({ key }) => { const value = String(key); if (value.startsWith("menu-")) setActiveMenuIndex(Number(value.slice(5))); else { setActiveMenuIndex(null); setActiveResource(value as AdminContentResourceName); } }} /></Col><Col xs={24} lg={19} xl={20}>{resourceContent}</Col></Row> : <Space direction="vertical" size="large" style={{ width: "100%" }}>{resourceContent}</Space>}
       </Spin>
     </PageContainer>
   );
@@ -164,6 +164,27 @@ function MenuManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (u
 function NavigationManager({ home, pages, onHomeCommit, busy }: { home: HomeContent; pages: Subpage[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
   const linkedPageCounts = home.navItems.map((item) => getLinkedPageSlugs(item).filter((slug) => pages.some((page) => page.slug === slug)).length);
   return <Tabs items={[{ key: "menu", label: "菜单配置", children: <MenuManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: <AdminMenuPageManager embedded items={home.navItems} linkedPageCounts={linkedPageCounts} /> }]} />;
+}
+
+function MenuContentManager({ menuIndex, menu, home, pages, onHomeCommit, onPagesCommit, busy }: { menuIndex: number; menu: NavItem; home: HomeContent; pages: Subpage[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; onPagesCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<void>; busy: boolean }) {
+  const pageManager = <PagesManager pages={pages} visibleSlugs={getLinkedPageSlugs(menu)} onCommit={onPagesCommit} busy={busy} />;
+
+  switch (menuIndex) {
+    case 0:
+      return <HomeManager home={home} onCommit={onHomeCommit} busy={busy} />;
+    case 1:
+      return <Tabs items={[{ key: "products", label: "首页产品区", children: <ProductsManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
+    case 2:
+      return <Tabs items={[{ key: "solutions", label: "首页解决方案与动态", children: <SolutionsManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
+    case 3:
+      return <Tabs items={[{ key: "path", label: "首页能力路径", children: <TimelineTable home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
+    case 4:
+      return pageManager;
+    case 5:
+      return <Tabs items={[{ key: "about", label: "公司介绍", children: <AboutTable home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "proof", label: "资质与伙伴", children: <ProofManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
+    default:
+      return pageManager;
+  }
 }
 
 function SiteSettingsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
