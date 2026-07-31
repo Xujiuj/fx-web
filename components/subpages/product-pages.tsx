@@ -4,10 +4,7 @@ import {
   Building2,
   CheckCircle2,
   Database,
-  FileCheck2,
-  Files,
   Gauge,
-  GitBranch,
   Layers3,
   LineChart,
   Network,
@@ -54,70 +51,36 @@ function ProductVisual({ page }: ProductPageProps) {
 }
 
 const platformAdvantages: Array<{
+  number: string;
   title: string;
   summary: string;
-  label: string;
-  items: string[];
-  outcome: string;
+  shorthand: string;
+  points: string[];
   icon: LucideIcon;
-  images: Array<{ src: string; alt: string; width: number; height: number }>;
 }> = [
   {
-    title: "统一数据体系",
-    summary: "统一管理组织、边界、排放源、活动数据与排放因子。",
-    label: "数据基础",
-    items: ["组织与边界", "排放源", "活动数据", "排放因子"],
-    outcome: "一次维护业务明细数据，为多年度核算与持续分析建立统一基础。",
+    number: "01",
+    title: "业务数据少维护，核算自动完成",
+    summary: "企业只需持续维护真实业务明细，平台自动完成数据归集、规则匹配、因子调用、排放计算与结果更新。",
+    shorthand: "少维护 · 自动核算 · 快速迭代",
+    points: ["仅维护业务明细数据", "自动归集与因子匹配", "模型和报表灵活配置"],
     icon: Database,
-    images: [{ src: "/media/platform-advantages/business-data-flow.png", alt: "业务输入、统一模型与核算分析的数据流程", width: 6209, height: 2297 }]
   },
   {
-    title: "统一核算引擎",
-    summary: "集中维护计算规则，支持不同组织、年度与核算口径。",
-    label: "核算能力",
-    items: ["规则集中维护", "因子版本管理", "多组织核算", "多年度更新"],
-    outcome: "让同源数据通过统一规则完成计算，减少重复维护与人工汇总。",
+    number: "02",
+    title: "一套数据，多标准输出与多维分析",
+    summary: "同源数据可按 GHG Protocol、ISO 14064-1 与 GB/T 32150-2025 输出结果，并沉淀排放总量、活动数据、气体构成和排放强度等关键成果。",
+    shorthand: "多标准 · 多成果 · 多维分析",
+    points: ["三大主流标准体系", "四类关键数据成果", "交互式分析视图", "基准年对比管理"],
     icon: Workflow,
-    images: [{ src: "/media/platform-advantages/reuse-standard-output.png", alt: "统一数据按不同标准输出核算结果", width: 5383, height: 3285 }]
   },
   {
-    title: "统一分析体系",
-    summary: "围绕总量、强度、趋势与组织维度开展分析。",
-    label: "分析维度",
-    items: ["排放总量", "排放强度", "年度趋势", "组织对标"],
-    outcome: "从核算结果进入基准年、趋势与强度分析，为管理决策提供依据。",
+    number: "03",
+    title: "模块层级清晰，核算结果逐级可查",
+    summary: "从集团驾驶舱、核算组织与边界，到活动数据、因子库和核算结果，平台按业务链路组织功能；结果模块继续细分为标准视图、气体构成和基准年对比。",
+    shorthand: "十个业务模块 · 七类结果视图",
+    points: ["业务模块按核算链路组织", "结果视图按应用场景细分", "数据来源与结果关系清晰"],
     icon: LineChart,
-    images: [
-      { src: "/media/platform-advantages/reuse-trend-analysis.png", alt: "温室气体排放趋势分析界面", width: 5491, height: 3379 },
-      { src: "/media/platform-advantages/reuse-baseline-analysis.png", alt: "温室气体排放基准年对比分析界面", width: 5491, height: 3369 }
-    ]
-  },
-  {
-    title: "统一管理平台",
-    summary: "在同一平台组织核算、分析、追溯与管理工作。",
-    label: "管理协同",
-    items: ["数据填报", "过程审核", "集团汇总", "成果应用"],
-    outcome: "把分散的年度核算工作纳入持续运行、责任清晰的管理流程。",
-    icon: Gauge,
-    images: [{ src: "/media/platform-advantages/reuse-activity-data.png", alt: "碳活动数据与核算结果管理界面", width: 5491, height: 3367 }]
-  },
-  {
-    title: "全过程可信可追溯",
-    summary: "从分析结果回溯原始数据、因子版本与计算逻辑。",
-    label: "追溯链路",
-    items: ["排放源", "活动数据", "排放因子", "核算结果"],
-    outcome: "支撑监管报送、第三方核查、ESG披露与企业内部审计。",
-    icon: GitBranch,
-    images: [{ src: "/media/platform-advantages/traceability-module-map.png", alt: "核算结果与数据来源的追溯关系图", width: 2169, height: 1495 }]
-  },
-  {
-    title: "一次核算，多场景复用",
-    summary: "让同一套碳数据持续服务披露、履约、供应链与经营分析。",
-    label: "应用场景",
-    items: ["碳市场履约", "ESG披露", "CDP问卷", "供应链管理"],
-    outcome: "以一套数据支持多标准输出，持续沉淀为企业碳数据资产。",
-    icon: Files,
-    images: [{ src: "/media/product-platform-dashboard.webp", alt: "企业碳管理数字化平台综合驾驶舱", width: 1720, height: 980 }]
   }
 ];
 
@@ -277,40 +240,110 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       </section>
 
       <section className={`${styles.platformAdvantages} ${styles.container} page-reveal`} aria-labelledby="platform-advantages-title">
-        <header className={styles.sectionHeading} data-motion-group="section-heading" data-motion-role="heading">
-          <span>CORE ADVANTAGES</span>
-          <h2 id="platform-advantages-title">六大核心优势</h2>
-          <p>围绕数据统一、自动核算、分析决策、过程追溯与多场景复用，构建企业长期碳管理能力。</p>
+        <header className={styles.advantageIntro} data-motion-group="section-heading" data-motion-role="heading">
+          <div>
+            <span>CORE ADVANTAGES</span>
+            <h2 id="platform-advantages-title">三大核心优势</h2>
+          </div>
+          <p>从日常数据维护出发，让核算自动发生、结果多维复用，并通过清晰的功能层级把每一项结果落实到可查看、可管理的业务场景。</p>
         </header>
-        <div className={styles.advantageList}>
+        <ol className={styles.advantageIndex} data-motion-group="product-grid">
           {platformAdvantages.map((advantage, index) => {
             const AdvantageIcon = advantage.icon;
             return (
-              <article key={advantage.title} data-motion-group="platform-advantage">
-                <header data-motion-role="copy">
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <AdvantageIcon size={28} strokeWidth={1.6} aria-hidden="true" />
-                  <h3>{advantage.title}</h3>
-                </header>
-                <div className={styles.advantageContent} data-motion-role="visual">
-                  <p>{advantage.summary}</p>
-                  <div className={styles.advantageDetail}>
-                    <strong>{advantage.label}</strong>
-                    <ul>{advantage.items.map((item) => <li key={item}>{item}</li>)}</ul>
-                  </div>
-                  <div className={styles.advantageOutcome}>
-                    <FileCheck2 size={18} aria-hidden="true" />
-                    <p>{advantage.outcome}</p>
-                  </div>
-                  <figure className={advantage.images.length > 1 ? styles.advantageMediaGrid : styles.advantageMedia}>
-                    {advantage.images.map((image) => (
-                      <Image key={image.src} src={image.src} alt={image.alt} width={image.width} height={image.height} sizes="(max-width: 780px) calc(100vw - 84px), 720px" />
-                    ))}
-                  </figure>
-                </div>
-              </article>
+              <li key={advantage.title} data-motion-role="item">
+                <span>{advantage.number}</span>
+                <AdvantageIcon size={24} strokeWidth={1.6} aria-hidden="true" />
+                <strong>{advantage.title}</strong>
+                <small>{advantage.shorthand}</small>
+                <i aria-hidden="true">{String(index + 1).padStart(2, "0")}</i>
+              </li>
             );
           })}
+        </ol>
+
+        <div className={styles.advantageStories}>
+          <article className={styles.advantageAutomation} data-motion-group="platform-advantage">
+            <div className={styles.advantageStoryCopy} data-motion-role="copy">
+              <span>{platformAdvantages[0].number} / AUTOMATED ACCOUNTING</span>
+              <h3>{platformAdvantages[0].title}</h3>
+              <p>{platformAdvantages[0].summary}</p>
+            </div>
+            <figure className={styles.automationFlow} data-motion-role="visual">
+              <Image
+                src="/media/platform-advantages/business-data-flow.png"
+                alt="业务输入层、统一模型层与核算分析层自动衔接的数据流程"
+                width={6209}
+                height={2297}
+                sizes="(max-width: 780px) calc(100vw - 36px), 760px"
+              />
+            </figure>
+            <ol className={styles.automationPoints} data-motion-group="product-grid">
+              {platformAdvantages[0].points.map((point, index) => (
+                <li key={point} data-motion-role="item">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <strong>{point}</strong>
+                </li>
+              ))}
+            </ol>
+          </article>
+
+          <article className={styles.advantageAnalysis} data-motion-group="platform-advantage">
+            <header data-motion-role="copy">
+              <div>
+                <span>{platformAdvantages[1].number} / MULTI-STANDARD OUTPUT</span>
+                <h3>一套数据，<br />多标准输出与多维分析</h3>
+              </div>
+              <p>{platformAdvantages[1].summary}</p>
+            </header>
+            <div className={styles.analysisEvidence} data-motion-role="visual">
+              <figure className={styles.analysisEvidencePrimary}>
+                <Image
+                  src="/media/platform-advantages/reuse-standard-output.png"
+                  alt="同一套碳数据按 GHG Protocol、ISO 14064-1 与 GB/T 32150-2025 输出核算结果"
+                  width={5383}
+                  height={3285}
+                  sizes="(max-width: 780px) calc(100vw - 36px), 720px"
+                />
+                <figcaption><span>01</span>一套数据，三大标准输出</figcaption>
+              </figure>
+              <div className={styles.analysisEvidenceMosaic}>
+                <figure>
+                  <Image src="/media/platform-advantages/reuse-activity-data.png" alt="排放总量、活动数据、温室气体构成与碳排放强度四类关键成果" width={5491} height={3367} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
+                  <figcaption><span>02</span>四类关键成果沉淀</figcaption>
+                </figure>
+                <figure>
+                  <Image src="/media/platform-advantages/reuse-trend-analysis.png" alt="支持年度、月份、单位、因子与工厂切换的多维交互分析" width={5491} height={3379} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
+                  <figcaption><span>03</span>多维交互分析</figcaption>
+                </figure>
+                <figure>
+                  <Image src="/media/platform-advantages/reuse-baseline-analysis.png" alt="企业温室气体排放基准年管理与对比分析界面" width={5491} height={3369} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
+                  <figcaption><span>04</span>基准年对比管理</figcaption>
+                </figure>
+              </div>
+            </div>
+          </article>
+
+          <article className={styles.advantageTraceability} data-motion-group="platform-advantage">
+            <figure data-motion-role="visual">
+              <Image
+                src="/media/platform-advantages/traceability-module-map.png"
+                alt="平台十个业务模块与排放量核算结果七类子视图的功能层级"
+                width={2169}
+                height={1495}
+                sizes="(max-width: 780px) calc(100vw - 72px), 620px"
+              />
+            </figure>
+            <div data-motion-role="copy">
+              <span>{platformAdvantages[2].number} / CLEAR DATA LINEAGE</span>
+              <h3>{platformAdvantages[2].title}</h3>
+              <p>{platformAdvantages[2].summary}</p>
+              <ul>
+                {platformAdvantages[2].points.map((point) => <li key={point}>{point}</li>)}
+              </ul>
+              <strong>{platformAdvantages[2].shorthand}</strong>
+            </div>
+          </article>
         </div>
       </section>
 
