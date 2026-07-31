@@ -82,86 +82,128 @@ export function ManufacturingCasePage({ page }: { page: Subpage }) {
 
     const query = gsap.utils.selector(pageElement);
     const media = gsap.matchMedia();
+    const clearProps = "transform,opacity,visibility,clipPath";
 
     media.add("(prefers-reduced-motion: no-preference)", () => {
       gsap.timeline()
         .fromTo(query(`.${styles.heroCopy}`), {
           autoAlpha: 0,
-          y: 28
+          x: -34
         }, {
           autoAlpha: 1,
-          y: 0,
+          x: 0,
           duration: 0.9,
-          ease: "power2.out"
+          ease: "power3.out",
+          clearProps
         })
         .fromTo(query(`.${styles.heroArtwork} img`), {
           autoAlpha: 0,
-          scale: 1.06
+          x: 42,
+          scale: 1.06,
+          clipPath: "inset(0 0 0 12%)"
         }, {
           autoAlpha: 1,
+          x: 0,
           scale: 1,
+          clipPath: "inset(0 0 0 0)",
           duration: 1.25,
-          ease: "power2.out"
+          ease: "power3.out",
+          clearProps
         }, 0.1);
 
       gsap.utils.toArray<HTMLElement>(query(`.${styles.introduction} p`)).forEach((element) => {
-        gsap.fromTo(element, {
-          autoAlpha: 0,
-          y: 18
-        }, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: element,
-            start: "top 88%",
-            once: true
-          }
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 90%",
+          once: true,
+          onEnter: () => gsap.fromTo(element, {
+            autoAlpha: 0,
+            x: -22
+          }, {
+            autoAlpha: 1,
+            x: 0,
+            duration: 0.72,
+            ease: "power3.out",
+            clearProps
+          })
         });
       });
 
       const sectionHeading = query(`.${styles.sectionHeading}`);
-      gsap.fromTo(sectionHeading, {
-        autoAlpha: 0,
-        y: 22
-      }, {
-        autoAlpha: 1,
-        y: 0,
-        duration: 0.85,
-        ease: "power2.out",
-        scrollTrigger: {
-          trigger: sectionHeading,
-          start: "top 88%",
-          once: true
-        }
-      });
-
-      gsap.utils.toArray<HTMLElement>(query(`.${styles.caseItem}`)).forEach((element, index) => {
-        gsap.fromTo(element, {
+      ScrollTrigger.create({
+        trigger: sectionHeading,
+        start: "top 90%",
+        once: true,
+        onEnter: () => gsap.fromTo(sectionHeading, {
           autoAlpha: 0,
-          x: index % 2 === 0 ? -30 : 30,
-          y: 18
+          x: -26
         }, {
           autoAlpha: 1,
           x: 0,
-          y: 0,
-          duration: 0.9,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: element,
-            start: "top 88%",
-            once: true
+          duration: 0.76,
+          ease: "power3.out",
+          clearProps
+        })
+      });
+
+      gsap.utils.toArray<HTMLElement>(query(`.${styles.caseItem}`)).forEach((element, index) => {
+        const artwork = element.querySelector<HTMLElement>(`.${styles.caseArtwork}`);
+        const copy = element.querySelector<HTMLElement>(`.${styles.caseCopy}`);
+        const origins = [
+          { x: -30, y: 0, clipPath: "inset(0 10% 0 0)" },
+          { x: 0, y: 26, clipPath: "inset(10% 0 0 0)" },
+          { x: 30, y: 0, clipPath: "inset(0 0 0 10%)" }
+        ];
+        const origin = origins[index % origins.length];
+
+        ScrollTrigger.create({
+          trigger: element,
+          start: "top 90%",
+          once: true,
+          onEnter: () => {
+            const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+            if (artwork) {
+              timeline.fromTo(artwork, {
+                autoAlpha: 0,
+                ...origin
+              }, {
+                autoAlpha: 1,
+                x: 0,
+                y: 0,
+                clipPath: "inset(0 0 0 0)",
+                duration: 0.86,
+                clearProps
+              });
+              const image = artwork.querySelector("img");
+              if (image) {
+                timeline.fromTo(image, { scale: 1.07 }, { scale: 1, duration: 1.05, clearProps: "transform" }, 0);
+              }
+            }
+            if (copy) {
+              timeline.fromTo(copy, {
+                autoAlpha: 0,
+                y: 18
+              }, {
+                autoAlpha: 1,
+                y: 0,
+                duration: 0.68,
+                clearProps
+              }, artwork ? 0.16 : 0);
+            }
           }
         });
       });
+    });
+
+    media.add("(prefers-reduced-motion: reduce)", () => {
+      gsap.set(query(`.${styles.heroCopy}, .${styles.heroArtwork} img, .${styles.introduction} p, .${styles.sectionHeading}, .${styles.caseItem}, .${styles.caseArtwork}, .${styles.caseCopy}`), { clearProps: "all" });
     });
 
     return () => media.revert();
   }, { scope: pageRef });
 
   return (
-    <main ref={pageRef} className={styles.page}>
+    <main ref={pageRef} className={styles.page} data-motion-family="customer-case">
       <section className={styles.hero} aria-labelledby="manufacturing-case-title">
         <div className={styles.heroContent}>
           <div className={styles.heroCopy}>

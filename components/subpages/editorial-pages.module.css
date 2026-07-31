@@ -892,19 +892,51 @@
 
 .companyBeliefGrid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid #d9e1dc;
-  border-bottom: 1px solid #d9e1dc;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .companyBeliefGrid article {
+  grid-column: span 6;
   min-height: 300px;
   padding: 34px 30px;
-  border-right: 1px solid #d9e1dc;
+  border: 1px solid #d9e1dc;
+}
+
+.companyBeliefGrid article:first-child {
+  grid-column: span 5;
+}
+
+.companyBeliefGrid article:nth-child(2) {
+  grid-column: span 7;
+  background: #f3f7f4;
 }
 
 .companyBeliefGrid article:last-child {
-  border-right: 0;
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: auto minmax(150px, 0.6fr) minmax(0, 1.4fr);
+  grid-template-rows: auto auto;
+  gap: 8px 24px;
+  align-items: center;
+  min-height: 190px;
+  border-color: #efc69e;
+  background: #fff8ef;
+}
+
+.companyBeliefGrid article:last-child svg {
+  grid-row: 1 / 3;
+}
+
+.companyBeliefGrid article:last-child span,
+.companyBeliefGrid article:last-child strong,
+.companyBeliefGrid article:last-child p {
+  margin-top: 0;
+}
+
+.companyBeliefGrid article:last-child p {
+  grid-column: 3;
+  grid-row: 1 / 3;
 }
 
 .companyBeliefGrid svg {
@@ -1071,18 +1103,28 @@
 
 .trustCards {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  border: 1px solid #d5dfd9;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
 }
 
 .trustCards article {
+  grid-column: span 6;
   min-height: 260px;
   padding: 32px;
-  border-right: 1px solid #d5dfd9;
+  border: 1px solid #d5dfd9;
+}
+
+.trustCards article:first-child {
+  grid-column: span 5;
+}
+
+.trustCards article:nth-child(2) {
+  grid-column: span 7;
 }
 
 .trustCards article:last-child {
-  border-right: 0;
+  grid-column: 1 / -1;
+  min-height: 220px;
 }
 
 .trustCards svg {
@@ -1206,16 +1248,24 @@
   }
 
   .companyBeliefGrid article,
-  .trustCards article {
+  .companyBeliefGrid article:first-child,
+  .companyBeliefGrid article:nth-child(2),
+  .companyBeliefGrid article:last-child,
+  .trustCards article,
+  .trustCards article:first-child,
+  .trustCards article:nth-child(2),
+  .trustCards article:last-child {
+    grid-column: auto;
     min-height: 0;
-    border-right: 0;
-    border-bottom: 1px solid #d9e1dc;
   }
 
-  .companyBeliefGrid article:last-child,
-  .trustCards article:last-child {
-    border-bottom: 0;
+  .companyBeliefGrid article:last-child {
+    display: block;
   }
+
+  .companyBeliefGrid article:last-child span { margin-top: 34px; }
+  .companyBeliefGrid article:last-child strong { margin-top: 8px; }
+  .companyBeliefGrid article:last-child p { margin-top: 20px; }
 }
 
 @media (max-width: 680px) {

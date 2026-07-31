@@ -9,9 +9,9 @@ export function ServicePage({ page }: { page: Subpage }) {
   return (
     <>
       <section className={`${styles.hero} page-reveal`}>
-        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="(max-width: 680px) calc(100vw - 36px), 1200px" />
+        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="(max-width: 680px) calc(100vw - 36px), 1200px" data-motion="hero-visual" />
         <div className={styles.heroShade} />
-        <div className={styles.heroTitle}>
+        <div className={styles.heroTitle} data-motion="hero-copy">
           <p>{page.eyebrow}</p>
           <h1>{page.title}</h1>
           <p className={styles.heroSummary}>{page.summary}</p>

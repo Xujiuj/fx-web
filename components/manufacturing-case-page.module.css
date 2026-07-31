@@ -98,30 +98,39 @@
   line-height: 1.35;
 }
 
-.caseList { display: grid; gap: 54px; }
+.caseList {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 24px;
+}
 
 .caseItem {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(270px, .72fr);
-  align-items: center;
-  gap: 58px;
+  grid-column: span 6;
+  grid-template-columns: 1fr;
+  align-content: start;
+  overflow: hidden;
+  border: 1px solid #dce3de;
+  background: #f8faf8;
 }
 
-.caseItem:nth-child(even) .caseArtwork { grid-column: 2; }
-.caseItem:nth-child(even) .caseCopy { grid-column: 1; grid-row: 1; }
+.caseItem:nth-child(4n + 1),
+.caseItem:nth-child(4n) { grid-column: span 7; }
+.caseItem:nth-child(4n + 2),
+.caseItem:nth-child(4n + 3) { grid-column: span 5; }
+.caseItem:nth-child(4n + 2) { margin-top: 72px; }
 
-.caseCopy { position: relative; padding: 6px 0 6px 34px; }
-.caseCopy > span { position: absolute; top: 5px; left: 0; color: #b77c49; font-size: 13px; font-weight: 800; }
+.caseCopy { position: relative; padding: 30px 30px 32px 62px; }
+.caseCopy > span { position: absolute; top: 31px; left: 28px; color: #b77c49; font-size: 13px; font-weight: 800; }
 .caseCopy svg { margin-bottom: 11px; color: #49735c; }
 .caseCopy h3 { margin: 0; color: #244c3b; font-size: 22px; line-height: 1.35; }
 .caseCopy p { margin: 13px 0 0; color: #5d6770; font-size: 15px; line-height: 1.85; }
 
 .caseArtwork {
   position: relative;
-  min-height: 278px;
+  min-height: 310px;
   overflow: hidden;
   background: #e7e2da;
-  box-shadow: 0 14px 28px rgba(39, 48, 42, .12);
 }
 
 .caseArtwork img {
@@ -142,10 +151,17 @@
   .applications { padding-bottom: 66px; }
   .sectionHeading { margin-bottom: 30px; }
   .sectionHeading h2 { font-size: 26px; }
-  .caseList { gap: 42px; }
-  .caseItem, .caseItem:nth-child(even) { grid-template-columns: 1fr; gap: 24px; }
-  .caseItem:nth-child(even) .caseArtwork, .caseItem:nth-child(even) .caseCopy { grid-column: auto; grid-row: auto; }
-  .caseItem:nth-child(even) .caseArtwork { grid-row: 1; }
-  .caseItem:nth-child(even) .caseCopy { grid-row: 2; }
+  .caseList { grid-template-columns: 1fr; gap: 24px; }
+  .caseItem,
+  .caseItem:nth-child(4n + 1),
+  .caseItem:nth-child(4n + 2),
+  .caseItem:nth-child(4n + 3),
+  .caseItem:nth-child(4n) {
+    grid-column: auto;
+    grid-template-columns: 1fr;
+    margin-top: 0;
+  }
   .caseArtwork { min-height: 234px; }
+  .caseCopy { padding: 25px 24px 27px 54px; }
+  .caseCopy > span { top: 26px; left: 22px; }
 }

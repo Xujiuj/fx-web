@@ -398,7 +398,7 @@
 
 .functionGrid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   margin-top: 38px;
   border-top: 1px solid #d6d1c8;
   border-left: 1px solid #d6d1c8;
@@ -414,6 +414,16 @@
   border-right: 1px solid #d6d1c8;
   border-bottom: 1px solid #d6d1c8;
   background: rgba(255, 255, 255, 0.46);
+}
+
+.functionGrid article:nth-child(4n + 1),
+.functionGrid article:nth-child(4n) {
+  grid-column: span 5;
+}
+
+.functionGrid article:nth-child(4n + 2),
+.functionGrid article:nth-child(4n + 3) {
+  grid-column: span 7;
 }
 
 .functionGrid article > span {
@@ -683,7 +693,14 @@
 }
 
 .advantageList > article:nth-child(2) > header {
+  grid-column: 2;
+  grid-row: 1;
   background: #3d5145;
+}
+
+.advantageList > article:nth-child(2) .advantageContent {
+  grid-column: 1;
+  grid-row: 1;
 }
 
 .advantageList > article:nth-child(3) > header {
@@ -1077,7 +1094,11 @@
   }
 
   .functionGrid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .functionGrid article:nth-child(n) {
+    grid-column: span 6;
   }
 
   .analysisSection {
@@ -1180,7 +1201,9 @@
     margin-top: 38px;
   }
 
-  .functionGrid article {
+  .functionGrid article,
+  .functionGrid article:nth-child(n) {
+    grid-column: auto;
     min-height: 180px;
   }
 
@@ -1227,6 +1250,12 @@
 
   .advantageList > article {
     grid-template-columns: 1fr;
+  }
+
+  .advantageList > article:nth-child(2) > header,
+  .advantageList > article:nth-child(2) .advantageContent {
+    grid-column: auto;
+    grid-row: auto;
   }
 
   .advantageList > article > header,

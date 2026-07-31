@@ -127,32 +127,32 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     <>
       <section className={styles.solutionDetailHero}>
         <div className={styles.solutionDetailHeroInner}>
-          <div className={`${styles.solutionDetailHeroCopy} page-reveal`}>
+          <div className={`${styles.solutionDetailHeroCopy} page-reveal`} data-motion="hero-copy">
             <span>解决方案 {framework.sequence}</span>
             <h1>{framework.title}</h1>
             <p>{framework.summary}</p>
           </div>
-          <strong aria-hidden="true">{framework.sequence}</strong>
+          <strong aria-hidden="true" data-motion="hero-support">{framework.sequence}</strong>
         </div>
       </section>
 
-      <section className={`${styles.solutionFramework} page-reveal`} aria-labelledby="solution-framework-title">
-        <header>
+      <section className={`${styles.solutionFramework} page-reveal`} aria-labelledby="solution-framework-title" data-motion-group="solution-framework">
+        <header data-motion-role="heading">
           <span>能力建设方案</span>
           <h2 id="solution-framework-title">从企业当前阶段出发，形成可持续使用的碳管理能力</h2>
         </header>
         <div className={styles.frameworkGrid}>
-          <article>
+          <article data-motion-role="item">
             <UsersRound aria-hidden="true" size={28} />
             <h3>适用企业</h3>
             <p>{framework.suitableFor}</p>
           </article>
-          <article>
+          <article data-motion-role="item">
             <Target aria-hidden="true" size={28} />
             <h3>核心解决问题</h3>
             <p>{framework.problem}</p>
           </article>
-          <article className={styles.deliverableCard}>
+          <article className={styles.deliverableCard} data-motion-role="item">
             <FileCheck2 aria-hidden="true" size={28} />
             <h3>核心交付成果</h3>
             <strong>{framework.deliverable}</strong>
@@ -162,8 +162,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
       </section>
 
       <section className={styles.serviceContents} aria-labelledby="service-contents-title">
-        <div className={`${styles.serviceContentsInner} page-reveal`}>
-          <header>
+        <div className={`${styles.serviceContentsInner} page-reveal`} data-motion-group="solution-services">
+          <header data-motion-role="heading">
             <Wrench aria-hidden="true" size={30} />
             <div>
               <span>服务内容</span>
@@ -172,7 +172,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </header>
           <ol>
             {framework.services.map((service, index) => (
-              <li key={service}>
+              <li key={service} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{service}</strong>
                 <Check aria-hidden="true" size={18} />
@@ -192,7 +192,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         />
       ) : null}
 
-      <section className={`${styles.solutionCta} page-reveal`} aria-label="联系顾问">
+      <section className={`${styles.solutionCta} page-reveal`} aria-label="联系顾问" data-motion="cta">
         <div>
           <span>下一步</span>
           <h2>讨论适合企业当前阶段的建设路径</h2>

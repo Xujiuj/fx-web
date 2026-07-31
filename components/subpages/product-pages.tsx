@@ -33,7 +33,7 @@ function ProductVisual({ page }: ProductPageProps) {
   if (!screenshot) return null;
 
   return (
-    <figure className={styles.productVisual}>
+    <figure className={styles.productVisual} data-motion="product-visual" data-motion-role="visual">
       <Image
         src={screenshot}
         alt={`${page.title}产品界面`}
@@ -105,7 +105,7 @@ const platformAdvantages: Array<{
 
 function PageCta({ title }: { title: string }) {
   return (
-    <section className={`${styles.cta} page-reveal`} aria-labelledby="product-contact-title">
+    <section className={`${styles.cta} page-reveal`} aria-labelledby="product-contact-title" data-motion="cta">
       <div>
         <span>PRODUCT CONSULTATION</span>
         <h2 id="product-contact-title">了解{title}如何适配企业真实的核算与管理流程</h2>
@@ -124,14 +124,14 @@ export function ExcelProductPage({ page }: ProductPageProps) {
     <>
       <section className={styles.excelHero}>
         <div className={styles.container}>
-          <div className={`${styles.excelHeroCopy} page-reveal`}>
+          <div className={`${styles.excelHeroCopy} page-reveal`} data-motion="hero-copy">
             <p className={styles.eyebrow}>Excel 温室气体核算工具</p>
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.heroActions}>
               <Link href="/#contact">咨询适用版本</Link>
             </div>
-            <dl className={styles.heroMetrics}>
+            <dl className={styles.heroMetrics} data-motion="hero-support">
               {page.metrics.map((metric) => (
                 <div key={metric.label}>
                   <dt>{metric.label}</dt>
@@ -140,18 +140,20 @@ export function ExcelProductPage({ page }: ProductPageProps) {
               ))}
             </dl>
           </div>
-          <ProductVisual page={page} />
+          <div data-motion="hero-visual">
+            <ProductVisual page={page} />
+          </div>
         </div>
       </section>
 
-      <section className={`${styles.versionSection} ${styles.container} page-reveal`} aria-labelledby="excel-version-title">
-        <header className={styles.sectionHeading}>
+      <section className={`${styles.versionSection} ${styles.container} page-reveal`} aria-labelledby="excel-version-title" data-motion-group="product-compare">
+        <header className={styles.sectionHeading} data-motion-role="heading">
           <span>ORGANIZATION EDITIONS</span>
           <h2 id="excel-version-title">匹配不同组织规模的核算方式</h2>
           <p>从单一法人独立核算，到多层级组织统一汇总，保持核算逻辑和数据口径一致。</p>
         </header>
         <div className={styles.versionCompare}>
-          <article>
+          <article data-motion-role="item">
             <div className={styles.versionNumber}>01</div>
             <Building2 size={28} aria-hidden="true" />
             <h3>单公司版</h3>
@@ -161,12 +163,12 @@ export function ExcelProductPage({ page }: ProductPageProps) {
               <li><CheckCircle2 size={16} aria-hidden="true" />持续积累多年数据</li>
             </ul>
           </article>
-          <div className={styles.compareAxis} aria-hidden="true">
+          <div className={styles.compareAxis} aria-hidden="true" data-motion-role="item">
             <span>统一口径</span>
             <i />
             <span>按需升级</span>
           </div>
-          <article>
+          <article data-motion-role="item">
             <div className={styles.versionNumber}>02</div>
             <Network size={28} aria-hidden="true" />
             <h3>集团版</h3>
@@ -179,9 +181,9 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <section className={styles.functionBand} aria-labelledby="excel-function-title">
+      <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
         <div className={styles.container}>
-          <header className={styles.sectionHeading}>
+          <header className={styles.sectionHeading} data-motion-role="heading">
             <span>FUNCTION MAP</span>
             <h2 id="excel-function-title">把核算方法落实到可持续使用的工具中</h2>
           </header>
@@ -189,7 +191,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
             {page.features.map((feature, index) => {
               const FeatureIcon = excelFeatureIcons[index % excelFeatureIcons.length];
               return (
-                <article className="page-reveal" key={feature}>
+                <article className="page-reveal" key={feature} data-motion-role="item">
                   <span>{String(index + 1).padStart(2, "0")}</span>
                   <FeatureIcon size={26} strokeWidth={1.7} aria-hidden="true" />
                   <h3>{feature}</h3>
@@ -219,7 +221,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
     <>
       <section className={styles.platformHero}>
         <div className={styles.container}>
-          <div className={`${styles.platformHeroCopy} page-reveal`}>
+          <div className={`${styles.platformHeroCopy} page-reveal`} data-motion="hero-copy">
             <p className={styles.eyebrow}>企业碳管理数字化平台</p>
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
@@ -227,12 +229,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
               预约平台演示 <ArrowRight size={18} aria-hidden="true" />
             </Link>
           </div>
-          <ProductVisual page={page} />
+          <div data-motion="hero-visual">
+            <ProductVisual page={page} />
+          </div>
         </div>
       </section>
 
       <section className={`${styles.platformAdvantages} ${styles.container} page-reveal`} aria-labelledby="platform-advantages-title">
-        <header className={styles.sectionHeading}>
+        <header className={styles.sectionHeading} data-motion-group="section-heading" data-motion-role="heading">
           <span>CORE ADVANTAGES</span>
           <h2 id="platform-advantages-title">把碳核算变成可持续运行的管理能力</h2>
           <p>以业务数据为基础，将核算、披露、履约与经营分析连接在同一套可信的数据链路中。</p>
@@ -241,13 +245,13 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           {platformAdvantages.map((advantage) => {
             const AdvantageIcon = advantage.icon;
             return (
-              <article key={advantage.number}>
-                <header>
+              <article key={advantage.number} data-motion-group="platform-advantage">
+                <header data-motion-role="copy">
                   <span>{advantage.number}</span>
                   <AdvantageIcon size={28} strokeWidth={1.6} aria-hidden="true" />
                   <h3>{advantage.title}</h3>
                 </header>
-                <div className={styles.advantageContent}>
+                <div className={styles.advantageContent} data-motion-role="visual">
                   <p>{advantage.summary}</p>
                   <div className={styles.advantageDetail}>
                     <strong>{advantage.label}</strong>
@@ -271,32 +275,32 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.architecture} ${styles.container} page-reveal`} aria-labelledby="platform-architecture-title">
-        <header className={styles.sectionHeading}>
+      <section className={`${styles.architecture} ${styles.container} page-reveal`} aria-labelledby="platform-architecture-title" data-motion-group="product-architecture">
+        <header className={styles.sectionHeading} data-motion-role="heading">
           <span>PLATFORM ARCHITECTURE</span>
           <h2 id="platform-architecture-title">一套贯穿数据、核算、分析与管理的业务架构</h2>
           <p>以统一数据模型承接日常业务数据，通过集中核算引擎形成多口径结果，并持续服务管理决策。</p>
         </header>
         <div className={styles.architectureMap}>
-          <div className={styles.architectureCore}>
+          <div className={styles.architectureCore} data-motion-role="item">
             <Database size={32} strokeWidth={1.6} aria-hidden="true" />
             <strong>统一碳数据体系</strong>
             <span>一次维护 · 持续沉淀</span>
           </div>
           <div className={styles.architectureLayers}>
-            <article>
+            <article data-motion-role="item">
               <span>01</span><Layers3 size={23} aria-hidden="true" /><strong>数据基础</strong>
               <p>统一管理排放边界、排放源、活动数据与排放因子。</p>
             </article>
-            <article>
+            <article data-motion-role="item">
               <span>02</span><Workflow size={23} aria-hidden="true" /><strong>核算引擎</strong>
               <p>集中执行核算逻辑，支持组织、年度与口径灵活切换。</p>
             </article>
-            <article>
+            <article data-motion-role="item">
               <span>03</span><LineChart size={23} aria-hidden="true" /><strong>分析体系</strong>
               <p>围绕总量、气体类型、排放强度与趋势开展多维分析。</p>
             </article>
-            <article>
+            <article data-motion-role="item">
               <span>04</span><Gauge size={23} aria-hidden="true" /><strong>管理应用</strong>
               <p>支撑基准年管理、工厂对标与长期碳管理决策。</p>
             </article>
@@ -312,13 +316,13 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         alt="企业碳管理平台功能架构图"
       />
 
-      <section className={`${styles.analysisSection} ${styles.container} page-reveal`} aria-labelledby="platform-analysis-title">
-        <header>
+      <section className={`${styles.analysisSection} ${styles.container} page-reveal`} aria-labelledby="platform-analysis-title" data-motion-group="product-grid">
+        <header data-motion-role="heading">
           <span>MANAGEMENT INSIGHT</span>
           <h2 id="platform-analysis-title">从核算结果走向多维管理分析</h2>
         </header>
         <div className={styles.analysisGrid}>
-          <article className={styles.analysisPrimary}>
+          <article className={styles.analysisPrimary} data-motion-role="item">
             <BarChart3 size={30} aria-hidden="true" />
             <h3>排放总量与趋势</h3>
             <p>按组织与年度观察排放变化，为基准年管理和持续改善提供数据依据。</p>
@@ -326,9 +330,9 @@ export function PlatformProductPage({ page }: ProductPageProps) {
               {[38, 55, 47, 72, 64, 82].map((height, index) => <i key={index} style={{ height: `${height}%` }} />)}
             </div>
           </article>
-          <article><Gauge size={27} aria-hidden="true" /><h3>排放强度</h3><p>结合企业业务口径开展强度分析。</p></article>
-          <article><Network size={27} aria-hidden="true" /><h3>组织对标</h3><p>在统一口径下比较不同组织与工厂。</p></article>
-          <article><ShieldCheck size={27} aria-hidden="true" /><h3>结果追溯</h3><p>从分析结果回溯数据来源和核算过程。</p></article>
+          <article data-motion-role="item"><Gauge size={27} aria-hidden="true" /><h3>排放强度</h3><p>结合企业业务口径开展强度分析。</p></article>
+          <article data-motion-role="item"><Network size={27} aria-hidden="true" /><h3>组织对标</h3><p>在统一口径下比较不同组织与工厂。</p></article>
+          <article data-motion-role="item"><ShieldCheck size={27} aria-hidden="true" /><h3>结果追溯</h3><p>从分析结果回溯数据来源和核算过程。</p></article>
         </div>
       </section>
 

@@ -50,6 +50,15 @@
   line-height: 1.2;
 }
 
+.heroContent .heroSummary {
+  max-width: 620px;
+  margin: 20px 0 0;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.8;
+}
+
 .content {
   padding: 84px 0 104px;
 }
@@ -67,13 +76,24 @@
 
 .honorsGrid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   column-gap: 44px;
   row-gap: 52px;
 }
 
 .honorCard {
+  grid-column: span 6;
   text-align: center;
+}
+
+.honorCard:nth-child(4n + 1),
+.honorCard:nth-child(4n) {
+  grid-column: span 5;
+}
+
+.honorCard:nth-child(4n + 2),
+.honorCard:nth-child(4n + 3) {
+  grid-column: span 7;
 }
 
 .honorCard > img {
@@ -134,17 +154,30 @@
 
 .contactGrid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  width: min(100%, 760px);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 12px;
+  width: min(100%, 900px);
   margin: 0 auto;
 }
 
 .contactCard {
   display: grid;
+  grid-column: span 6;
   justify-items: center;
   align-content: start;
-  padding: 24px;
+  min-height: 260px;
+  padding: 34px 28px;
+  border: 1px solid #d8e2dc;
   text-align: center;
+}
+
+.contactCard:nth-child(odd) {
+  grid-column: span 5;
+}
+
+.contactCard:nth-child(even) {
+  grid-column: span 7;
+  background: #f3f7f4;
 }
 
 .contactCard h3 {
@@ -181,7 +214,11 @@
 
 @media (max-width: 900px) {
   .honorsGrid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .honorCard:nth-child(n) {
+    grid-column: span 6;
   }
 
   .partnerGrid {
@@ -218,6 +255,13 @@
   .partnerGrid,
   .contactGrid {
     grid-template-columns: 1fr;
+  }
+
+  .honorCard:nth-child(n),
+  .contactCard,
+  .contactCard:nth-child(odd),
+  .contactCard:nth-child(even) {
+    grid-column: auto;
   }
 
   .honorCard > img {

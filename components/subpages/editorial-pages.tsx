@@ -42,7 +42,7 @@ function SectionLabel({ children }: { children: string }) {
 
 function ContactBand({ title }: { title: string }) {
   return (
-    <section className={`${styles.contactBand} page-reveal`} aria-label="联系顾问">
+    <section className={`${styles.contactBand} page-reveal`} aria-label="联系顾问" data-motion="cta">
       <div>
         <span>下一步</span>
         <strong>{title}</strong>
@@ -67,12 +67,12 @@ export function CasesPage({ page }: EditorialPageProps) {
     <>
       <section className={styles.caseHero}>
         <div className={`${styles.wrap} ${styles.caseHeroInner}`}>
-          <div className={`${styles.caseHeroCopy} page-reveal`}>
+          <div className={`${styles.caseHeroCopy} page-reveal`} data-motion="hero-copy">
             <SectionLabel>行业案例</SectionLabel>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
-          <div className={`${styles.caseHeroIndex} page-reveal`} aria-label="覆盖行业">
+          <div className={`${styles.caseHeroIndex} page-reveal`} aria-label="覆盖行业" data-motion="hero-visual">
             {industryCaseDetails.map((item, index) => (
               <div key={item.label}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
@@ -83,17 +83,17 @@ export function CasesPage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.wrap} ${styles.industryIntroduction} page-reveal`} aria-labelledby="industry-intro-title">
+      <section className={`${styles.wrap} ${styles.industryIntroduction} page-reveal`} aria-labelledby="industry-intro-title" data-motion-group="section-introduction">
         <SectionLabel>业务场景</SectionLabel>
-        <h2 id="industry-intro-title">行业不同，数据基础和工作重点也不同</h2>
-        <p>以下案例按常见业务场景整理，不展示未经确认的客户名称或项目成效。企业可据此判断本单位的数据准备、组织协同与核算工作重点。</p>
+        <h2 id="industry-intro-title" data-motion-role="heading">行业不同，数据基础和工作重点也不同</h2>
+        <p data-motion-role="item">以下案例按常见业务场景整理，不展示未经确认的客户名称或项目成效。企业可据此判断本单位的数据准备、组织协同与核算工作重点。</p>
       </section>
 
-      <section className={`${styles.wrap} ${styles.industryGrid}`} aria-label="行业场景">
+      <section className={`${styles.wrap} ${styles.industryGrid}`} aria-label="行业场景" data-motion-group="case-grid">
         {industryCaseDetails.map((item, index) => {
           const Icon = item.icon;
           return (
-            <article className="page-reveal" key={item.label}>
+            <article className="page-reveal" key={item.label} data-motion-role="item">
               <div className={styles.industryCardTop}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <Icon size={27} aria-hidden="true" />
@@ -111,16 +111,16 @@ export function CasesPage({ page }: EditorialPageProps) {
         })}
       </section>
 
-      <section className={`${styles.caseScope} page-reveal`} aria-labelledby="case-scope-title">
+      <section className={`${styles.caseScope} page-reveal`} aria-labelledby="case-scope-title" data-motion-group="case-path">
         <div className={styles.wrap}>
-          <div className={styles.caseScopeHeading}>
+          <div className={styles.caseScopeHeading} data-motion-role="heading">
             <SectionLabel>实施范围</SectionLabel>
             <h2 id="case-scope-title">从业务边界到管理应用，逐项明确工作范围</h2>
             <p>实施内容以企业实际数据条件和管理目标为基础确认，不用跳转链接替代范围说明。</p>
           </div>
           <ol>
             {page.steps.map((step, index) => (
-              <li key={step}>
+              <li key={step} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <div>
                   <strong>{step}</strong>
@@ -150,20 +150,20 @@ export function KnowledgePage({ page }: EditorialPageProps) {
     <>
       <section className={styles.knowledgeHero}>
         <div className={`${styles.wrap} ${styles.knowledgeHeroInner}`}>
-          <div className={`${styles.knowledgeHeroTitle} page-reveal`}>
+          <div className={`${styles.knowledgeHeroTitle} page-reveal`} data-motion="hero-copy">
             <Breadcrumb page={page} />
             <SectionLabel>{page.eyebrow}</SectionLabel>
             <h1>{page.title}</h1>
           </div>
-          <div className={`${styles.knowledgeHeroSummary} page-reveal`}>
+          <div className={`${styles.knowledgeHeroSummary} page-reveal`} data-motion="hero-visual">
             <BookOpen size={31} aria-hidden="true" />
             <p>{page.summary}</p>
           </div>
         </div>
       </section>
 
-      <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title">
-        <article className={styles.featuredTopic}>
+      <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title" data-motion-group="knowledge-index">
+        <article className={styles.featuredTopic} data-motion-role="item">
           <div>
             <span>本期重点</span>
             <small>FEATURED 01</small>
@@ -175,7 +175,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
             <ArrowRight size={16} aria-hidden="true" />
           </Link>
         </article>
-        <div className={styles.topicIndex}>
+        <div className={styles.topicIndex} data-motion-role="item">
           <header>
             <span>内容索引</span>
             <small>{String(topics.length).padStart(2, "0")} TOPICS</small>
@@ -190,16 +190,16 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section id="video-courses" className={`${styles.learningSection} page-reveal`} aria-labelledby="learning-path-title">
+      <section id="video-courses" className={`${styles.learningSection} page-reveal`} aria-labelledby="learning-path-title" data-motion-group="knowledge-path">
         <div className={styles.wrap}>
-          <div className={styles.learningHeading}>
+          <div className={styles.learningHeading} data-motion-role="heading">
             <SectionLabel>LEARNING PATH</SectionLabel>
             <h2 id="learning-path-title">循序进入企业碳管理</h2>
             <p>按照阅读、学习、查阅和使用的顺序，逐步把知识转化为企业内部能力。</p>
           </div>
           <ol className={styles.learningPath}>
             {page.steps.map((step, index) => (
-              <li key={step}>
+              <li key={step} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <strong>{step}</strong>
                 <i aria-hidden="true" />
@@ -209,8 +209,8 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section id="downloads" className={`${styles.wrap} ${styles.resourceDesk} page-reveal`} aria-labelledby="resource-title">
-        <div className={styles.resourceIntro}>
+      <section id="downloads" className={`${styles.wrap} ${styles.resourceDesk} page-reveal`} aria-labelledby="resource-title" data-motion-group="resource-grid">
+        <div className={styles.resourceIntro} data-motion-role="heading">
           <SectionLabel>RESOURCE DESK</SectionLabel>
           <h2 id="resource-title">课程、工具与方案资料</h2>
           <p>根据工作任务进入对应内容；需正式资料时，可联系顾问获取当前有效版本。</p>
@@ -221,7 +221,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
         <div className={styles.resourceLinks}>
           {knowledgeRoutes.map(({ href, action, icon: Icon }, index) => (
-            <Link href={href} key={href}>
+            <Link href={href} key={href} data-motion-role="item">
               <Icon size={22} aria-hidden="true" />
               <div>
                 <span>{page.steps[index + 1] ?? page.steps[index] ?? "学习资料"}</span>
@@ -248,41 +248,41 @@ export function CompanyPage({ page }: EditorialPageProps) {
     <>
       <section className={styles.companyHero}>
         <div className={`${styles.wrap} ${styles.companyHeroInner}`}>
-          <div className={`${styles.companyHeroTop} page-reveal`}>
+          <div className={`${styles.companyHeroTop} page-reveal`} data-motion="hero-copy">
             <Breadcrumb page={page} />
             <SectionLabel>{page.eyebrow}</SectionLabel>
           </div>
-          <div className={`${styles.companyHeroStatement} page-reveal`}>
+          <div className={`${styles.companyHeroStatement} page-reveal`} data-motion="hero-copy">
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
           {isVisionPage ? (
-            <figure className={`${styles.companyVisionVisual} page-reveal`}>
+            <figure className={`${styles.companyVisionVisual} page-reveal`} data-motion="hero-visual">
               <Image src={page.image} alt="企业愿景" width={1200} height={660} sizes="(max-width: 720px) 100vw, 1120px" />
             </figure>
           ) : null}
         </div>
       </section>
 
-      <section className={`${styles.wrap} ${styles.companyBelief} page-reveal`} aria-labelledby="company-belief-title">
-        <div className={styles.companyBeliefTitle}>
+      <section className={`${styles.wrap} ${styles.companyBelief} page-reveal`} aria-labelledby="company-belief-title" data-motion-group="company-beliefs">
+        <div className={styles.companyBeliefTitle} data-motion-role="heading">
           <SectionLabel>OUR DIRECTION</SectionLabel>
           <h2 id="company-belief-title">让碳管理成为企业可持续使用的业务能力</h2>
         </div>
         <div className={styles.companyBeliefGrid}>
-          <article>
+          <article data-motion-role="item">
             <Target size={27} aria-hidden="true" />
             <span>{mission?.label ?? "企业使命"}</span>
             <strong>{mission?.value ?? "智慧驱动"}</strong>
             <p>以清晰的方法、可靠的数据与适用的工具，支持企业建立长期能力。</p>
           </article>
-          <article>
+          <article data-motion-role="item">
             <Waypoints size={27} aria-hidden="true" />
             <span>{positioning?.label ?? "能力定位"}</span>
             <strong>{positioning?.value ?? "碳管理"}</strong>
             <p>连接核算、咨询、数字化建设与持续运营，让工作成果能够复用和追溯。</p>
           </article>
-          <article>
+          <article data-motion-role="item">
             <CheckCircle2 size={27} aria-hidden="true" />
             <span>{serviceMode?.label ?? "服务方式"}</span>
             <strong>{serviceMode?.value ?? "全周期"}</strong>
@@ -291,15 +291,15 @@ export function CompanyPage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.serviceBand} page-reveal`} aria-labelledby="service-capability-title">
+      <section className={`${styles.serviceBand} page-reveal`} aria-labelledby="service-capability-title" data-motion-group="company-grid">
         <div className={styles.wrap}>
-          <div className={styles.serviceBandHeading}>
+          <div className={styles.serviceBandHeading} data-motion-role="heading">
             <SectionLabel>SERVICE CAPABILITY</SectionLabel>
             <h2 id="service-capability-title">从基础核算到长期运营</h2>
           </div>
           <div className={styles.serviceList}>
             {page.features.map((feature, index) => (
-              <article key={feature}>
+              <article key={feature} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <h3>{feature}</h3>
                 <i aria-hidden="true" />
@@ -309,15 +309,15 @@ export function CompanyPage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <section className={`${styles.wrap} ${styles.companyTimeline} page-reveal`} aria-labelledby="company-timeline-title">
-        <div className={styles.companyTimelineHeading}>
+      <section className={`${styles.wrap} ${styles.companyTimeline} page-reveal`} aria-labelledby="company-timeline-title" data-motion-group="company-path">
+        <div className={styles.companyTimelineHeading} data-motion-role="heading">
           <SectionLabel>WORKING METHOD</SectionLabel>
           <h2 id="company-timeline-title">一条贯穿建设与运营的服务路径</h2>
           <p>不虚构企业发展年份；这里呈现峰行智成已明确的项目工作路径。</p>
         </div>
         <ol>
           {page.steps.map((step, index) => (
-            <li key={step}>
+            <li key={step} data-motion-role="item">
               <span>{String(index + 1).padStart(2, "0")}</span>
               <div>
                 <small>{index === 0 ? "识别" : index === page.steps.length - 1 ? "运营" : "建设"}</small>
@@ -328,23 +328,23 @@ export function CompanyPage({ page }: EditorialPageProps) {
         </ol>
       </section>
 
-      <section className={`${styles.wrap} ${styles.trustSection} page-reveal`} aria-labelledby="trust-title">
-        <div className={styles.trustHeading}>
+      <section className={`${styles.wrap} ${styles.trustSection} page-reveal`} aria-labelledby="trust-title" data-motion-group="trust-grid">
+        <div className={styles.trustHeading} data-motion-role="heading">
           <SectionLabel>TRUST &amp; COOPERATION</SectionLabel>
           <h2 id="trust-title">资质与合作信息，坚持可核验</h2>
         </div>
         <div className={styles.trustCards}>
-          <article>
+          <article data-motion-role="item">
             <ShieldCheck size={31} aria-hidden="true" />
             <h3>资质信息</h3>
             <p>相关资质以官网公示及正式合作时提供的有效文件为准。</p>
           </article>
-          <article>
+          <article data-motion-role="item">
             <Network size={31} aria-hidden="true" />
             <h3>合作伙伴</h3>
             <p>合作信息经相关方确认后发布，未确认的名称与标识不作展示。</p>
           </article>
-          <article className={styles.trustContact}>
+          <article className={styles.trustContact} data-motion-role="item">
             <Building2 size={31} aria-hidden="true" />
             <h3>合作咨询</h3>
             <p>围绕核算、咨询、数字化平台与持续运营开展业务沟通。</p>
