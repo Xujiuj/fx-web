@@ -294,21 +294,21 @@
 }
 
 .versionSection {
-  padding-block: 104px 112px;
+  padding-block: 76px 82px;
 }
 
 .versionCompare {
   display: grid;
   grid-template-columns: 1fr 140px 1fr;
   align-items: stretch;
-  margin-top: 54px;
+  margin-top: 38px;
   border-top: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
 
 .versionCompare article {
   position: relative;
-  padding: 42px 38px;
+  padding: 34px 32px;
 }
 
 .versionCompare article:first-child {
@@ -392,14 +392,14 @@
 }
 
 .functionBand {
-  padding-block: 96px;
+  padding-block: 74px;
   background: #f3f0ea;
 }
 
 .functionGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  margin-top: 52px;
+  margin-top: 38px;
   border-top: 1px solid #d6d1c8;
   border-left: 1px solid #d6d1c8;
 }
@@ -407,7 +407,7 @@
 .functionGrid article {
   position: relative;
   display: grid;
-  min-height: 220px;
+  min-height: 184px;
   align-content: space-between;
   padding: 28px;
   overflow: hidden;
@@ -447,7 +447,7 @@
   display: grid;
   grid-template-columns: 0.8fr 1.2fr;
   gap: 80px;
-  padding-block: 112px;
+  padding-block: 82px;
 }
 
 .workflowIntro > svg {
@@ -659,11 +659,11 @@
 }
 
 .platformAdvantages {
-  padding-block: 112px 8px;
+  padding-block: 80px 6px;
 }
 
 .advantageList {
-  margin-top: 56px;
+  margin-top: 38px;
   border-top: 1px solid var(--line);
 }
 
@@ -677,7 +677,7 @@
   display: grid;
   align-content: start;
   gap: 18px;
-  padding: 36px 38px;
+  padding: 30px 32px;
   color: #fff;
   background: #315f46;
 }
@@ -707,7 +707,7 @@
 }
 
 .advantageContent {
-  padding: 36px 42px 34px;
+  padding: 30px 34px;
   background: #fbfcfa;
 }
 
@@ -796,7 +796,7 @@
 }
 
 .architecture {
-  padding-block: 112px;
+  padding-block: 82px;
 }
 
 .architectureMap {
@@ -804,7 +804,7 @@
   grid-template-columns: 250px 1fr;
   gap: 0;
   align-items: stretch;
-  margin-top: 56px;
+  margin-top: 38px;
   border: 1px solid #ccd8cd;
 }
 
@@ -812,7 +812,7 @@
   display: grid;
   place-items: center;
   align-content: center;
-  min-height: 410px;
+  min-height: 346px;
   padding: 30px;
   color: #fff;
   background: #315f46;
@@ -840,7 +840,7 @@
   grid-template-columns: auto 1fr;
   grid-template-rows: auto auto 1fr;
   gap: 10px 14px;
-  min-height: 205px;
+  min-height: 173px;
   padding: 27px 30px;
   border-left: 1px solid #d8e0d8;
   border-bottom: 1px solid #d8e0d8;
@@ -875,7 +875,7 @@
 }
 
 .dataFlow {
-  padding-block: 100px;
+  padding-block: 76px;
   color: #fff;
   background: #262b27;
 }
@@ -938,7 +938,7 @@
   display: grid;
   grid-template-columns: 0.65fr 1.35fr;
   gap: 70px;
-  padding-block: 112px;
+  padding-block: 82px;
 }
 
 .analysisGrid {
@@ -1015,7 +1015,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 40px;
-  margin: 0 auto 88px;
+  margin: 0 auto 64px;
   padding: 42px 46px;
   color: #fff;
   background: #315f46;
@@ -1306,11 +1306,11 @@
 .excelHero > .container,
 .platformHero > .container {
   display: grid;
-  min-height: 620px;
+  min-height: 540px;
   grid-template-columns: minmax(0, 0.82fr) minmax(0, 1.18fr);
   gap: clamp(32px, 6vw, 80px);
   align-items: center;
-  padding-block: 76px;
+  padding-block: 58px;
 }
 
 .excelHeroCopy h1,
@@ -1369,7 +1369,7 @@
   .platformHero > .container {
     min-height: 0;
     grid-template-columns: 1fr;
-    padding-block: 68px;
+    padding-block: 56px;
   }
 
   .productVisual {
@@ -1380,7 +1380,7 @@
 @media (max-width: 780px) {
   .excelHero > .container,
   .platformHero > .container {
-    padding-block: 58px;
+    padding-block: 50px;
   }
 
   .productVisual {

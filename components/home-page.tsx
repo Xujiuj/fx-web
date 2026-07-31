@@ -187,8 +187,15 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
         <div className="latest-updates-list">
           {items.map((item, index) => (
             <a className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
-              <span className="latest-update-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <Image
+                src={item.image}
+                alt=""
+                fill
+                sizes="(max-width: 720px) calc(100vw - 36px), (max-width: 1100px) 50vw, 720px"
+              />
+              <span className="latest-update-shade" aria-hidden="true" />
               <div className="latest-update-copy">
+                <span className="latest-update-meta">{item.action}</span>
                 <h3>{item.title}</h3>
                 <p>{item.subtitle ?? item.summary ?? item.action}</p>
               </div>
@@ -244,25 +251,27 @@ function CertificateSection({ title, images }: { title: string; images: string[]
     Autoplay({ delay: 9000, stopOnInteraction: false })
   ]);
 
+  if (!configuredImages.length) return null;
+
   return (
     <section className="certificate-section">
       <SectionHeading title={title} />
       <div className="certificate-carousel" ref={emblaRef}>
-        {configuredImages.length ? (
-          <div className="certificate-track">
-            {configuredImages.map((src) => (
-              <motion.figure className="certificate-card" key={src} whileHover={{ y: -8, rotate: -0.5 }}>
-                <Image src={src} alt="企业荣誉证书" width={210} height={300} loading="lazy" />
-              </motion.figure>
-            ))}
-          </div>
-        ) : <div className="certificate-empty" aria-hidden="true" />}
+        <div className="certificate-track">
+          {configuredImages.map((src) => (
+            <motion.figure className="certificate-card" key={src} whileHover={{ y: -8, rotate: -0.5 }}>
+              <Image src={src} alt="企业荣誉证书" width={210} height={300} loading="lazy" />
+            </motion.figure>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
 function PartnerSection({ title, partners }: { title: string; partners: HomeContent["partners"] }) {
+  if (!partners.length) return null;
+
   return (
     <section className="partner-section" id="partners">
       <SectionHeading title={title} />
@@ -280,7 +289,6 @@ function PartnerSection({ title, partners }: { title: string; partners: HomeCont
             {partner.logo ? <Image src={partner.logo} alt={partner.name} width={180} height={72} /> : partner.name}
           </motion.div>
         ))}
-        {!partners.length ? <div className="partner-empty" aria-hidden="true" /> : null}
       </div>
     </section>
   );
@@ -288,6 +296,8 @@ function PartnerSection({ title, partners }: { title: string; partners: HomeCont
 
 function ThinkingSection({ eyebrow, title, text, capabilities }: { eyebrow: string; title: string; text: string; capabilities: HomeContent["capabilities"] }) {
   const shouldReduceMotion = useReducedMotion();
+
+  if (!capabilities.length) return null;
 
   return (
     <section className="thinking-section" id="capabilities">

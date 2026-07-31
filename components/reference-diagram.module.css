@@ -1,17 +1,20 @@
 .figure {
+  display: grid;
   width: min(calc(100% - 48px), 1200px);
+  grid-template-columns: minmax(240px, 0.38fr) minmax(0, 1fr);
+  gap: clamp(28px, 5vw, 64px);
+  align-items: start;
   margin: 0 auto;
-  padding: clamp(48px, 7vw, 92px) 0;
+  padding: clamp(52px, 6vw, 76px) 0;
 }
 
 .caption {
   display: grid;
-  justify-items: center;
-  gap: 12px;
-  text-align: center;
-  margin-bottom: 30px;
-  padding-bottom: 22px;
-  border-bottom: 1px solid #dbe5df;
+  gap: 16px;
+  margin: 0;
+  padding: 8px clamp(20px, 3vw, 38px) 8px 0;
+  border-right: 1px solid #dbe5df;
+  text-align: left;
 }
 
 .caption > span {
@@ -29,8 +32,7 @@
 }
 
 .caption p {
-  max-width: 690px;
-  margin: 0 auto;
+  margin: 0;
   color: #66766f;
   font-size: 15px;
   line-height: 1.8;
@@ -38,7 +40,7 @@
 
 .canvas {
   overflow: hidden;
-  padding: clamp(16px, 2.8vw, 40px);
+  padding: clamp(12px, 2vw, 24px);
   border: 1px solid #dce7e2;
   background: #f7faf8;
 }
@@ -49,16 +51,24 @@
   height: auto;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 900px) {
   .figure {
-    width: calc(100% - 36px);
-    padding: 62px 0;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
 
   .caption {
-    grid-template-columns: 1fr;
     gap: 10px;
-    margin-bottom: 22px;
+    padding: 0 0 20px;
+    border-right: 0;
+    border-bottom: 1px solid #dbe5df;
+  }
+}
+
+@media (max-width: 720px) {
+  .figure {
+    width: calc(100% - 36px);
+    padding: 52px 0;
   }
 
   .caption > span {
