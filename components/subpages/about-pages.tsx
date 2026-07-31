@@ -1,7 +1,7 @@
 import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Mail, Phone } from "lucide-react";
-import type { Subpage, SubpageSection } from "@/lib/cms-content";
+import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ContactSection } from "@/components/home-page";
+import { defaultHomeContent, type Subpage, type SubpageSection } from "@/lib/cms-content";
 import styles from "./about-pages.module.css";
 
 type AboutPageProps = { page: Subpage };
@@ -41,7 +41,7 @@ export function HonorsPage({ page }: AboutPageProps) {
               <article className={`${styles.honorCard} page-reveal`} key={`${item.title}-${item.image ?? ""}`} data-motion-role="item">
                 <h2>{item.title}</h2>
                 {item.image ? <Image src={item.image} alt={item.title} width={560} height={680} sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 33vw" /> : null}
-                {item.description ? <p>{item.description}</p> : null}
+                <p>{item.description ?? "相关信息将在确认后持续更新。"}</p>
               </article>
             ))}
           </div>
@@ -84,17 +84,24 @@ export function ContactPage({ page }: AboutPageProps) {
             <span>LET&apos;S TALK</span>
             <h2>{page.summary}</h2>
             {section.description ? <p>{section.description}</p> : null}
-            <Link href="/#contact">提交咨询 <ArrowRight size={17} aria-hidden="true" /></Link>
           </div>
           <div className={styles.contactGrid}>
           {section.items.map((item) => {
             const isEmail = item.value?.includes("@");
-            const href = item.value ? isEmail ? `mailto:${item.value}` : `tel:${item.value.replace(/[^\d+]/g, "")}` : undefined;
+            const isPhone = Boolean(item.value && /^\+?[\d\s-]{7,}$/.test(item.value));
+            const href = item.value
+              ? isEmail
+                ? `mailto:${item.value}`
+                : isPhone
+                  ? `tel:${item.value.replace(/[^\d+]/g, "")}`
+                  : undefined
+              : undefined;
+            const Icon = isEmail ? Mail : isPhone ? Phone : item.title.includes("地址") ? MapPin : MessageCircle;
             return (
               <article className={`${styles.contactCard} page-reveal`} key={`${item.title}-${item.value ?? ""}`} data-motion-role="item">
-                <div className={styles.contactIcon} aria-hidden="true">{isEmail ? <Mail size={21} /> : <Phone size={21} />}</div>
+                <div className={styles.contactIcon} aria-hidden="true"><Icon size={21} /></div>
                 <h3>{item.title}</h3>
-                {href ? <a href={href}>{item.value}</a> : <strong>{item.value}</strong>}
+                {href ? <a href={href}>{item.value}</a> : item.value ? <strong>{item.value}</strong> : null}
                 {item.description ? <p>{item.description}</p> : null}
                 {item.image ? <Image src={item.image} alt={`${item.title}二维码`} width={520} height={520} sizes="260px" /> : null}
               </article>
@@ -103,6 +110,7 @@ export function ContactPage({ page }: AboutPageProps) {
           </div>
         </div>
       </section>
+      <ContactSection contact={defaultHomeContent.contact} id="online-consultation" />
     </>
   );
 }

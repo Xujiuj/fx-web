@@ -1,22 +1,16 @@
 import {
   ArrowRight,
   BookOpen,
-  Building2,
   CheckCircle2,
   Download,
-  Factory,
   FileSpreadsheet,
   GraduationCap,
   Home,
-  Landmark,
   Library,
   Network,
-  ShieldCheck,
   Target,
   Waypoints,
-  Warehouse,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./editorial-pages.module.css";
@@ -55,28 +49,60 @@ function ContactBand({ title }: { title: string }) {
   );
 }
 
-const industryCaseDetails = [
-  { label: "制造业", icon: Factory, focus: "生产环节、能源消耗与工厂边界", description: "围绕固定燃烧、外购电力和生产过程数据，梳理覆盖生产现场的核算基础。" },
-  { label: "能源与公用事业", icon: Landmark, focus: "资产边界、供能数据与年度分析", description: "将设备、站点和供能环节纳入统一口径，为多年度管理和信息披露准备数据。" },
-  { label: "园区与多组织管理", icon: Warehouse, focus: "组织分级、数据汇总与责任分工", description: "明确园区、成员企业及运营主体的职责边界，形成可持续维护的数据协同方式。" },
-  { label: "供应链与品牌企业", icon: Network, focus: "采购数据、供应商协同与范围三准备", description: "从可获得的数据出发，逐步建立供应链排放信息的收集、校核与应用基础。" },
+const caseIcons = [GraduationCap, FileSpreadsheet, Network, Library];
+const caseIds = ["training-case", "excel-company-case", "excel-group-case", "platform-case"];
+const caseStructure = ["项目背景", "面临问题", "建设内容", "实施过程", "建设成果", "客户价值"];
+const caseDetails = [
+  {
+    background: "企业启动温室气体核算工作，需要先统一参与人员对标准、边界和方法的理解。",
+    problem: "内部缺少专业人员，核算口径不一致，难以把标准要求落实到实际业务数据。",
+    content: "开展核算方法、适用标准、Excel 实操和企业场景案例培训。",
+    process: "需求访谈、课程设计、集中培训、实操演练、问题复盘。",
+    result: "形成企业温室气体核算实操课程与后续工作清单。",
+    value: "建立统一认知，培养内部人才，使团队具备独立开展核算的基础能力。",
+  },
+  {
+    background: "单一法人企业准备完成首次温室气体核算，并形成可持续更新的数据台账。",
+    problem: "数据来源分散，采集模板缺失，计算过程和成果复核依赖临时人工协作。",
+    content: "梳理数据来源，部署 Excel 单公司版工具，配置边界、因子和计算规则。",
+    process: "边界确认、数据采集、工具配置、实操辅导、过程校核、成果交付。",
+    result: "形成企业温室气体核算报表、活动数据台账与工作底稿。",
+    value: "完成首次核算闭环，并为核查、披露和后续年度更新建立标准基础。",
+  },
+  {
+    background: "集团需要由成员企业独立维护数据，同时在集团层面统一汇总和复核。",
+    problem: "各公司核算口径、数据模板和责任分工不同，集团汇总效率低且难以追溯。",
+    content: "统一组织边界、数据模板和核算口径，部署单体核算与集团汇总模型。",
+    process: "集团规则设计、成员企业部署、填报辅导、集中复核、集团成果汇总。",
+    result: "形成企业温室气体核算报表（Excel 集团版）及统一工作规范。",
+    value: "实现子公司独立核算、集团自动汇总，并持续支撑 ESG 披露。",
+  },
+  {
+    background: "企业已有基础核算体系，希望将分散数据和年度核算工作转入统一平台。",
+    problem: "数据分散存储、人工维护成本高，缺少自动化核算、多维分析和持续沉淀。",
+    content: "搭建统一数据模型、核算引擎、分析体系与管理平台。",
+    process: "业务蓝图、平台配置、数据初始化、试运行、用户培训、持续运营支持。",
+    result: "交付企业碳管理数字化平台及配套数据、规则和运营机制。",
+    value: "实现数据集中管理、自动化核算、多维分析决策和多场景价值释放。",
+  },
 ];
 
 export function CasesPage({ page }: EditorialPageProps) {
+  const categories = page.sections.find((section) => section.id === "case-categories")?.items ?? [];
   return (
     <>
       <section className={styles.caseHero}>
         <div className={`${styles.wrap} ${styles.caseHeroInner}`}>
           <div className={`${styles.caseHeroCopy} page-reveal`} data-motion="hero-copy">
-            <SectionLabel>行业案例</SectionLabel>
+            <SectionLabel>客户案例</SectionLabel>
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
           <div className={`${styles.caseHeroIndex} page-reveal`} aria-label="覆盖行业" data-motion="hero-visual">
-            {industryCaseDetails.map((item, index) => (
-              <div key={item.label}>
+            {categories.map((item, index) => (
+              <div key={item.title}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{page.features[index] ?? item.label}</strong>
+                <strong>{item.title}</strong>
               </div>
             ))}
           </div>
@@ -84,28 +110,31 @@ export function CasesPage({ page }: EditorialPageProps) {
       </section>
 
       <section className={`${styles.wrap} ${styles.industryIntroduction} page-reveal`} aria-labelledby="industry-intro-title" data-motion-group="section-introduction">
-        <SectionLabel>业务场景</SectionLabel>
-        <h2 id="industry-intro-title" data-motion-role="heading">行业不同，数据基础和工作重点也不同</h2>
-        <p data-motion-role="item">以下案例按常见业务场景整理，不展示未经确认的客户名称或项目成效。企业可据此判断本单位的数据准备、组织协同与核算工作重点。</p>
+        <SectionLabel>分类展示</SectionLabel>
+        <h2 id="industry-intro-title" data-motion-role="heading">沿能力建设路径，查看不同阶段的项目实践</h2>
+        <p data-motion-role="item">案例不使用未经确认的客户名称或量化成效。每类案例采用一致的信息结构，便于企业对照自身阶段判断建设重点。</p>
       </section>
 
       <section className={`${styles.wrap} ${styles.industryGrid}`} aria-label="行业场景" data-motion-group="case-grid">
-        {industryCaseDetails.map((item, index) => {
-          const Icon = item.icon;
+        {categories.map((item, index) => {
+          const Icon = caseIcons[index % caseIcons.length];
+          const detail = caseDetails[index] ?? caseDetails[0];
           return (
-            <article className="page-reveal" key={item.label} data-motion-role="item">
+            <article className="page-reveal" id={caseIds[index]} key={item.title} data-motion-role="item">
               <div className={styles.industryCardTop}>
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <Icon size={27} aria-hidden="true" />
               </div>
-              <h2>{page.features[index] ?? item.label}</h2>
-              <dl>
-                <div>
-                  <dt>关注重点</dt>
-                  <dd>{item.focus}</dd>
-                </div>
+              <h2>{item.title}</h2>
+              <p className={styles.caseLead}>{item.description}</p>
+              <dl className={styles.caseDetailGrid}>
+                <div><dt>项目背景</dt><dd>{detail.background}</dd></div>
+                <div><dt>面临问题</dt><dd>{detail.problem}</dd></div>
+                <div><dt>建设内容</dt><dd>{detail.content}</dd></div>
+                <div><dt>实施过程</dt><dd>{detail.process}</dd></div>
+                <div><dt>建设成果</dt><dd>{detail.result}</dd></div>
+                <div><dt>客户价值</dt><dd>{detail.value}</dd></div>
               </dl>
-              <p>{item.description}</p>
             </article>
           );
         })}
@@ -114,17 +143,17 @@ export function CasesPage({ page }: EditorialPageProps) {
       <section className={`${styles.caseScope} page-reveal`} aria-labelledby="case-scope-title" data-motion-group="case-path">
         <div className={styles.wrap}>
           <div className={styles.caseScopeHeading} data-motion-role="heading">
-            <SectionLabel>实施范围</SectionLabel>
-            <h2 id="case-scope-title">从业务边界到管理应用，逐项明确工作范围</h2>
-            <p>实施内容以企业实际数据条件和管理目标为基础确认，不用跳转链接替代范围说明。</p>
+            <SectionLabel>统一结构</SectionLabel>
+            <h2 id="case-scope-title">每个案例都回答六个关键问题</h2>
+            <p>从项目为何启动，到如何实施、交付什么，以及最终为企业带来什么价值。</p>
           </div>
           <ol>
-            {page.steps.map((step, index) => (
+            {caseStructure.map((step, index) => (
               <li key={step} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
                 <div>
                   <strong>{step}</strong>
-                  <p>{index === 0 ? "结合组织结构、业务流程和管理目标，确定本次工作的边界。" : index === 1 ? "确认活动数据、能源数据及相关凭证的来源和责任人。" : index === 2 ? "统一数据口径、核算规则和内部复核方式。" : "形成可用于后续更新、分析和管理沟通的成果。"}</p>
+                  <p>{index === 0 ? "说明企业所处阶段、业务背景与启动原因。" : index === 1 ? "识别数据、方法、组织协同或管理应用中的关键障碍。" : index === 2 ? "明确本次项目覆盖的服务范围与工作任务。" : index === 3 ? "呈现从准备、实施到交付的推进过程。" : index === 4 ? "说明形成的工具、体系、报告或平台成果。" : "归纳项目为企业能力建设带来的长期价值。"}</p>
                 </div>
               </li>
             ))}
@@ -132,19 +161,20 @@ export function CasesPage({ page }: EditorialPageProps) {
         </div>
       </section>
 
-      <ContactBand title="从行业场景开始梳理企业碳管理工作" />
+      <ContactBand title="从企业当前阶段出发，匹配相近的建设案例" />
     </>
   );
 }
 
 const knowledgeRoutes = [
-  { href: "/solution-standard", action: "查看培训方案", icon: GraduationCap },
-  { href: "/excel-accounting-tool", action: "查看核算工具", icon: FileSpreadsheet },
-  { href: "/carbon-management-platform", action: "查看数字化平台", icon: Library },
+  { href: "/#contact", action: "获取产品手册", icon: Library },
+  { href: "/#contact", action: "获取解决方案", icon: GraduationCap },
+  { href: "/#contact", action: "获取Excel核算工具", icon: FileSpreadsheet },
 ];
 
 export function KnowledgePage({ page }: EditorialPageProps) {
-  const [featured, ...topics] = page.features;
+  const topics = page.features;
+  const downloads = page.sections.find((section) => section.id === "downloads")?.items ?? [];
 
   return (
     <>
@@ -164,16 +194,9 @@ export function KnowledgePage({ page }: EditorialPageProps) {
 
       <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title" data-motion-group="knowledge-index">
         <article className={styles.featuredTopic} data-motion-role="item">
-          <div>
-            <span>本期重点</span>
-            <small>FEATURED 01</small>
-          </div>
-          <h2 id="knowledge-featured-title">{featured ?? "企业碳管理知识"}</h2>
-          <p>从政策背景进入企业实际工作，理解核算边界、数据口径与管理要求之间的关系。</p>
-          <Link href="/solution-standard">
-            从基础课程开始
-            <ArrowRight size={16} aria-hidden="true" />
-          </Link>
+          <div><span>双碳专栏</span><small>06 TOPICS</small></div>
+          <h2 id="knowledge-featured-title">从政策、核算到披露与市场动态</h2>
+          <p>以企业实际工作为起点，持续整理双碳政策、核算方法与相关管理要求。</p>
         </article>
         <div className={styles.topicIndex} data-motion-role="item">
           <header>
@@ -182,7 +205,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
           </header>
           {topics.map((topic, index) => (
             <article key={topic}>
-              <span>{String(index + 2).padStart(2, "0")}</span>
+              <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>{topic}</h3>
               <BookOpen size={18} aria-hidden="true" />
             </article>
@@ -193,9 +216,9 @@ export function KnowledgePage({ page }: EditorialPageProps) {
       <section id="video-courses" className={`${styles.learningSection} page-reveal`} aria-labelledby="learning-path-title" data-motion-group="knowledge-path">
         <div className={styles.wrap}>
           <div className={styles.learningHeading} data-motion-role="heading">
-            <SectionLabel>LEARNING PATH</SectionLabel>
+            <SectionLabel>视频课程</SectionLabel>
             <h2 id="learning-path-title">循序进入企业碳管理</h2>
-            <p>按照阅读、学习、查阅和使用的顺序，逐步把知识转化为企业内部能力。</p>
+            <p>从入门方法到工具实战、集团体系与平台应用，逐步建立企业内部能力。</p>
           </div>
           <ol className={styles.learningPath}>
             {page.steps.map((step, index) => (
@@ -211,9 +234,9 @@ export function KnowledgePage({ page }: EditorialPageProps) {
 
       <section id="downloads" className={`${styles.wrap} ${styles.resourceDesk} page-reveal`} aria-labelledby="resource-title" data-motion-group="resource-grid">
         <div className={styles.resourceIntro} data-motion-role="heading">
-          <SectionLabel>RESOURCE DESK</SectionLabel>
+          <SectionLabel>资料下载</SectionLabel>
           <h2 id="resource-title">课程、工具与方案资料</h2>
-          <p>根据工作任务进入对应内容；需正式资料时，可联系顾问获取当前有效版本。</p>
+          <p>获取产品手册、解决方案与Excel核算工具的当前有效版本。</p>
           <Link href="/#contact">
             <Download size={17} aria-hidden="true" />
             联系获取资料
@@ -224,7 +247,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
             <Link href={href} key={href} data-motion-role="item">
               <Icon size={22} aria-hidden="true" />
               <div>
-                <span>{page.steps[index + 1] ?? page.steps[index] ?? "学习资料"}</span>
+                <span>{downloads[index]?.title ?? "学习资料"}</span>
                 <strong>{action}</strong>
               </div>
               <ArrowRight size={17} aria-hidden="true" />
@@ -239,10 +262,11 @@ export function KnowledgePage({ page }: EditorialPageProps) {
 }
 
 export function CompanyPage({ page }: EditorialPageProps) {
-  const isVisionPage = page.slug.includes("vision") || page.title.includes("愿景");
-  const mission = page.metrics[0];
-  const positioning = page.metrics[1];
-  const serviceMode = page.metrics[2];
+  const positioning = page.metrics[0];
+  const mission = page.metrics[1];
+  const vision = page.metrics[2];
+  const introduction = page.sections.find((section) => section.id === "company-introduction")?.items[0];
+  const capabilities = page.sections.find((section) => section.id === "core-capabilities")?.items ?? [];
 
   return (
     <>
@@ -256,103 +280,57 @@ export function CompanyPage({ page }: EditorialPageProps) {
             <h1>{page.title}</h1>
             <p>{page.summary}</p>
           </div>
-          {isVisionPage ? (
-            <figure className={`${styles.companyVisionVisual} page-reveal`} data-motion="hero-visual">
-              <Image src={page.image} alt="企业愿景" width={1200} height={660} sizes="(max-width: 720px) 100vw, 1120px" />
-            </figure>
-          ) : null}
         </div>
       </section>
 
       <section className={`${styles.wrap} ${styles.companyBelief} page-reveal`} aria-labelledby="company-belief-title" data-motion-group="company-beliefs">
         <div className={styles.companyBeliefTitle} data-motion-role="heading">
-          <SectionLabel>OUR DIRECTION</SectionLabel>
-          <h2 id="company-belief-title">让碳管理成为企业可持续使用的业务能力</h2>
+          <SectionLabel>COMPANY PROFILE</SectionLabel>
+          <h2 id="company-belief-title">企业定位、使命与愿景</h2>
         </div>
         <div className={styles.companyBeliefGrid}>
           <article data-motion-role="item">
             <Target size={27} aria-hidden="true" />
-            <span>{mission?.label ?? "企业使命"}</span>
-            <strong>{mission?.value ?? "智慧驱动"}</strong>
-            <p>以清晰的方法、可靠的数据与适用的工具，支持企业建立长期能力。</p>
+            <span>{positioning?.label ?? "企业定位"}</span>
+            <strong>{positioning?.value ?? "企业碳管理数字化服务商"}</strong>
           </article>
           <article data-motion-role="item">
             <Waypoints size={27} aria-hidden="true" />
-            <span>{positioning?.label ?? "能力定位"}</span>
-            <strong>{positioning?.value ?? "碳管理"}</strong>
-            <p>连接核算、咨询、数字化建设与持续运营，让工作成果能够复用和追溯。</p>
+            <span>{mission?.label ?? "企业使命"}</span>
+            <strong>{mission?.value ?? "以智慧驱动业务增长"}</strong>
           </article>
           <article data-motion-role="item">
             <CheckCircle2 size={27} aria-hidden="true" />
-            <span>{serviceMode?.label ?? "服务方式"}</span>
-            <strong>{serviceMode?.value ?? "全周期"}</strong>
-            <p>根据企业所处阶段匹配服务方式，不以单一产品替代真实业务需求。</p>
+            <span>{vision?.label ?? "企业愿景"}</span>
+            <strong>{vision?.value ?? "成为企业绿色低碳转型可信赖的长期合作伙伴"}</strong>
           </article>
         </div>
+      </section>
+
+      <section className={`${styles.wrap} ${styles.companyTimeline} page-reveal`} aria-labelledby="company-introduction-title" data-motion-group="company-path">
+        <div className={styles.companyTimelineHeading} data-motion-role="heading">
+          <SectionLabel>ABOUT FENGXING</SectionLabel>
+          <h2 id="company-introduction-title">{introduction?.title ?? "企业简介"}</h2>
+        </div>
+        <p className={styles.companyIntroduction} data-motion-role="item">{introduction?.description}</p>
       </section>
 
       <section className={`${styles.serviceBand} page-reveal`} aria-labelledby="service-capability-title" data-motion-group="company-grid">
         <div className={styles.wrap}>
           <div className={styles.serviceBandHeading} data-motion-role="heading">
-            <SectionLabel>SERVICE CAPABILITY</SectionLabel>
+            <SectionLabel>核心能力</SectionLabel>
             <h2 id="service-capability-title">从基础核算到长期运营</h2>
           </div>
           <div className={styles.serviceList}>
-            {page.features.map((feature, index) => (
-              <article key={feature} data-motion-role="item">
+            {capabilities.map((feature, index) => (
+              <article key={feature.title} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <h3>{feature}</h3>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
                 <i aria-hidden="true" />
               </article>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className={`${styles.wrap} ${styles.companyTimeline} page-reveal`} aria-labelledby="company-timeline-title" data-motion-group="company-path">
-        <div className={styles.companyTimelineHeading} data-motion-role="heading">
-          <SectionLabel>WORKING METHOD</SectionLabel>
-          <h2 id="company-timeline-title">一条贯穿建设与运营的服务路径</h2>
-          <p>不虚构企业发展年份；这里呈现峰行智成已明确的项目工作路径。</p>
-        </div>
-        <ol>
-          {page.steps.map((step, index) => (
-            <li key={step} data-motion-role="item">
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div>
-                <small>{index === 0 ? "识别" : index === page.steps.length - 1 ? "运营" : "建设"}</small>
-                <strong>{step}</strong>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section className={`${styles.wrap} ${styles.trustSection} page-reveal`} aria-labelledby="trust-title" data-motion-group="trust-grid">
-        <div className={styles.trustHeading} data-motion-role="heading">
-          <SectionLabel>TRUST &amp; COOPERATION</SectionLabel>
-          <h2 id="trust-title">资质与合作信息，坚持可核验</h2>
-        </div>
-        <div className={styles.trustCards}>
-          <article data-motion-role="item">
-            <ShieldCheck size={31} aria-hidden="true" />
-            <h3>资质信息</h3>
-            <p>相关资质以官网公示及正式合作时提供的有效文件为准。</p>
-          </article>
-          <article data-motion-role="item">
-            <Network size={31} aria-hidden="true" />
-            <h3>合作伙伴</h3>
-            <p>合作信息经相关方确认后发布，未确认的名称与标识不作展示。</p>
-          </article>
-          <article className={styles.trustContact} data-motion-role="item">
-            <Building2 size={31} aria-hidden="true" />
-            <h3>合作咨询</h3>
-            <p>围绕核算、咨询、数字化平台与持续运营开展业务沟通。</p>
-            <Link href="/#contact">
-              获取可核验资料
-              <ArrowRight size={16} aria-hidden="true" />
-            </Link>
-          </article>
         </div>
       </section>
 

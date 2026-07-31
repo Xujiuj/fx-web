@@ -27,6 +27,13 @@ type ProductPageProps = { page: Subpage };
 
 const excelFeatureIcons: LucideIcon[] = [Table2, LineChart, ShieldCheck, RefreshCcw];
 
+const platformPrinciples = [
+  { title: "统一数据体系", icon: Database },
+  { title: "统一核算引擎", icon: Workflow },
+  { title: "统一分析体系", icon: LineChart },
+  { title: "统一管理平台", icon: Gauge },
+];
+
 function ProductVisual({ page }: ProductPageProps) {
   const screenshot = page.media?.screenshot;
 
@@ -47,7 +54,6 @@ function ProductVisual({ page }: ProductPageProps) {
 }
 
 const platformAdvantages: Array<{
-  number: string;
   title: string;
   summary: string;
   label: string;
@@ -57,50 +63,62 @@ const platformAdvantages: Array<{
   images: Array<{ src: string; alt: string; width: number; height: number }>;
 }> = [
   {
-    number: "01",
-    title: "业务数据驱动，降低碳管理成本",
-    summary: "企业无需反复填写核算报表，仅需维护业务明细数据。平台自动完成数据归集、因子匹配、排放计算与结果分析。",
-    label: "自动完成",
-    items: ["数据归集", "因子匹配", "排放计算", "结果分析"],
-    outcome: "减少人工填报与重复汇总，降低时间、人力和管理成本。",
+    title: "统一数据体系",
+    summary: "统一管理组织、边界、排放源、活动数据与排放因子。",
+    label: "数据基础",
+    items: ["组织与边界", "排放源", "活动数据", "排放因子"],
+    outcome: "一次维护业务明细数据，为多年度核算与持续分析建立统一基础。",
     icon: Database,
-    images: [{
-      src: "/media/platform-advantages/business-data-flow.png",
-      alt: "业务输入层、统一模型层与核算分析层的碳数据处理流程",
-      width: 6209,
-      height: 2297,
-    }],
+    images: [{ src: "/media/platform-advantages/business-data-flow.png", alt: "业务输入、统一模型与核算分析的数据流程", width: 6209, height: 2297 }]
   },
   {
-    number: "02",
-    title: "一次核算，多场景复用",
-    summary: "基于统一碳数据模型，将同源数据统一治理，一次核算即可持续服务多个管理与披露场景。",
-    label: "覆盖场景",
-    items: ["全国碳市场履约管理", "ESG与可持续发展信息披露", "CDP气候变化问卷填报", "供应链碳管理", "企业经营决策分析"],
-    outcome: "支持三大主流标准核算，实现一套数据、多标准输出。",
-    icon: Files,
+    title: "统一核算引擎",
+    summary: "集中维护计算规则，支持不同组织、年度与核算口径。",
+    label: "核算能力",
+    items: ["规则集中维护", "因子版本管理", "多组织核算", "多年度更新"],
+    outcome: "让同源数据通过统一规则完成计算，减少重复维护与人工汇总。",
+    icon: Workflow,
+    images: [{ src: "/media/platform-advantages/reuse-standard-output.png", alt: "统一数据按不同标准输出核算结果", width: 5383, height: 3285 }]
+  },
+  {
+    title: "统一分析体系",
+    summary: "围绕总量、强度、趋势与组织维度开展分析。",
+    label: "分析维度",
+    items: ["排放总量", "排放强度", "年度趋势", "组织对标"],
+    outcome: "从核算结果进入基准年、趋势与强度分析，为管理决策提供依据。",
+    icon: LineChart,
     images: [
-      { src: "/media/platform-advantages/reuse-standard-output.png", alt: "一套碳数据按不同标准输出的核算结果界面", width: 5383, height: 3285 },
-      { src: "/media/platform-advantages/reuse-activity-data.png", alt: "碳活动数据与核算结果的管理界面", width: 5491, height: 3367 },
-      { src: "/media/platform-advantages/reuse-trend-analysis.png", alt: "碳排放趋势与多维分析界面", width: 5491, height: 3379 },
-      { src: "/media/platform-advantages/reuse-baseline-analysis.png", alt: "碳排放基准年对比分析界面", width: 5491, height: 3369 },
-    ],
+      { src: "/media/platform-advantages/reuse-trend-analysis.png", alt: "温室气体排放趋势分析界面", width: 5491, height: 3379 },
+      { src: "/media/platform-advantages/reuse-baseline-analysis.png", alt: "温室气体排放基准年对比分析界面", width: 5491, height: 3369 }
+    ]
   },
   {
-    number: "03",
+    title: "统一管理平台",
+    summary: "在同一平台组织核算、分析、追溯与管理工作。",
+    label: "管理协同",
+    items: ["数据填报", "过程审核", "集团汇总", "成果应用"],
+    outcome: "把分散的年度核算工作纳入持续运行、责任清晰的管理流程。",
+    icon: Gauge,
+    images: [{ src: "/media/platform-advantages/reuse-activity-data.png", alt: "碳活动数据与核算结果管理界面", width: 5491, height: 3367 }]
+  },
+  {
     title: "全过程可信可追溯",
-    summary: "建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，让每项结果都可回溯、可核验。",
+    summary: "从分析结果回溯原始数据、因子版本与计算逻辑。",
     label: "追溯链路",
     items: ["排放源", "活动数据", "排放因子", "核算结果"],
-    outcome: "可追溯原始业务数据、因子版本和计算逻辑，支撑监管报送、第三方核查、ESG披露与内部审计。",
+    outcome: "支撑监管报送、第三方核查、ESG披露与企业内部审计。",
     icon: GitBranch,
-    images: [{
-      src: "/media/platform-advantages/traceability-module-map.png",
-      alt: "从排放量核算结果回溯模块与子目录的功能关系图",
-      width: 2169,
-      height: 1495,
-    }],
+    images: [{ src: "/media/platform-advantages/traceability-module-map.png", alt: "核算结果与数据来源的追溯关系图", width: 2169, height: 1495 }]
   },
+  {
+    title: "一次核算，多场景复用",
+    summary: "让同一套碳数据持续服务披露、履约、供应链与经营分析。",
+    label: "应用场景",
+    items: ["碳市场履约", "ESG披露", "CDP问卷", "供应链管理"],
+    outcome: "以一套数据支持多标准输出，持续沉淀为企业碳数据资产。",
+    icon: Files,
+    images: [{ src: "/media/product-platform-dashboard.webp", alt: "企业碳管理数字化平台综合驾驶舱", width: 1720, height: 980 }]
+  }
 ];
 
 function PageCta({ title }: { title: string }) {
@@ -184,8 +202,9 @@ export function ExcelProductPage({ page }: ProductPageProps) {
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
         <div className={styles.container}>
           <header className={styles.sectionHeading} data-motion-role="heading">
-            <span>FUNCTION MAP</span>
-            <h2 id="excel-function-title">把核算方法落实到可持续使用的工具中</h2>
+            <span>PRODUCT FEATURES</span>
+            <h2 id="excel-function-title">产品特点</h2>
+            <p>把核算方法落实到可持续使用的工具中，兼顾单体核算、集团汇总与多年数据积累。</p>
           </header>
           <div className={styles.functionGrid}>
             {page.features.map((feature, index) => {
@@ -235,19 +254,41 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
+      <section className={styles.principleBand} aria-labelledby="platform-principles-title" data-motion-group="product-grid">
+        <div className={styles.principleInner}>
+          <header data-motion-role="heading">
+            <span>PLATFORM PHILOSOPHY</span>
+            <h2 id="platform-principles-title">平台理念</h2>
+            <p>以一套贯通的数据与管理底座，承接企业从核算执行到持续运营的全过程。</p>
+          </header>
+          <ol className={styles.principleGrid}>
+            {platformPrinciples.map((principle, index) => {
+              const PrincipleIcon = principle.icon;
+              return (
+                <li key={principle.title} data-motion-role="item">
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <PrincipleIcon size={25} strokeWidth={1.6} aria-hidden="true" />
+                  <strong>{principle.title}</strong>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
+
       <section className={`${styles.platformAdvantages} ${styles.container} page-reveal`} aria-labelledby="platform-advantages-title">
         <header className={styles.sectionHeading} data-motion-group="section-heading" data-motion-role="heading">
           <span>CORE ADVANTAGES</span>
-          <h2 id="platform-advantages-title">把碳核算变成可持续运行的管理能力</h2>
-          <p>以业务数据为基础，将核算、披露、履约与经营分析连接在同一套可信的数据链路中。</p>
+          <h2 id="platform-advantages-title">六大核心优势</h2>
+          <p>围绕数据统一、自动核算、分析决策、过程追溯与多场景复用，构建企业长期碳管理能力。</p>
         </header>
         <div className={styles.advantageList}>
-          {platformAdvantages.map((advantage) => {
+          {platformAdvantages.map((advantage, index) => {
             const AdvantageIcon = advantage.icon;
             return (
-              <article key={advantage.number} data-motion-group="platform-advantage">
+              <article key={advantage.title} data-motion-group="platform-advantage">
                 <header data-motion-role="copy">
-                  <span>{advantage.number}</span>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
                   <AdvantageIcon size={28} strokeWidth={1.6} aria-hidden="true" />
                   <h3>{advantage.title}</h3>
                 </header>
@@ -255,9 +296,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
                   <p>{advantage.summary}</p>
                   <div className={styles.advantageDetail}>
                     <strong>{advantage.label}</strong>
-                    <ul>
-                      {advantage.items.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
+                    <ul>{advantage.items.map((item) => <li key={item}>{item}</li>)}</ul>
                   </div>
                   <div className={styles.advantageOutcome}>
                     <FileCheck2 size={18} aria-hidden="true" />

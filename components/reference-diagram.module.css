@@ -39,6 +39,8 @@
 }
 
 .canvas {
+  position: relative;
+  display: block;
   overflow: hidden;
   padding: clamp(12px, 2vw, 24px);
   border: 1px solid #dce7e2;
@@ -49,6 +51,35 @@
   display: block;
   width: 100%;
   height: auto;
+}
+
+.openOriginal {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  gap: 7px;
+  padding: 0 12px;
+  border: 1px solid rgba(180, 91, 36, 0.32);
+  border-radius: 4px;
+  color: #934318;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 12px;
+  font-weight: 750;
+  box-shadow: 0 5px 18px rgba(47, 42, 36, 0.1);
+}
+
+.canvas:hover .openOriginal,
+.canvas:focus-visible .openOriginal {
+  border-color: #b45b24;
+  background: #fff;
+}
+
+.canvas:focus-visible {
+  outline: 2px solid #b45b24;
+  outline-offset: 3px;
 }
 
 @media (max-width: 900px) {
@@ -85,10 +116,15 @@
 
   .canvas {
     padding: 10px;
-    overflow-x: auto;
+    overflow: hidden;
   }
 
   .canvas img {
-    min-width: 620px;
+    min-width: 0;
+  }
+
+  .openOriginal {
+    right: 8px;
+    bottom: 8px;
   }
 }

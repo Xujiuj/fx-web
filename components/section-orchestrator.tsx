@@ -7,44 +7,36 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
 const latestUpdateOrigins = [
-  { x: -48, y: 16, clipPath: "inset(0% 100% 0% 0%)" },
-  { x: 24, y: -32, clipPath: "inset(100% 0% 0% 0%)" },
-  { x: -24, y: 32, clipPath: "inset(0% 0% 100% 0%)" },
-  { x: 48, y: 16, clipPath: "inset(0% 0% 0% 100%)" }
+  { x: -36, y: 12, clipPath: "inset(0% 100% 0% 0%)" },
+  { x: 18, y: -24, clipPath: "inset(100% 0% 0% 0%)" },
+  { x: -18, y: 24, clipPath: "inset(0% 0% 100% 0%)" },
+  { x: 36, y: 12, clipPath: "inset(0% 0% 0% 100%)" }
 ];
-
-const latestUpdateStartTimes = [0, 0.22, 0.3, 0.08];
 
 function animateLatestUpdates() {
   const list = document.querySelector(".latest-updates-list");
   const cards = gsap.utils.toArray<HTMLElement>(".latest-update");
   if (!list || cards.length === 0) return;
 
-  const isMobile = window.matchMedia("(max-width: 720px)").matches;
+  const compact = window.matchMedia("(max-width: 720px)").matches;
   const timeline = gsap.timeline({
-    scrollTrigger: {
-      trigger: list,
-      start: "top 88%",
-      once: true
-    }
+    scrollTrigger: { trigger: list, start: compact ? "top 94%" : "top 88%", once: true }
   });
 
   cards.forEach((card, index) => {
     const desktopOrigin = latestUpdateOrigins[index % latestUpdateOrigins.length];
-    const origin = isMobile ? {
-      x: index % 2 === 0 ? -22 : 22,
-      y: 26,
-      clipPath: index % 2 === 0 ? "inset(0% 0% 14% 0%)" : "inset(14% 0% 0% 0%)"
-    } : desktopOrigin;
-    const startAt = isMobile ? index * 0.11 : latestUpdateStartTimes[index] ?? index * 0.12;
+    const origin = compact
+      ? { x: 0, y: 20, clipPath: "inset(8% 0% 0% 0%)" }
+      : desktopOrigin;
+    const startAt = compact ? index * 0.08 : [0, 0.16, 0.24, 0.08][index] ?? index * 0.1;
     const image = card.querySelector("img");
     const copy = card.querySelector<HTMLElement>(".latest-update-copy");
 
     timeline.fromTo(card, {
-      autoAlpha: 0,
+      autoAlpha: 0.72,
       x: origin.x,
       y: origin.y,
-      scale: isMobile ? 1.01 : 1.025,
+      scale: compact ? 0.99 : 1.015,
       clipPath: origin.clipPath
     }, {
       autoAlpha: 1,
@@ -52,33 +44,28 @@ function animateLatestUpdates() {
       y: 0,
       scale: 1,
       clipPath: "inset(0% 0% 0% 0%)",
-      duration: isMobile ? 0.72 : 0.96,
+      duration: compact ? 0.62 : 0.82,
       ease: "power3.out",
       clearProps: "transform,clipPath,opacity,visibility"
     }, startAt);
 
     if (image) {
-      timeline.fromTo(image, {
-        scale: isMobile ? 1.06 : 1.11
-      }, {
+      timeline.fromTo(image, { scale: compact ? 1.035 : 1.07 }, {
         scale: 1,
-        duration: isMobile ? 0.9 : 1.3,
+        duration: compact ? 0.76 : 1.02,
         ease: "power2.out",
         clearProps: "transform"
       }, startAt);
     }
 
     if (copy) {
-      timeline.fromTo(copy, {
-        autoAlpha: 0,
-        y: 20
-      }, {
+      timeline.fromTo(copy, { autoAlpha: 0.78, y: 14 }, {
         autoAlpha: 1,
         y: 0,
-        duration: isMobile ? 0.48 : 0.62,
+        duration: compact ? 0.44 : 0.54,
         ease: "power2.out",
         clearProps: "transform,opacity,visibility"
-      }, startAt + (isMobile ? 0.18 : 0.28));
+      }, startAt + (compact ? 0.12 : 0.2));
     }
   });
 }
@@ -89,11 +76,9 @@ export function SectionOrchestrator() {
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const groups = [
-        { trigger: ".news-section", targets: ".news-card", y: 22, scale: 0.992, duration: 0.95 },
-        { trigger: ".certificate-section", targets: ".certificate-card", y: 20, scale: 0.995, duration: 0.95 },
-        { trigger: ".partner-section", targets: ".partner-logo", y: 10, scale: 0.998, duration: 0.95 },
-        { trigger: ".thinking-section", targets: ".capability-node", y: 18, scale: 0.995, duration: 0.95 },
-        { trigger: ".contact-section", targets: ".contact-section > *", y: 16, scale: 1, duration: 1.1 }
+        { trigger: ".home-services", targets: ".home-service-list > a", y: 18, scale: 0.995, duration: 0.72 },
+        { trigger: ".home-cases", targets: ".home-case-grid > a", y: 24, scale: 0.985, duration: 0.8 },
+        { trigger: ".contact-section", targets: ".contact-section > *", y: 16, scale: 1, duration: 0.9 }
       ];
 
       groups.forEach((group) => {
@@ -101,13 +86,18 @@ export function SectionOrchestrator() {
         const targets = gsap.utils.toArray<HTMLElement>(group.targets);
         if (!trigger || targets.length === 0) return;
 
-        gsap.from(targets, {
-          autoAlpha: 0,
+        gsap.fromTo(targets, {
+          autoAlpha: 0.72,
           y: group.y,
           scale: group.scale,
+        }, {
+          autoAlpha: 1,
+          y: 0,
+          scale: 1,
           duration: group.duration,
           ease: "power2.out",
           stagger: 0.14,
+          clearProps: "transform,opacity,visibility",
           scrollTrigger: {
             trigger,
             start: "top 82%",
@@ -118,13 +108,16 @@ export function SectionOrchestrator() {
 
       animateLatestUpdates();
 
-      gsap.to(".hero-dots button.is-active", {
-        scaleX: 1.22,
-        duration: 4.8,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true
-      });
+      const activeHeroDot = document.querySelector(".hero-dots button.is-active");
+      if (activeHeroDot) {
+        gsap.to(activeHeroDot, {
+          scaleX: 1.22,
+          duration: 4.8,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true
+        });
+      }
     });
 
     return () => mm.revert();

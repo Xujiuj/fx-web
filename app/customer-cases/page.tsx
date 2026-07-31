@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { ManufacturingCasePage } from "@/components/manufacturing-case-page";
+import { SubpageShell } from "@/components/subpage-shell";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getHomeContent, getSubpageContent } from "@/lib/cms-content";
@@ -18,7 +18,7 @@ export default async function CustomerCasesPage() {
   return (
     <>
       <SiteHeader content={content} />
-      <ManufacturingCasePage page={page} />
+      <SubpageShell page={page} />
       <SiteFooter footer={content.footer} />
     </>
   );

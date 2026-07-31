@@ -1,8 +1,5 @@
 ﻿"use client";
 
-import Autoplay from "embla-carousel-autoplay";
-import useEmblaCarousel from "embla-carousel-react";
-import * as Tabs from "@radix-ui/react-tabs";
 import {
   ArrowRight,
   BarChart3,
@@ -18,13 +15,12 @@ import {
   Sparkles,
   Workflow
 } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
-import type { HomeContent, IconKey } from "@/lib/cms-content";
+import { homeEditorialContent, type HomeContent, type HomeEditorialContent, type IconKey } from "@/lib/cms-content";
 import { AnimatedTimeline } from "./animated-timeline";
-import { SectionHeading } from "./section-heading";
 import { SectionOrchestrator } from "./section-orchestrator";
 import { SiteFooter } from "./site-footer";
 
@@ -45,18 +41,20 @@ export function HomePage({ content }: { content: HomeContent }) {
     <main>
       <SectionOrchestrator />
       <HeroCarousel slides={content.heroSlides} />
-      <AboutSection tabs={content.aboutTabs} />
-      <AnimatedTimeline title={content.sectionTitles.timeline} timeline={content.timeline} />
-      <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
-      <ProductSection title={content.sectionTitles.products} products={content.products} />
-      <CertificateSection title={content.sectionTitles.certificates} images={content.certificateImages} />
-      <PartnerSection title={content.sectionTitles.partners} partners={content.partners} />
-      <ThinkingSection
-        eyebrow={content.sectionTitles.thinkingEyebrow}
-        title={content.sectionTitles.thinkingTitle}
-        text={content.thinkingText}
-        capabilities={content.capabilities}
+      <AnimatedTimeline
+        eyebrow={homeEditorialContent.path.eyebrow}
+        title={homeEditorialContent.path.title}
+        description={homeEditorialContent.path.description}
+        summary={homeEditorialContent.path.summary}
+        timeline={content.timeline}
       />
+      <DriversSection items={homeEditorialContent.drivers} />
+      <ChallengesSection items={homeEditorialContent.challenges} />
+      <ManagementPathSection items={homeEditorialContent.managementPath} />
+      <ServicesSection items={homeEditorialContent.services} />
+      <CasesSection items={homeEditorialContent.cases} />
+      <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
+      <BrandPositioningSection />
       <ContactSection contact={content.contact} />
       <SiteFooter footer={content.footer} />
     </main>
@@ -122,72 +120,105 @@ function HeroTitle({ title }: { title: string }) {
   );
 }
 
-function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
-  const [activeValue, setActiveValue] = useState(tabs[0]?.value ?? "about");
+function DriversSection({ items }: { items: HomeEditorialContent["drivers"] }) {
   const shouldReduceMotion = useReducedMotion();
-  const activeTab = tabs.find((tab) => tab.value === activeValue) ?? tabs[0];
-
-  if (!activeTab) return null;
-
   return (
-    <section className="about-section" id="about">
-      <Tabs.Root className="about-tabs" value={activeValue} onValueChange={setActiveValue}>
-        <Tabs.List className="about-tab-list" aria-label="公司介绍">
-          {tabs.map((tab) => (
-            <Tabs.Trigger value={tab.value} key={tab.value} id={`about-tab-${tab.value}`}>
-              {tab.label}
-            </Tabs.Trigger>
-          ))}
-        </Tabs.List>
-        <div className="about-content" role="tabpanel" aria-labelledby={`about-tab-${activeTab.value}`}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              className="about-panel"
-              key={activeTab.value}
-              initial={shouldReduceMotion ? false : { opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, x: -18, transition: { duration: 0.2 } }}
-              transition={{ duration: shouldReduceMotion ? 0 : 0.28, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.div
-                className="about-copy"
-                initial={shouldReduceMotion ? false : { opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: shouldReduceMotion ? 0 : 0.5, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <p className="about-kicker">{activeTab.kicker}</p>
-                <span className="about-rule" aria-hidden="true" />
-                <h2>{activeTab.title}</h2>
-                <p>{activeTab.body}</p>
-              </motion.div>
-              <motion.div
-                className={`about-media about-diagram about-diagram-${activeTab.value}`}
-                aria-label={activeTab.label}
-                initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.12, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <span aria-hidden="true" />
-                <strong>{activeTab.label}</strong>
-              </motion.div>
-            </motion.div>
-          </AnimatePresence>
-        </div>
-      </Tabs.Root>
+    <section className="home-drivers" id="drivers">
+      <div className="home-editorial-heading">
+        <span>WHY CARBON MANAGEMENT</span>
+        <h2>企业为什么需要碳管理？</h2>
+      </div>
+      <div className="home-driver-grid">
+        {items.map((item, index) => <EditorialItem key={item.title} item={item} index={index} reduced={shouldReduceMotion} />)}
+      </div>
+    </section>
+  );
+}
+
+function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"] }) {
+  const shouldReduceMotion = useReducedMotion();
+  return (
+    <section className="home-challenges" id="challenges">
+      <div className="home-challenge-intro">
+        <span>CORE CHALLENGES</span>
+        <h2>企业面临的核心挑战</h2>
+        <p>当核算仍依赖分散表格与临时协作，数据很难成为持续管理的基础。</p>
+      </div>
+      <ol className="home-challenge-list">
+        {items.map((item, index) => {
+          const Icon = iconMap[item.icon] ?? BarChart3;
+          return <motion.li key={item.title} initial={false} whileInView={shouldReduceMotion ? undefined : { opacity: [0.65, 1], x: [10, 0] }} viewport={{ once: true, amount: 0.45 }} transition={{ duration: 0.58, delay: index * 0.07 }}>
+            <span>{String(index + 1).padStart(2, "0")}</span><Icon size={22} aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.description}</p></div>
+          </motion.li>;
+        })}
+      </ol>
+    </section>
+  );
+}
+
+function ManagementPathSection({ items }: { items: HomeEditorialContent["managementPath"] }) {
+  const shouldReduceMotion = useReducedMotion();
+  return (
+    <section className="home-management-path" id="management-path">
+      <div className="home-management-heading">
+        <span>MANAGEMENT LOGIC</span>
+        <h2>从核算走向碳管理</h2>
+        <p>峰行智成总体思路</p>
+      </div>
+      <ol className="home-management-flow">
+        {items.map((item, index) => {
+          const Icon = iconMap[item.icon] ?? BarChart3;
+          return <motion.li key={item.title} initial={false} whileInView={shouldReduceMotion ? undefined : { opacity: [0.65, 1], y: [10, 0] }} viewport={{ once: true, amount: 0.45 }} transition={{ duration: 0.62, delay: index * 0.08 }}>
+            <span>{String(index + 1).padStart(2, "0")}</span><Icon size={25} aria-hidden="true" /><h3>{item.title}</h3><p>{item.description}</p>{index < items.length - 1 ? <ArrowRight className="flow-arrow" size={19} aria-hidden="true" /> : null}
+          </motion.li>;
+        })}
+      </ol>
+      <p className="home-management-summary">通过统一数据模型与数字化平台，推动企业从“一次性核算”走向“持续运营管理”。</p>
+    </section>
+  );
+}
+
+function ServicesSection({ items }: { items: HomeEditorialContent["services"] }) {
+  return (
+    <section className="home-services" id="solutions">
+      <div className="home-editorial-heading"><span>WHAT WE PROVIDE</span><h2>我们提供什么</h2></div>
+      <div className="home-service-list">
+        {items.map((item, index) => {
+          const Icon = iconMap[item.icon] ?? BarChart3;
+          return <Link href={item.href} key={item.title}><span>{String(index + 1).padStart(2, "0")}</span><Icon size={27} aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.description}</p></div><ArrowRight size={19} aria-hidden="true" /></Link>;
+        })}
+      </div>
+    </section>
+  );
+}
+
+function CasesSection({ items }: { items: HomeEditorialContent["cases"] }) {
+  return (
+    <section className="home-cases" id="cases">
+      <div className="home-cases-heading"><span>CLIENT CASES</span><h2>客户案例</h2><Link href="/customer-cases">查看全部案例 <ArrowRight size={16} /></Link></div>
+      <div className="home-case-grid">
+        {items.map((item, index) => {
+          const Icon = iconMap[item.icon] ?? BarChart3;
+          return <Link href={item.href} key={item.title}><span>{String(index + 1).padStart(2, "0")}</span><Icon size={24} aria-hidden="true" /><h3>{item.title}</h3><p>{item.description}</p><small>查看案例框架 <ArrowRight size={14} /></small></Link>;
+        })}
+      </div>
     </section>
   );
 }
 
 function LatestUpdatesSection({ title, items }: { title: string; items: HomeContent["newsItems"] }) {
+  if (!items.length) return null;
+
   return (
     <section className="latest-updates-section" id="updates">
       <div className="latest-updates-inner">
-        <SectionHeading title={title} />
+        <div className="home-editorial-heading">
+          <span>INSIGHTS</span>
+          <h2>{title}</h2>
+        </div>
         <div className="latest-updates-list">
           {items.map((item, index) => (
-            <a className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
+            <Link className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
               <Image
                 src={item.image}
                 alt=""
@@ -200,7 +231,7 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
                 <h3>{item.title}</h3>
                 <p>{item.subtitle ?? item.summary ?? item.action}</p>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </div>
@@ -208,123 +239,30 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
   );
 }
 
-function ProductSection({ title, products }: { title: string; products: HomeContent["products"] }) {
-  const [productEmblaRef] = useEmblaCarousel({
-    align: "start",
-    containScroll: "trimSnaps",
-    breakpoints: { "(min-width: 721px)": { active: false } }
-  });
-
+function BrandPositioningSection() {
   return (
-    <section className="product-section" id="products">
-      <SectionHeading title={title} />
-      <div className="product-carousel" ref={productEmblaRef}>
-        <div className="product-band">
-          {products.map((product, index) => {
-            const Icon = iconMap[product.icon] ?? BarChart3;
-            return (
-              <motion.a
-                className="product-card"
-                href={product.href}
-                key={product.name}
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Icon size={42} />
-                <h3>{product.name}</h3>
-                <p>{product.summary}</p>
-                <span className="product-card-action">
-                  了解更多
-                  <ArrowRight size={15} />
-                </span>
-              </motion.a>
-            );
-          })}
-        </div>
+    <section className="home-positioning" aria-labelledby="home-positioning-title">
+      <div className="home-positioning-inner">
+        <header>
+          <span>OUR POSITIONING</span>
+          <h2 id="home-positioning-title">企业碳管理能力建设专家</h2>
+        </header>
+        <p>
+          从培训赋能到咨询实施，从Excel工具到数字化平台，从温室气体核算到碳数据价值释放，帮助企业构建可持续运行的碳管理体系。
+        </p>
       </div>
     </section>
   );
 }
 
-function CertificateSection({ title, images }: { title: string; images: string[] }) {
-  const configuredImages = images.filter(Boolean);
-  const [emblaRef] = useEmblaCarousel({ align: "center", loop: true }, [
-    Autoplay({ delay: 9000, stopOnInteraction: false })
-  ]);
-
-  if (!configuredImages.length) return null;
-
-  return (
-    <section className="certificate-section">
-      <SectionHeading title={title} />
-      <div className="certificate-carousel" ref={emblaRef}>
-        <div className="certificate-track">
-          {configuredImages.map((src) => (
-            <motion.figure className="certificate-card" key={src} whileHover={{ y: -8, rotate: -0.5 }}>
-              <Image src={src} alt="企业荣誉证书" width={210} height={300} loading="lazy" />
-            </motion.figure>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
+function EditorialItem({ item, index, reduced }: { item: HomeEditorialContent["drivers"][number]; index: number; reduced: boolean | null }) {
+  const Icon = iconMap[item.icon] ?? BarChart3;
+  return <motion.article initial={false} whileInView={reduced ? undefined : { opacity: [0.65, 1], y: [12, 0] }} viewport={{ once: true, amount: 0.35 }} transition={{ duration: 0.65, delay: index * 0.08 }}>
+    <div><span>{String(index + 1).padStart(2, "0")}</span><Icon size={27} aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.description}</p>
+  </motion.article>;
 }
 
-function PartnerSection({ title, partners }: { title: string; partners: HomeContent["partners"] }) {
-  if (!partners.length) return null;
-
-  return (
-    <section className="partner-section" id="partners">
-      <SectionHeading title={title} />
-      <div className="partner-grid">
-        {partners.map((partner, index) => (
-          <motion.div
-            className="partner-logo"
-            key={partner.name + "-" + index}
-            initial={false}
-            whileInView={{ opacity: 1, y: 0 }}
-            whileHover={{ scale: 1.06 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.25, delay: index * 0.015 }}
-          >
-            {partner.logo ? <Image src={partner.logo} alt={partner.name} width={180} height={72} /> : partner.name}
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function ThinkingSection({ eyebrow, title, text, capabilities }: { eyebrow: string; title: string; text: string; capabilities: HomeContent["capabilities"] }) {
-  const shouldReduceMotion = useReducedMotion();
-
-  if (!capabilities.length) return null;
-
-  return (
-    <section className="thinking-section" id="capabilities">
-      <SectionHeading eyebrow={eyebrow} title={title} />
-      <p>{text}</p>
-      <div className="thinking-bubbles" aria-label="碳管理能力">
-        {capabilities.map((item, index) => {
-          return (
-            <motion.div
-              className={`thinking-bubble thinking-bubble-${index % 6}`}
-              key={item.label}
-              initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.36, y: 26 }}
-              whileInView={{ opacity: 1, scale: 1, y: 0 }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{ duration: shouldReduceMotion ? 0 : 0.58, delay: shouldReduceMotion ? 0 : index * 0.22, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <strong>{item.label}</strong>
-            </motion.div>
-          );
-        })}
-      </div>
-    </section>
-  );
-}
-
-function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
+export function ContactSection({ contact, id = "contact" }: { contact: HomeContent["contact"]; id?: string }) {
   const [hasError, setHasError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const successDialogRef = useRef<HTMLDialogElement>(null);
@@ -354,7 +292,7 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
   }
 
   return (
-    <section className="contact-section" id="contact">
+    <section className="contact-section" id={id}>
       <div className="contact-intro">
         <div className="contact-mark" aria-hidden="true"><Mail size={22} /></div>
         <span className="contact-kicker">CONSULTATION</span>
@@ -380,15 +318,15 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
             <input id="contact-company" name="company" placeholder={contact.companyPlaceholder} />
           </div>
           <div className="contact-field">
-            <label htmlFor="contact-method">手机号 / 微信号</label>
+            <label htmlFor="contact-method">联系电话</label>
             <input id="contact-method" name="contact" placeholder={contact.contactPlaceholder} inputMode="tel" required />
           </div>
           <div className="contact-field">
-            <label htmlFor="contact-email">联系邮箱</label>
-            <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} required />
+            <label htmlFor="contact-email">联系邮箱（选填）</label>
+            <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} />
           </div>
           <div className="contact-field contact-field-message">
-            <label htmlFor="contact-message">咨询需求</label>
+            <label htmlFor="contact-message">企业需求</label>
             <textarea id="contact-message" name="message" placeholder={contact.messagePlaceholder} required />
           </div>
           <button type="submit" disabled={submitting}>
