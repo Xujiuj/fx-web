@@ -1679,3 +1679,163 @@
     font-size: 13px;
   }
 }
+
+/* Shared editorial treatment: readable surfaces first, orange reserved for structure and action. */
+.serviceBand {
+  margin-top: 64px;
+  padding: 76px 0 82px;
+  color: #4d4d4d;
+  background: #fff0d4;
+  border-block: 1px solid #eadbca;
+}
+
+.serviceBand > div {
+  align-items: start;
+  gap: clamp(42px, 7vw, 92px);
+}
+
+.serviceBandHeading {
+  padding-left: 24px;
+  border-left: 4px solid #e95513;
+}
+
+.serviceBandHeading .sectionLabel {
+  color: #bf3f08;
+}
+
+.serviceBandHeading h2 {
+  max-width: 360px;
+  color: #4d4d4d;
+  font-size: clamp(32px, 3.5vw, 44px);
+  line-height: 1.28;
+}
+
+.serviceList {
+  border-top: 2px solid #e95513;
+  border-left: 1px solid #eadbca;
+  box-shadow: 0 12px 30px rgba(104, 48, 14, 0.06);
+}
+
+.serviceList article {
+  min-height: 112px;
+  padding: 22px 24px;
+  border-right: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
+  background: #fff;
+}
+
+.serviceList article:nth-child(even) {
+  background: #fffaf4;
+}
+
+.serviceList span {
+  color: #e95513;
+}
+
+.serviceList h3 {
+  color: #4d4d4d;
+  font-size: 18px;
+}
+
+.serviceList p {
+  color: #6e655a;
+}
+
+.serviceList i {
+  background: #f7b52c;
+}
+
+.caseScope {
+  margin-top: 64px;
+  padding: 76px 0 82px;
+  color: #4d4d4d;
+  background: #fff6e9;
+  border-block: 1px solid #eadbca;
+}
+
+.caseScope > div {
+  gap: clamp(42px, 7vw, 88px);
+}
+
+.caseScopeHeading {
+  padding-left: 24px;
+  border-left: 4px solid #e95513;
+}
+
+.caseScope .sectionLabel,
+.caseScope li > span {
+  color: #e95513;
+}
+
+.caseScopeHeading h2 {
+  color: #4d4d4d;
+  font-size: clamp(32px, 3.5vw, 43px);
+  line-height: 1.28;
+}
+
+.caseScopeHeading > p:last-child {
+  max-width: 390px;
+  color: #6e655a;
+}
+
+.caseScope ol {
+  border-top: 2px solid #e95513;
+  border-left: 1px solid #eadbca;
+  box-shadow: 0 12px 30px rgba(104, 48, 14, 0.05);
+}
+
+.caseScope li {
+  min-height: 142px;
+  border-right: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
+  background: #fff;
+}
+
+.caseScope li:nth-child(3n) {
+  background: #fffaf4;
+}
+
+.caseScope li strong {
+  color: #4d4d4d;
+}
+
+.caseScope li p {
+  color: #6e655a;
+}
+
+.contactBand {
+  border-top: 3px solid #f7b52c;
+  box-shadow: 0 14px 34px rgba(104, 48, 14, 0.1);
+}
+
+@media (max-width: 900px) {
+  .serviceBand,
+  .caseScope {
+    margin-top: 48px;
+  }
+
+  .serviceBand > div,
+  .caseScope > div {
+    gap: 42px;
+  }
+}
+
+@media (max-width: 680px) {
+  .serviceBand,
+  .caseScope {
+    padding: 58px 0 64px;
+  }
+
+  .serviceBandHeading,
+  .caseScopeHeading {
+    padding-left: 18px;
+  }
+
+  .serviceList article {
+    padding: 19px 18px;
+  }
+
+  .caseScope li {
+    min-height: 116px;
+  }
+}

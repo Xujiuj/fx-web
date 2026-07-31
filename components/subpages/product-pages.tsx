@@ -55,31 +55,35 @@ const platformAdvantages: Array<{
   title: string;
   summary: string;
   shorthand: string;
+  eyebrow: string;
   points: string[];
   icon: LucideIcon;
 }> = [
   {
     number: "01",
-    title: "业务数据少维护，核算自动完成",
-    summary: "企业只需持续维护真实业务明细，平台自动完成数据归集、规则匹配、因子调用、排放计算与结果更新。",
-    shorthand: "少维护 · 自动核算 · 快速迭代",
-    points: ["仅维护业务明细数据", "自动归集与因子匹配", "模型和报表灵活配置"],
+    title: "业务数据驱动，降低碳管理成本",
+    summary: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。",
+    shorthand: "少维护 · 自动核算 · 降低成本",
+    eyebrow: "BUSINESS DATA DRIVEN",
+    points: ["数据归集", "因子匹配", "排放计算", "结果分析"],
     icon: Database,
   },
   {
     number: "02",
-    title: "一套数据，多标准输出与多维分析",
-    summary: "同源数据可按 GHG Protocol、ISO 14064-1 与 GB/T 32150-2025 输出结果，并沉淀排放总量、活动数据、气体构成和排放强度等关键成果。",
-    shorthand: "多标准 · 多成果 · 多维分析",
-    points: ["三大主流标准体系", "四类关键数据成果", "交互式分析视图", "基准年对比管理"],
+    title: "一次核算，多场景复用",
+    summary: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。",
+    shorthand: "一次治理 · 多标准 · 多场景",
+    eyebrow: "ONE MODEL · MANY USES",
+    points: ["全国碳市场履约管理", "ESG与可持续发展信息披露", "CDP气候变化问卷填报", "供应链碳管理", "企业经营决策分析"],
     icon: Workflow,
   },
   {
     number: "03",
-    title: "模块层级清晰，核算结果逐级可查",
-    summary: "从集团驾驶舱、核算组织与边界，到活动数据、因子库和核算结果，平台按业务链路组织功能；结果模块继续细分为标准视图、气体构成和基准年对比。",
-    shorthand: "十个业务模块 · 七类结果视图",
-    points: ["业务模块按核算链路组织", "结果视图按应用场景细分", "数据来源与结果关系清晰"],
+    title: "全流程可信可追溯",
+    summary: "平台建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，支持监管报送、第三方核查、ESG披露与内部审计。",
+    shorthand: "全链路 · 可追溯 · 可核查",
+    eyebrow: "TRACEABLE DATA LINEAGE",
+    points: ["排放源 → 活动数据", "活动数据 → 排放因子", "排放因子 → 核算结果", "结果回溯原始业务数据与计算逻辑"],
     icon: LineChart,
   }
 ];
@@ -245,7 +249,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <span>CORE ADVANTAGES</span>
             <h2 id="platform-advantages-title">三大核心优势</h2>
           </div>
-          <p>从日常数据维护出发，让核算自动发生、结果多维复用，并通过清晰的功能层级把每一项结果落实到可查看、可管理的业务场景。</p>
+          <p>从业务数据驱动核算，到一次治理、多场景复用，再到全流程可信追溯，平台让碳数据成为可持续运营的业务资产。</p>
         </header>
         <ol className={styles.advantageIndex} data-motion-group="product-grid">
           {platformAdvantages.map((advantage, index) => {
@@ -265,14 +269,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         <div className={styles.advantageStories}>
           <article className={styles.advantageAutomation} data-motion-group="platform-advantage">
             <div className={styles.advantageStoryCopy} data-motion-role="copy">
-              <span>{platformAdvantages[0].number} / AUTOMATED ACCOUNTING</span>
+              <span>{platformAdvantages[0].number} / {platformAdvantages[0].eyebrow}</span>
               <h3>{platformAdvantages[0].title}</h3>
               <p>{platformAdvantages[0].summary}</p>
             </div>
             <figure className={styles.automationFlow} data-motion-role="visual">
               <Image
                 src="/media/platform-advantages/business-data-flow.png"
-                alt="业务输入层、统一模型层与核算分析层自动衔接的数据流程"
+                alt="业务明细数据经过统一模型自动完成数据归集、因子匹配、排放计算与结果分析"
                 width={6209}
                 height={2297}
                 sizes="(max-width: 780px) calc(100vw - 36px), 760px"
@@ -291,10 +295,13 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           <article className={styles.advantageAnalysis} data-motion-group="platform-advantage">
             <header data-motion-role="copy">
               <div>
-                <span>{platformAdvantages[1].number} / MULTI-STANDARD OUTPUT</span>
-                <h3>一套数据，<br />多标准输出与多维分析</h3>
+                <span>{platformAdvantages[1].number} / {platformAdvantages[1].eyebrow}</span>
+                <h3>{platformAdvantages[1].title}</h3>
               </div>
               <p>{platformAdvantages[1].summary}</p>
+              <ul className={styles.analysisUseCases}>
+                {platformAdvantages[1].points.map((point) => <li key={point}>{point}</li>)}
+              </ul>
             </header>
             <div className={styles.analysisEvidence} data-motion-role="visual">
               <figure className={styles.analysisEvidencePrimary}>
@@ -305,20 +312,20 @@ export function PlatformProductPage({ page }: ProductPageProps) {
                   height={3285}
                   sizes="(max-width: 780px) calc(100vw - 36px), 720px"
                 />
-                <figcaption><span>01</span>一套数据，三大标准输出</figcaption>
+                <figcaption><span>01</span>三大主流标准体系，一套数据多标准输出</figcaption>
               </figure>
               <div className={styles.analysisEvidenceMosaic}>
                 <figure>
                   <Image src="/media/platform-advantages/reuse-activity-data.png" alt="排放总量、活动数据、温室气体构成与碳排放强度四类关键成果" width={5491} height={3367} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
-                  <figcaption><span>02</span>四类关键成果沉淀</figcaption>
+                  <figcaption><span>02</span>沉淀四大类关键数据成果</figcaption>
                 </figure>
                 <figure>
                   <Image src="/media/platform-advantages/reuse-trend-analysis.png" alt="支持年度、月份、单位、因子与工厂切换的多维交互分析" width={5491} height={3379} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
-                  <figcaption><span>03</span>多维交互分析</figcaption>
+                  <figcaption><span>03</span>多维度、交互式呈现分析结果</figcaption>
                 </figure>
                 <figure>
                   <Image src="/media/platform-advantages/reuse-baseline-analysis.png" alt="企业温室气体排放基准年管理与对比分析界面" width={5491} height={3369} sizes="(max-width: 780px) calc(100vw - 36px), 340px" />
-                  <figcaption><span>04</span>基准年对比管理</figcaption>
+                  <figcaption><span>04</span>内置基准年管理与对比分析</figcaption>
                 </figure>
               </div>
             </div>
@@ -328,14 +335,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <figure data-motion-role="visual">
               <Image
                 src="/media/platform-advantages/traceability-module-map.png"
-                alt="平台十个业务模块与排放量核算结果七类子视图的功能层级"
+                alt="平台覆盖排放源、活动数据、排放因子和核算结果的全链路追溯体系"
                 width={2169}
                 height={1495}
                 sizes="(max-width: 780px) calc(100vw - 72px), 620px"
               />
             </figure>
             <div data-motion-role="copy">
-              <span>{platformAdvantages[2].number} / CLEAR DATA LINEAGE</span>
+              <span>{platformAdvantages[2].number} / {platformAdvantages[2].eyebrow}</span>
               <h3>{platformAdvantages[2].title}</h3>
               <p>{platformAdvantages[2].summary}</p>
               <ul>

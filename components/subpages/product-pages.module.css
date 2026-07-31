@@ -1927,3 +1927,62 @@
     border-top: 0;
   }
 }
+
+.automationPoints {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.analysisUseCases {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+  margin: 8px 0 0;
+  padding: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.28);
+  list-style: none;
+}
+
+.analysisUseCases li {
+  min-height: 76px;
+  padding: 18px 16px 0 0;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.55;
+}
+
+.analysisUseCases li::before {
+  display: block;
+  width: 22px;
+  margin-bottom: 10px;
+  border-top: 2px solid #f7b52c;
+  content: "";
+}
+
+@media (max-width: 1080px) {
+  .analysisUseCases {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .automationPoints {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 780px) {
+  .analysisUseCases,
+  .automationPoints {
+    grid-template-columns: 1fr;
+  }
+
+  .analysisUseCases li {
+    min-height: 0;
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .analysisUseCases li:last-child {
+    border-bottom: 0;
+  }
+}

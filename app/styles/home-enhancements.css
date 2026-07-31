@@ -670,6 +670,39 @@
   color: #bf3f08;
 }
 
+/* Keep the positioning statement legible on its orange brand surface. */
+main .home-positioning {
+  color: #fff;
+  background: #e95513 !important;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+main .home-positioning header {
+  border-left-color: #f7b52c;
+}
+
+main .home-positioning header > span {
+  color: #ffd477;
+}
+
+main .home-positioning h2 {
+  color: #fff;
+}
+
+main .home-positioning p {
+  max-width: 560px;
+  padding-left: 28px;
+  border-left: 2px solid rgba(247, 181, 44, 0.9);
+  color: rgba(255, 255, 255, 0.86);
+}
+
+@media (max-width: 720px) {
+  main .home-positioning p {
+    padding-left: 20px;
+  }
+}
+
 /* Keep customer-facing surfaces within the orange/yellow brand palette. */
 main .home-positioning,
 main .home-challenges,
