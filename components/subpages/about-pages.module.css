@@ -365,3 +365,107 @@
     height: auto;
   }
 }
+
+/* Contact details are concise records, not a wall of placeholder cards. */
+.contactLayout {
+  gap: 0 clamp(48px, 8vw, 108px);
+  align-items: stretch;
+}
+
+.contactLead {
+  grid-column: span 6;
+  padding: 26px 52px 34px 0;
+}
+
+.contactGrid {
+  grid-column: span 6;
+  grid-template-columns: 1fr;
+  gap: 0;
+  border-top: 1px solid #d8e2dc;
+}
+
+.contactCard,
+.contactCard:nth-child(odd) {
+  min-height: 0;
+  grid-template-columns: 48px minmax(0, 1fr);
+  align-items: center;
+  gap: 3px 20px;
+  padding: 28px 0;
+  border: 0;
+  border-bottom: 1px solid #d8e2dc;
+  background: transparent;
+}
+
+.contactIcon {
+  grid-row: 1 / span 3;
+  width: 44px;
+  height: 44px;
+  margin: 0;
+  background: #29483a;
+}
+
+.contactCard h3,
+.contactCard a,
+.contactCard strong,
+.contactCard p {
+  grid-column: 2;
+}
+
+.contactCard h3 {
+  font-size: 15px;
+}
+
+.contactCard a,
+.contactCard strong {
+  margin-top: 1px;
+  font-size: 19px;
+}
+
+.contactCard p {
+  margin-top: 4px;
+}
+
+.contactCard img {
+  grid-column: 2;
+  width: 180px;
+  height: 180px;
+  margin-top: 18px;
+}
+
+@media (max-width: 900px) {
+  .contactLead,
+  .contactGrid {
+    grid-column: span 12;
+  }
+
+  .contactGrid {
+    margin-top: 32px;
+  }
+}
+
+@media (max-width: 680px) {
+  .contactLead {
+    padding: 24px 0 10px;
+  }
+
+  .contactCard,
+  .contactCard:nth-child(odd) {
+    grid-template-columns: 42px minmax(0, 1fr);
+    gap: 3px 15px;
+    padding: 24px 0;
+  }
+
+  .contactIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .contactCard a,
+  .contactCard strong {
+    font-size: 17px;
+  }
+
+  .contactCard a[href^="mailto:"] {
+    font-size: 15px;
+  }
+}

@@ -6,13 +6,6 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
 
-const latestUpdateOrigins = [
-  { x: -36, y: 12, clipPath: "inset(0% 100% 0% 0%)" },
-  { x: 18, y: -24, clipPath: "inset(100% 0% 0% 0%)" },
-  { x: -18, y: 24, clipPath: "inset(0% 0% 100% 0%)" },
-  { x: 36, y: 12, clipPath: "inset(0% 0% 0% 100%)" }
-];
-
 function animateLatestUpdates() {
   const list = document.querySelector(".latest-updates-list");
   const cards = gsap.utils.toArray<HTMLElement>(".latest-update");
@@ -20,52 +13,42 @@ function animateLatestUpdates() {
 
   const compact = window.matchMedia("(max-width: 720px)").matches;
   const timeline = gsap.timeline({
-    scrollTrigger: { trigger: list, start: compact ? "top 94%" : "top 88%", once: true }
+    scrollTrigger: { trigger: list, start: compact ? "top 94%" : "top 90%", once: true }
   });
 
   cards.forEach((card, index) => {
-    const desktopOrigin = latestUpdateOrigins[index % latestUpdateOrigins.length];
-    const origin = compact
-      ? { x: 0, y: 20, clipPath: "inset(8% 0% 0% 0%)" }
-      : desktopOrigin;
-    const startAt = compact ? index * 0.08 : [0, 0.16, 0.24, 0.08][index] ?? index * 0.1;
+    const startAt = index * (compact ? 0.045 : 0.06);
     const image = card.querySelector("img");
     const copy = card.querySelector<HTMLElement>(".latest-update-copy");
 
     timeline.fromTo(card, {
-      autoAlpha: 0.72,
-      x: origin.x,
-      y: origin.y,
-      scale: compact ? 0.99 : 1.015,
-      clipPath: origin.clipPath
+      autoAlpha: 0,
+      y: compact ? 14 : 18
     }, {
       autoAlpha: 1,
-      x: 0,
       y: 0,
-      scale: 1,
-      clipPath: "inset(0% 0% 0% 0%)",
-      duration: compact ? 0.62 : 0.82,
+      duration: compact ? 0.46 : 0.56,
       ease: "power3.out",
-      clearProps: "transform,clipPath,opacity,visibility"
+      clearProps: "transform,opacity,visibility"
     }, startAt);
 
     if (image) {
-      timeline.fromTo(image, { scale: compact ? 1.035 : 1.07 }, {
+      timeline.fromTo(image, { scale: compact ? 1.015 : 1.025 }, {
         scale: 1,
-        duration: compact ? 0.76 : 1.02,
+        duration: compact ? 0.58 : 0.7,
         ease: "power2.out",
         clearProps: "transform"
       }, startAt);
     }
 
     if (copy) {
-      timeline.fromTo(copy, { autoAlpha: 0.78, y: 14 }, {
+      timeline.fromTo(copy, { autoAlpha: 0, y: 8 }, {
         autoAlpha: 1,
         y: 0,
-        duration: compact ? 0.44 : 0.54,
+        duration: compact ? 0.38 : 0.44,
         ease: "power2.out",
         clearProps: "transform,opacity,visibility"
-      }, startAt + (compact ? 0.12 : 0.2));
+      }, startAt + 0.08);
     }
   });
 }
@@ -76,34 +59,56 @@ export function SectionOrchestrator() {
 
     mm.add("(prefers-reduced-motion: no-preference)", () => {
       const groups = [
-        { trigger: ".home-services", targets: ".home-service-list > a", y: 18, scale: 0.995, duration: 0.72 },
-        { trigger: ".home-cases", targets: ".home-case-grid > a", y: 24, scale: 0.985, duration: 0.8 },
-        { trigger: ".contact-section", targets: ".contact-section > *", y: 16, scale: 1, duration: 0.9 }
+        { trigger: ".timeline-section", heading: ".timeline-section-heading", targets: ".timeline-horizontal > li, .timeline-summary" },
+        { trigger: ".home-drivers", heading: ".home-drivers .home-editorial-heading", targets: ".home-driver-grid > article" },
+        { trigger: ".home-challenges", heading: ".home-challenge-intro", targets: ".home-challenge-list > li" },
+        { trigger: ".home-management-path", heading: ".home-management-heading", targets: ".home-management-flow > li, .home-management-summary" },
+        { trigger: ".home-services", heading: ".home-services .home-editorial-heading", targets: ".home-service-list > a" },
+        { trigger: ".home-cases", heading: ".home-cases-heading", targets: ".home-case-grid > a" },
+        { trigger: ".home-positioning", heading: ".home-positioning header", targets: ".home-positioning p" },
+        { trigger: ".contact-section", heading: ".contact-intro", targets: ".contact-form-panel" }
       ];
 
       groups.forEach((group) => {
         const trigger = document.querySelector(group.trigger);
+        const heading = group.heading ? document.querySelector<HTMLElement>(group.heading) : null;
         const targets = gsap.utils.toArray<HTMLElement>(group.targets);
-        if (!trigger || targets.length === 0) return;
+        if (!trigger || (!heading && targets.length === 0)) return;
 
-        gsap.fromTo(targets, {
-          autoAlpha: 0.72,
-          y: group.y,
-          scale: group.scale,
-        }, {
-          autoAlpha: 1,
-          y: 0,
-          scale: 1,
-          duration: group.duration,
-          ease: "power2.out",
-          stagger: 0.14,
-          clearProps: "transform,opacity,visibility",
+        const timeline = gsap.timeline({
           scrollTrigger: {
             trigger,
-            start: "top 82%",
+            start: "top 90%",
             once: true
           }
         });
+
+        if (heading) {
+          timeline.fromTo(heading, {
+            autoAlpha: 0,
+            y: 16
+          }, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power3.out",
+            clearProps: "transform,opacity,visibility"
+          });
+        }
+
+        if (targets.length) {
+          timeline.fromTo(targets, {
+            autoAlpha: 0,
+            y: 18
+          }, {
+            autoAlpha: 1,
+            y: 0,
+            duration: 0.56,
+            ease: "power3.out",
+            stagger: 0.055,
+            clearProps: "transform,opacity,visibility"
+          }, heading ? 0.1 : 0);
+        }
       });
 
       animateLatestUpdates();

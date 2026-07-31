@@ -15,7 +15,6 @@ import {
   Sparkles,
   Workflow
 } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
@@ -121,7 +120,6 @@ function HeroTitle({ title }: { title: string }) {
 }
 
 function DriversSection({ items }: { items: HomeEditorialContent["drivers"] }) {
-  const shouldReduceMotion = useReducedMotion();
   return (
     <section className="home-drivers" id="drivers">
       <div className="home-editorial-heading">
@@ -129,14 +127,13 @@ function DriversSection({ items }: { items: HomeEditorialContent["drivers"] }) {
         <h2>企业为什么需要碳管理？</h2>
       </div>
       <div className="home-driver-grid">
-        {items.map((item, index) => <EditorialItem key={item.title} item={item} index={index} reduced={shouldReduceMotion} />)}
+        {items.map((item, index) => <EditorialItem key={item.title} item={item} index={index} />)}
       </div>
     </section>
   );
 }
 
 function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"] }) {
-  const shouldReduceMotion = useReducedMotion();
   return (
     <section className="home-challenges" id="challenges">
       <div className="home-challenge-intro">
@@ -147,9 +144,9 @@ function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"
       <ol className="home-challenge-list">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] ?? BarChart3;
-          return <motion.li key={item.title} initial={false} whileInView={shouldReduceMotion ? undefined : { opacity: [0.65, 1], x: [10, 0] }} viewport={{ once: true, amount: 0.45 }} transition={{ duration: 0.58, delay: index * 0.07 }}>
+          return <li key={item.title}>
             <span>{String(index + 1).padStart(2, "0")}</span><Icon size={22} aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.description}</p></div>
-          </motion.li>;
+          </li>;
         })}
       </ol>
     </section>
@@ -157,7 +154,6 @@ function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"
 }
 
 function ManagementPathSection({ items }: { items: HomeEditorialContent["managementPath"] }) {
-  const shouldReduceMotion = useReducedMotion();
   return (
     <section className="home-management-path" id="management-path">
       <div className="home-management-heading">
@@ -168,9 +164,9 @@ function ManagementPathSection({ items }: { items: HomeEditorialContent["managem
       <ol className="home-management-flow">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] ?? BarChart3;
-          return <motion.li key={item.title} initial={false} whileInView={shouldReduceMotion ? undefined : { opacity: [0.65, 1], y: [10, 0] }} viewport={{ once: true, amount: 0.45 }} transition={{ duration: 0.62, delay: index * 0.08 }}>
+          return <li key={item.title}>
             <span>{String(index + 1).padStart(2, "0")}</span><Icon size={25} aria-hidden="true" /><h3>{item.title}</h3><p>{item.description}</p>{index < items.length - 1 ? <ArrowRight className="flow-arrow" size={19} aria-hidden="true" /> : null}
-          </motion.li>;
+          </li>;
         })}
       </ol>
       <p className="home-management-summary">通过统一数据模型与数字化平台，推动企业从“一次性核算”走向“持续运营管理”。</p>
@@ -255,11 +251,11 @@ function BrandPositioningSection() {
   );
 }
 
-function EditorialItem({ item, index, reduced }: { item: HomeEditorialContent["drivers"][number]; index: number; reduced: boolean | null }) {
+function EditorialItem({ item, index }: { item: HomeEditorialContent["drivers"][number]; index: number }) {
   const Icon = iconMap[item.icon] ?? BarChart3;
-  return <motion.article initial={false} whileInView={reduced ? undefined : { opacity: [0.65, 1], y: [12, 0] }} viewport={{ once: true, amount: 0.35 }} transition={{ duration: 0.65, delay: index * 0.08 }}>
+  return <article>
     <div><span>{String(index + 1).padStart(2, "0")}</span><Icon size={27} aria-hidden="true" /></div><h3>{item.title}</h3><p>{item.description}</p>
-  </motion.article>;
+  </article>;
 }
 
 export function ContactSection({ contact, id = "contact" }: { contact: HomeContent["contact"]; id?: string }) {

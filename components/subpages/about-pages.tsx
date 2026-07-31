@@ -74,6 +74,7 @@ export function PartnersPage({ page }: AboutPageProps) {
 
 export function ContactPage({ page }: AboutPageProps) {
   const section = getSection(page, "contacts", "联系信息");
+  const visibleItems = section.items.filter((item) => item.value || item.image);
 
   return (
     <>
@@ -86,7 +87,7 @@ export function ContactPage({ page }: AboutPageProps) {
             {section.description ? <p>{section.description}</p> : null}
           </div>
           <div className={styles.contactGrid}>
-          {section.items.map((item) => {
+          {visibleItems.map((item) => {
             const isEmail = item.value?.includes("@");
             const isPhone = Boolean(item.value && /^\+?[\d\s-]{7,}$/.test(item.value));
             const href = item.value
