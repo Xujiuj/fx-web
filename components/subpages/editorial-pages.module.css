@@ -8,7 +8,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 28px;
-  color: rgba(37, 55, 47, 0.64);
+  color: rgba(77, 77, 77, 0.72);
   font-size: 13px;
 }
 
@@ -41,7 +41,7 @@
   width: min(calc(100% - 48px), 1120px);
   margin: 0 auto 88px;
   padding: 32px 36px;
-  background: #254f3d;
+  background: #e95513;
   color: #fff;
 }
 
@@ -51,7 +51,7 @@
 }
 
 .contactBand span {
-  color: #b9cfc5;
+  color: #eadbca;
   font-size: 12px;
   font-weight: 700;
 }
@@ -93,7 +93,7 @@
 /* Case studies: a vertical archive with alternating project records. */
 .caseHero {
   overflow: hidden;
-  background: #244c3b;
+  background: #e95513;
   color: #fff;
 }
 
@@ -125,7 +125,7 @@
 .caseHeroCopy > p:last-child {
   max-width: 650px;
   margin: 24px 0 0;
-  color: #c9dad2;
+  color: #eadbca;
   font-size: 17px;
   line-height: 1.9;
 }
@@ -187,8 +187,8 @@
   position: absolute;
   z-index: 2;
   padding: 6px 9px;
-  background: #244c3b;
-  color: #d5e2dc;
+  background: #e95513;
+  color: #eadbca;
   font-size: 12px;
 }
 
@@ -215,13 +215,13 @@
   grid-template-columns: 200px minmax(0, 1fr);
   column-gap: 54px;
   padding: 90px 0 62px;
-  border-bottom: 1px solid #d9e2dc;
+  border-bottom: 1px solid #eadbca;
 }
 
 .caseIntroduction h2 {
   max-width: 720px;
   margin: 0;
-  color: #234737;
+  color: #4d4d4d;
   font-size: 45px;
   line-height: 1.28;
 }
@@ -230,7 +230,7 @@
   grid-column: 2;
   max-width: 760px;
   margin: 22px 0 0;
-  color: #657269;
+  color: #6e655a;
   line-height: 1.9;
 }
 
@@ -244,7 +244,7 @@
   gap: 34px;
   align-items: start;
   padding: 54px 0;
-  border-bottom: 1px solid #d9e2dc;
+  border-bottom: 1px solid #eadbca;
 }
 
 .caseRecord:nth-child(even) .caseRecordHeading {
@@ -280,7 +280,7 @@
 
 .caseRecordHeading h2 {
   margin: 10px 0 0;
-  color: #244c3b;
+  color: #4d4d4d;
   font-size: 34px;
   line-height: 1.35;
 }
@@ -296,14 +296,14 @@
 }
 
 .caseRecordBody strong {
-  color: #313c35;
+  color: #4d4d4d;
   font-size: 17px;
   line-height: 1.65;
 }
 
 .caseRecordBody p {
   margin: 0;
-  color: #657269;
+  color: #6e655a;
   line-height: 1.85;
 }
 
@@ -320,7 +320,7 @@
 .caseDecision {
   margin-bottom: 80px;
   padding: 76px 0;
-  background: #f1f5f2;
+  background: #eadbca;
 }
 
 .caseDecision > div {
@@ -332,13 +332,13 @@
 .caseDecisionTitle h2 {
   max-width: 380px;
   margin: 0;
-  color: #244c3b;
+  color: #4d4d4d;
   font-size: 39px;
   line-height: 1.35;
 }
 
 .caseDecisionSteps {
-  border-top: 1px solid #bdcac2;
+  border-top: 1px solid #eadbca;
 }
 
 .caseDecisionSteps > div {
@@ -346,7 +346,7 @@
   grid-template-columns: 50px 1fr;
   gap: 18px;
   padding: 19px 0;
-  border-bottom: 1px solid #bdcac2;
+  border-bottom: 1px solid #eadbca;
 }
 
 .caseDecisionSteps span {
@@ -357,7 +357,7 @@
 
 .caseDecisionSteps p {
   margin: 0;
-  color: #34493f;
+  color: #4d4d4d;
   line-height: 1.6;
 }
 
@@ -401,7 +401,7 @@
 .industryIntroduction h2 {
   max-width: 720px;
   margin: 0;
-  color: #234737;
+  color: #4d4d4d;
   font-size: 46px;
   line-height: 1.28;
 }
@@ -410,14 +410,14 @@
   grid-column: 2;
   max-width: 760px;
   margin: 22px 0 0;
-  color: #657269;
+  color: #6e655a;
   line-height: 1.9;
 }
 
 .industryGrid {
   display: grid;
   gap: 0;
-  border-top: 1px solid #d9e2dc;
+  border-top: 1px solid #eadbca;
 }
 
 .industryGrid article {
@@ -425,7 +425,7 @@
   grid-template-columns: minmax(230px, .48fr) minmax(0, 1.52fr);
   gap: 28px 54px;
   padding: 54px 0;
-  border-bottom: 1px solid #d9e2dc;
+  border-bottom: 1px solid #eadbca;
 }
 
 .industryCardTop {
@@ -436,14 +436,14 @@
 }
 
 .industryCardTop span {
-  color: #9aaba0;
+  color: #6e655a;
   font-size: 12px;
   font-weight: 800;
 }
 
 .industryGrid h2 {
   margin: 0;
-  color: #234737;
+  color: #4d4d4d;
   font-size: 32px;
   line-height: 1.3;
 }
@@ -451,7 +451,7 @@
 .caseLead {
   grid-column: 1;
   margin: 0;
-  color: #657269;
+  color: #6e655a;
   line-height: 1.8;
 }
 
@@ -461,15 +461,15 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   margin: 0;
-  border-top: 1px solid #e0e7e2;
-  border-left: 1px solid #e0e7e2;
+  border-top: 1px solid #eadbca;
+  border-left: 1px solid #eadbca;
 }
 
 .caseDetailGrid > div {
   min-height: 142px;
   padding: 22px;
-  border-right: 1px solid #e0e7e2;
-  border-bottom: 1px solid #e0e7e2;
+  border-right: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
 }
 
 .industryGrid dl {
@@ -485,7 +485,7 @@
 
 .industryGrid dd {
   margin: 0;
-  color: #3d5147;
+  color: #4d4d4d;
   font-size: 14px;
   line-height: 1.65;
 }
@@ -494,7 +494,7 @@
   margin-top: 88px;
   padding: 92px 0;
   color: #fff;
-  background: #244c3b;
+  background: #e95513;
 }
 
 .caseScope > div {
@@ -516,7 +516,7 @@
 
 .caseScopeHeading > p:last-child {
   margin: 22px 0 0;
-  color: #bed1c7;
+  color: #eadbca;
   line-height: 1.85;
 }
 
@@ -548,7 +548,7 @@
 
 .caseScope li p {
   margin: 8px 0 0;
-  color: #c7d8d0;
+  color: #eadbca;
   font-size: 14px;
   line-height: 1.75;
 }
@@ -556,8 +556,8 @@
 /* Knowledge: editorial lead story, dense index and an explicit learning path. */
 .knowledgeHero {
   padding: 76px 0 58px;
-  border-bottom: 1px solid #dbe4df;
-  background: #f5f8f6;
+  border-bottom: 1px solid #eadbca;
+  background: #eadbca;
 }
 
 .knowledgeHeroInner {
@@ -570,7 +570,7 @@
 .knowledgeHeroTitle h1 {
   max-width: 720px;
   margin: 0;
-  color: #223f32;
+  color: #4d4d4d;
   font-size: 66px;
   line-height: 1.15;
 }
@@ -578,7 +578,7 @@
 .knowledgeHeroSummary {
   padding: 26px 0 3px 28px;
   border-left: 2px solid #cf6c29;
-  color: #56675e;
+  color: #4d4d4d;
 }
 
 .knowledgeHeroSummary svg {
@@ -600,7 +600,7 @@
 .featuredTopic {
   min-height: 440px;
   padding: 38px;
-  background: #274f3e;
+  background: #e95513;
   color: #fff;
 }
 
@@ -623,7 +623,7 @@
 .featuredTopic p {
   max-width: 520px;
   margin: 0;
-  color: #c8dad1;
+  color: #eadbca;
   line-height: 1.85;
 }
 
@@ -638,7 +638,7 @@
 }
 
 .topicIndex {
-  border-top: 3px solid #274f3e;
+  border-top: 3px solid #4d4d4d;
 }
 
 .topicIndex header,
@@ -647,18 +647,18 @@
   grid-template-columns: 54px 1fr auto;
   gap: 18px;
   align-items: center;
-  border-bottom: 1px solid #d8e1db;
+  border-bottom: 1px solid #eadbca;
 }
 
 .topicIndex header {
   min-height: 68px;
-  color: #78857d;
+  color: rgba(77, 77, 77, 0.68);
   font-size: 12px;
 }
 
 .topicIndex header span {
   grid-column: 1 / 3;
-  color: #283f34;
+  color: #4d4d4d;
   font-size: 14px;
   font-weight: 750;
 }
@@ -675,18 +675,18 @@
 
 .topicIndex h3 {
   margin: 0;
-  color: #294236;
+  color: #4d4d4d;
   font-size: 18px;
   line-height: 1.55;
 }
 
 .topicIndex article svg {
-  color: #8b9d93;
+  color: #6e655a;
 }
 
 .learningSection {
   padding: 82px 0;
-  background: #253f34;
+  background: #e95513;
   color: #fff;
 }
 
@@ -708,7 +708,7 @@
 
 .learningHeading > p:last-child {
   margin: 22px 0 0;
-  color: #bdcec5;
+  color: #eadbca;
   line-height: 1.85;
 }
 
@@ -761,14 +761,14 @@
 
 .resourceIntro h2 {
   margin: 0;
-  color: #274638;
+  color: #4d4d4d;
   font-size: 40px;
   line-height: 1.35;
 }
 
 .resourceIntro p {
   margin: 22px 0 0;
-  color: #66736b;
+  color: rgba(77, 77, 77, 0.78);
   line-height: 1.85;
 }
 
@@ -783,7 +783,7 @@
 }
 
 .resourceLinks {
-  border-top: 1px solid #d5dfd8;
+  border-top: 1px solid #eadbca;
 }
 
 .resourceLinks > a {
@@ -793,14 +793,14 @@
   align-items: center;
   min-height: 112px;
   padding: 18px 8px;
-  border-bottom: 1px solid #d5dfd8;
+  border-bottom: 1px solid #eadbca;
   transition: padding 400ms ease, background-color 400ms ease;
 }
 
 .resourceLinks > a:hover {
   padding-right: 18px;
   padding-left: 18px;
-  background: #f3f7f4;
+  background: #eadbca;
 }
 
 .resourceLinks > a > svg:first-child {
@@ -813,23 +813,23 @@
 }
 
 .resourceLinks span {
-  color: #2f463a;
+  color: #4d4d4d;
   font-size: 16px;
   font-weight: 700;
 }
 
 .resourceLinks strong {
-  color: #7b887f;
+  color: rgba(77, 77, 77, 0.66);
   font-size: 12px;
 }
 
 .resourceLinks > a > svg:last-child {
-  color: #76877e;
+  color: #6e655a;
 }
 
 /* Company: brand statement, operating beliefs and an honest service chronology. */
 .companyHero {
-  background: #edf3ef;
+  background: #eadbca;
 }
 
 .companyHeroInner {
@@ -851,7 +851,7 @@
 .companyHeroStatement h1 {
   max-width: 670px;
   margin: 0;
-  color: #223f32;
+  color: #4d4d4d;
   font-size: 63px;
   line-height: 1.18;
 }
@@ -859,7 +859,7 @@
 .companyHeroStatement p {
   max-width: 650px;
   margin: 25px 0 0;
-  color: #5c6f64;
+  color: #4d4d4d;
   font-size: 17px;
   line-height: 1.9;
 }
@@ -868,8 +868,8 @@
   width: 100%;
   margin: 48px 0 0;
   overflow: hidden;
-  border: 1px solid #d8e2dc;
-  background: #dfe9e3;
+  border: 1px solid #eadbca;
+  background: #eadbca;
 }
 
 .companyVisionVisual img {
@@ -895,7 +895,7 @@
 .companyBeliefTitle h2 {
   max-width: 760px;
   margin: 0;
-  color: #254637;
+  color: #4d4d4d;
   font-size: 48px;
   line-height: 1.3;
 }
@@ -910,7 +910,7 @@
   grid-column: span 6;
   min-height: 300px;
   padding: 34px 30px;
-  border: 1px solid #d9e1dc;
+  border: 1px solid #eadbca;
 }
 
 .companyBeliefGrid article:first-child {
@@ -919,7 +919,7 @@
 
 .companyBeliefGrid article:nth-child(2) {
   grid-column: span 7;
-  background: #f3f7f4;
+  background: #eadbca;
 }
 
 .companyBeliefGrid article:last-child {
@@ -956,27 +956,27 @@
 .companyBeliefGrid span {
   display: block;
   margin-top: 54px;
-  color: #7c8981;
+  color: rgba(77, 77, 77, 0.66);
   font-size: 12px;
 }
 
 .companyBeliefGrid strong {
   display: block;
   margin-top: 8px;
-  color: #28473a;
+  color: #4d4d4d;
   font-size: 25px;
 }
 
 .companyBeliefGrid p {
   margin: 20px 0 0;
-  color: #66746c;
+  color: #6e655a;
   font-size: 14px;
   line-height: 1.85;
 }
 
 .serviceBand {
   padding: 82px 0;
-  background: #264b3b;
+  background: #e95513;
   color: #fff;
 }
 
@@ -1027,7 +1027,7 @@
 .serviceList p {
   max-width: 280px;
   margin: 10px 0 0;
-  color: #c8d6cf;
+  color: #eadbca;
   font-size: 13px;
   line-height: 1.7;
 }
@@ -1050,7 +1050,7 @@
 
 .companyTimelineHeading h2 {
   margin: 0;
-  color: #27483a;
+  color: #4d4d4d;
   font-size: 43px;
   line-height: 1.34;
 }
@@ -1064,7 +1064,7 @@
 
 .companyIntroduction {
   margin: 0;
-  color: #5f6d65;
+  color: #6e655a;
   font-size: 16px;
   line-height: 2;
 }
@@ -1073,7 +1073,7 @@
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid #d3ded7;
+  border-top: 1px solid #eadbca;
 }
 
 .companyTimeline li {
@@ -1082,7 +1082,7 @@
   gap: 20px;
   min-height: 94px;
   padding: 20px 0;
-  border-bottom: 1px solid #d3ded7;
+  border-bottom: 1px solid #eadbca;
 }
 
 .companyTimeline li > span {
@@ -1102,7 +1102,7 @@
 }
 
 .companyTimeline strong {
-  color: #2b4438;
+  color: #4d4d4d;
   font-size: 18px;
   line-height: 1.55;
 }
@@ -1121,7 +1121,7 @@
 .trustHeading h2 {
   max-width: 690px;
   margin: 0;
-  color: #27483a;
+  color: #4d4d4d;
   font-size: 42px;
   line-height: 1.35;
 }
@@ -1136,7 +1136,7 @@
   grid-column: span 6;
   min-height: 260px;
   padding: 32px;
-  border: 1px solid #d5dfd9;
+  border: 1px solid #eadbca;
 }
 
 .trustCards article:first-child {
@@ -1158,7 +1158,7 @@
 
 .trustCards h3 {
   margin: 58px 0 13px;
-  color: #29483a;
+  color: #4d4d4d;
   font-size: 21px;
 }
 
@@ -1170,7 +1170,7 @@
 }
 
 .trustContact {
-  background: #f3f7f4;
+  background: #eadbca;
 }
 
 .trustContact a {
@@ -1513,9 +1513,9 @@
 .caseScope {
   margin-top: 64px;
   padding: 66px 0;
-  color: #29483a;
-  background: #f3f7f4;
-  border-block: 1px solid #d9e2dc;
+  color: #4d4d4d;
+  background: #eadbca;
+  border-block: 1px solid #eadbca;
 }
 
 .caseScope > div {
@@ -1530,19 +1530,19 @@
 
 .caseScopeHeading h2 {
   max-width: 430px;
-  color: #29483a;
+  color: #4d4d4d;
   font-size: 39px;
 }
 
 .caseScopeHeading > p:last-child {
-  color: #68776f;
+  color: #6e655a;
 }
 
 .caseScope ol {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   border-top: 2px solid #e95513;
-  border-left: 1px solid #d3ded7;
+  border-left: 1px solid #eadbca;
 }
 
 .caseScope li {
@@ -1551,8 +1551,8 @@
   min-height: 148px;
   align-content: start;
   padding: 22px 22px 20px;
-  border-right: 1px solid #d3ded7;
-  border-bottom: 1px solid #d3ded7;
+  border-right: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
   background: #fff;
 }
 
@@ -1565,13 +1565,13 @@
 }
 
 .caseScope li strong {
-  color: #29483a;
+  color: #4d4d4d;
   font-size: 17px;
 }
 
 .caseScope li p {
   grid-column: 2;
-  color: #68776f;
+  color: #6e655a;
   font-size: 13px;
 }
 

@@ -198,13 +198,13 @@ export function KnowledgePage({ page }: EditorialPageProps) {
           <h2 id="knowledge-featured-title">从政策、核算到披露与市场动态</h2>
           <p>以企业实际工作为起点，持续整理双碳政策、核算方法与相关管理要求。</p>
         </article>
-        <div className={styles.topicIndex} data-motion-role="item">
-          <header>
+        <div className={styles.topicIndex} data-motion-role="visual">
+          <header data-motion-role="copy">
             <span>内容索引</span>
             <small>{String(topics.length).padStart(2, "0")} TOPICS</small>
           </header>
           {topics.map((topic, index) => (
-            <article key={topic}>
+            <article key={topic} data-motion-role="item">
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h3>{topic}</h3>
               <BookOpen size={18} aria-hidden="true" />
@@ -244,7 +244,7 @@ export function KnowledgePage({ page }: EditorialPageProps) {
         </div>
         <div className={styles.resourceLinks}>
           {knowledgeRoutes.map(({ href, action, icon: Icon }, index) => (
-            <Link href={href} key={href} data-motion-role="item">
+            <Link href={href} key={action} data-motion-role="item">
               <Icon size={22} aria-hidden="true" />
               <div>
                 <span>{downloads[index]?.title ?? "学习资料"}</span>

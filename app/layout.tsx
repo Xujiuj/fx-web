@@ -17,7 +17,7 @@ export default function RootLayout({
       <body suppressHydrationWarning>
         {children}
         <noscript>
-          <style>{".reference-page .page-reveal { visibility: visible !important; opacity: 1 !important; transform: none !important; }"}</style>
+          <style>{".reference-page .page-reveal, .reference-page [data-motion], .reference-page [data-motion-role], .capability-orbit-section .timeline-section-heading, .capability-orbit-track, .capability-orbit-sweep, .capability-orbit-core, .capability-orbit-stage, .capability-orbit-section .timeline-summary, .site-footer > * { visibility: visible !important; opacity: 1 !important; transform: none !important; } .latest-update-drawer { display: none !important; }"}</style>
         </noscript>
       </body>
     </html>

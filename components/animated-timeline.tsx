@@ -14,18 +14,31 @@ type AnimatedTimelineProps = {
 export function AnimatedTimeline({ title, eyebrow, description, summary, timeline }: AnimatedTimelineProps) {
   if (timeline.length === 0) return null;
 
-  return <section className="timeline-section timeline-landscape-section" id="path">
+  return <section className="timeline-section capability-orbit-section" id="path">
     <div className="timeline-section-heading">
       <SectionHeading eyebrow={eyebrow} title={title} />
       {description ? <p>{description}</p> : null}
     </div>
-    <div className="timeline-landscape">
-      <ol className="timeline-horizontal">
+    <div className="capability-orbit">
+      <div className="capability-orbit-visual" aria-hidden="true">
+        <svg viewBox="0 0 620 620" focusable="false">
+          <circle className="capability-orbit-track capability-orbit-track-outer" cx="310" cy="310" r="232" />
+          <circle className="capability-orbit-track capability-orbit-track-inner" cx="310" cy="310" r="176" />
+          <circle className="capability-orbit-sweep capability-orbit-sweep-orange" cx="310" cy="310" r="232" />
+          <circle className="capability-orbit-sweep capability-orbit-sweep-yellow" cx="310" cy="310" r="176" />
+        </svg>
+        <div className="capability-orbit-core">
+          <span>CAPABILITY OS</span>
+          <strong>能力中枢</strong>
+          <small>4-STAGE SYSTEM</small>
+        </div>
+      </div>
+      <ol className="capability-orbit-stages">
         {timeline.map((entry, index) => {
-          const isTop = index % 2 === 0;
-          return <li className={isTop ? "is-top" : "is-bottom"} key={`${entry.year}-${index}`}>
-            <div className="timeline-entry-copy"><small>阶段 {entry.year}</small><h3>{entry.items[0] ?? entry.year}</h3><ul>{entry.items.slice(1).map((item) => <li key={item}>{item}</li>)}</ul></div>
-            <span className="timeline-node" aria-hidden="true" />
+          return <li className={`capability-orbit-stage capability-orbit-stage-${index + 1}`} key={`${entry.year}-${index}`}>
+            <span className="capability-orbit-link" aria-hidden="true" />
+            <span className="capability-orbit-node" aria-hidden="true"><b>{entry.year}</b></span>
+            <div className="capability-orbit-copy"><small>STAGE {entry.year}</small><h3>{entry.items[0] ?? entry.year}</h3><ul>{entry.items.slice(1).map((item) => <li key={item}>{item}</li>)}</ul></div>
           </li>;
         })}
       </ol>

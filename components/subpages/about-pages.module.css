@@ -66,9 +66,9 @@
 .emptyState {
   margin: 0;
   padding: 64px 24px;
-  border-top: 1px solid #d8e2dc;
-  border-bottom: 1px solid #d8e2dc;
-  color: #708077;
+  border-top: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
+  color: #6e655a;
   font-size: 16px;
   line-height: 1.7;
   text-align: center;
@@ -107,7 +107,7 @@
 .partnerCard strong,
 .contactCard h3 {
   margin: 0;
-  color: #29483a;
+  color: #4d4d4d;
   font-size: 17px;
   line-height: 1.5;
 }
@@ -122,7 +122,7 @@
 .partnerCard p,
 .contactCard p {
   margin: 7px 0 0;
-  color: #708077;
+  color: #6e655a;
   font-size: 13px;
   line-height: 1.7;
 }
@@ -130,8 +130,8 @@
 .partnerGrid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid #d8e2dc;
-  border-left: 1px solid #d8e2dc;
+  border-top: 1px solid #eadbca;
+  border-left: 1px solid #eadbca;
 }
 
 .partnerCard {
@@ -140,8 +140,8 @@
   justify-items: center;
   min-height: 210px;
   padding: 24px;
-  border-right: 1px solid #d8e2dc;
-  border-bottom: 1px solid #d8e2dc;
+  border-right: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
   text-align: center;
 }
 
@@ -175,14 +175,14 @@
 
 .contactLead h2 {
   margin: 10px 0 16px;
-  color: #29483a;
+  color: #4d4d4d;
   font-size: 28px;
   line-height: 1.42;
 }
 
 .contactLead p {
   margin: 0;
-  color: #708077;
+  color: #6e655a;
   font-size: 15px;
   line-height: 1.8;
 }
@@ -221,12 +221,12 @@
   align-content: start;
   min-height: 270px;
   padding: 34px 30px;
-  border: 1px solid #d8e2dc;
+  border: 1px solid #eadbca;
   background: #fff;
 }
 
 .contactCard:nth-child(odd) {
-  background: #f3f7f4;
+  background: #eadbca;
 }
 
 .contactIcon {
@@ -381,7 +381,7 @@
   grid-column: span 6;
   grid-template-columns: 1fr;
   gap: 0;
-  border-top: 1px solid #d8e2dc;
+  border-top: 1px solid #eadbca;
 }
 
 .contactCard,
@@ -392,7 +392,7 @@
   gap: 3px 20px;
   padding: 28px 0;
   border: 0;
-  border-bottom: 1px solid #d8e2dc;
+  border-bottom: 1px solid #eadbca;
   background: transparent;
 }
 
@@ -401,7 +401,7 @@
   width: 44px;
   height: 44px;
   margin: 0;
-  background: #29483a;
+  background: #e95513;
 }
 
 .contactCard h3,

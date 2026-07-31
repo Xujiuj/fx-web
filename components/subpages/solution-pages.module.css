@@ -2,7 +2,7 @@
   text-align: left;
   position: relative;
   isolation: isolate;
-  background: #e9f1ec;
+  background: #eadbca;
 }
 
 .solutionHeroVisual {
@@ -29,7 +29,7 @@
 }
 
 .solutionHeroDark::before {
-  background: linear-gradient(90deg, rgba(10, 37, 31, 0.96) 0%, rgba(10, 37, 31, 0.86) 42%, rgba(10, 37, 31, 0.38) 68%, rgba(10, 37, 31, 0.08) 100%);
+  background: linear-gradient(90deg, rgba(233, 85, 19, 0.96) 0%, rgba(233, 85, 19, 0.84) 42%, rgba(247, 181, 44, 0.38) 68%, rgba(247, 181, 44, 0.08) 100%);
 }
 
 .kicker,
@@ -53,7 +53,7 @@
 }
 
 .standardHero {
-  background: #edf5ef;
+  background: #eadbca;
 }
 
 .standardHeroInner,
@@ -86,7 +86,7 @@
 .platformHeroCopy h1 {
   max-width: 720px;
   margin: 14px 0 22px;
-  color: #1c3f32;
+  color: #4d4d4d;
   font-size: clamp(38px, 4.6vw, 62px);
   font-weight: 720;
   line-height: 1.16;
@@ -98,7 +98,7 @@
 .platformHeroCopy > p {
   max-width: 660px;
   margin: 0;
-  color: #57665e;
+  color: #4d4d4d;
   font-size: 17px;
   line-height: 1.85;
 }
@@ -111,7 +111,7 @@
 .platformLayersIntro h2,
 .platformRoadmap h2 {
   margin: 12px 0 18px;
-  color: #1d3f33;
+  color: #4d4d4d;
   font-size: clamp(28px, 3.2vw, 42px);
   line-height: 1.3;
 }
@@ -121,7 +121,7 @@
 .organization header p,
 .platformLayersIntro p {
   margin: 0;
-  color: #65726b;
+  color: #6e655a;
   line-height: 1.85;
 }
 
@@ -136,7 +136,7 @@
 .curriculum {
   display: grid;
   grid-template-columns: minmax(280px, 0.82fr) minmax(0, 1.18fr);
-  background: #273f34;
+  background: #e95513;
 }
 
 .curriculumIntro {
@@ -154,7 +154,7 @@
 }
 
 .curriculumIntro p {
-  color: #cbd5cf;
+  color: #eadbca;
 }
 
 .curriculumList {
@@ -166,7 +166,7 @@
   position: relative;
   min-height: 112px;
   padding: 25px 50px 22px 0;
-  border-bottom: 1px solid #dae2dd;
+  border-bottom: 1px solid #eadbca;
 }
 
 .curriculumList article:last-child {
@@ -181,7 +181,7 @@
 
 .curriculumList article h3 {
   margin: 10px 0 0;
-  color: #243f34;
+  color: #4d4d4d;
   font-size: 18px;
   line-height: 1.45;
 }
@@ -190,12 +190,12 @@
   position: absolute;
   top: 47px;
   right: 4px;
-  color: #6a8b77;
+  color: #6e655a;
 }
 
 .practicalHero {
   color: #fff;
-  background: #233f34;
+  background: #e95513;
 }
 
 .practicalHeroInner {
@@ -212,15 +212,15 @@
 }
 
 .practicalHeroCopy > p {
-  color: #c7d3cc;
+  color: #eadbca;
 }
 
 .platformHeroCopy h1 {
-  color: #173d33;
+  color: #4d4d4d;
 }
 
 .platformHeroCopy > p {
-  color: #496358;
+  color: #4d4d4d;
 }
 
 .inventoryFlow {
@@ -244,15 +244,15 @@
 .inventoryFlow ol {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  border-top: 1px solid #b9cabf;
-  border-bottom: 1px solid #b9cabf;
+  border-top: 1px solid #eadbca;
+  border-bottom: 1px solid #eadbca;
 }
 
 .inventoryFlow li {
   position: relative;
   min-height: 205px;
   padding: 28px 24px;
-  border-right: 1px solid #d7e0da;
+  border-right: 1px solid #eadbca;
 }
 
 .inventoryFlow li:last-child {
@@ -272,14 +272,14 @@
 
 .inventoryFlow li strong {
   margin-top: 54px;
-  color: #254437;
+  color: #4d4d4d;
   font-size: 18px;
   line-height: 1.5;
 }
 
 .inventoryFlow li small {
   margin-top: 11px;
-  color: #718078;
+  color: #6e655a;
   line-height: 1.55;
 }
 
@@ -299,7 +299,7 @@
   grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
   gap: 82px;
   padding: 74px 0;
-  border-top: 1px solid #dbe3de;
+  border-top: 1px solid #eadbca;
 }
 
 .deliveryRows article {
@@ -308,7 +308,7 @@
   gap: 24px;
   align-items: center;
   min-height: 105px;
-  border-bottom: 1px solid #dbe3de;
+  border-bottom: 1px solid #eadbca;
 }
 
 .deliveryRows article > div {
@@ -324,19 +324,19 @@
 
 .deliveryRows h3 {
   margin: 0;
-  color: #254437;
+  color: #4d4d4d;
   font-size: 16px;
 }
 
 .deliveryRows p {
   margin: 0;
-  color: #6a7870;
+  color: #6e655a;
   font-size: 14px;
   line-height: 1.7;
 }
 
 .consultingHero {
-  background: #f7f8f5;
+  background: #eadbca;
 }
 
 .consultingHeroInner {
@@ -375,7 +375,7 @@
   min-height: 72px;
   margin: 0 auto;
   color: #fff;
-  background: #285842;
+  background: #e95513;
   font-weight: 750;
 }
 
@@ -383,7 +383,7 @@
   width: 1px;
   height: 52px;
   margin: 0 auto;
-  background: #9fb5a7;
+  background: #6e655a;
 }
 
 .organizationBranches {
@@ -400,7 +400,7 @@
   right: 11%;
   left: 11%;
   height: 1px;
-  background: #9fb5a7;
+  background: #6e655a;
   content: "";
 }
 
@@ -408,7 +408,7 @@
   position: relative;
   min-height: 148px;
   padding: 24px 17px;
-  border: 1px solid #d7e0da;
+  border: 1px solid #eadbca;
   background: #fff;
 }
 
@@ -418,7 +418,7 @@
   left: 50%;
   width: 1px;
   height: 28px;
-  background: #9fb5a7;
+  background: #6e655a;
   content: "";
 }
 
@@ -430,14 +430,14 @@
 
 .organizationBranches h3 {
   margin: 31px 0 0;
-  color: #2a4a3d;
+  color: #4d4d4d;
   font-size: 15px;
   line-height: 1.55;
 }
 
 .responsibilitySection {
   padding: 82px 70px;
-  background: #eef3ef;
+  background: #eadbca;
 }
 
 .responsibilityHeading {
@@ -453,13 +453,13 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   margin-top: 52px;
-  border-top: 1px solid #bdcbc2;
+  border-top: 1px solid #eadbca;
 }
 
 .responsibilityMatrix article {
   min-height: 245px;
   padding: 28px;
-  border-right: 1px solid #bdcbc2;
+  border-right: 1px solid #eadbca;
 }
 
 .responsibilityMatrix article:last-child {
@@ -474,14 +474,14 @@
 
 .responsibilityMatrix h3 {
   margin: 35px 0 12px;
-  color: #244438;
+  color: #4d4d4d;
   font-size: 20px;
 }
 
 .responsibilityMatrix p {
   min-height: 70px;
   margin: 0;
-  color: #5e6e65;
+  color: #6e655a;
   font-size: 14px;
   line-height: 1.75;
 }
@@ -489,7 +489,7 @@
 .responsibilityMatrix small {
   display: block;
   margin-top: 16px;
-  color: #2a6a4d;
+  color: #4d4d4d;
   font-weight: 700;
   line-height: 1.55;
 }
@@ -500,7 +500,7 @@
 
 .consultingStages > h2 {
   margin: 0 0 34px;
-  color: #203f33;
+  color: #4d4d4d;
   font-size: 28px;
 }
 
@@ -508,7 +508,7 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1px;
-  background: #d6dfd9;
+  background: #eadbca;
 }
 
 .consultingStages li {
@@ -526,14 +526,14 @@
 }
 
 .consultingStages li strong {
-  color: #29483b;
+  color: #4d4d4d;
   font-size: 15px;
   line-height: 1.55;
 }
 
 .platformHero {
-  color: #173d33;
-  background: #eaf1ed;
+  color: #4d4d4d;
+  background: #eadbca;
 }
 
 .platformHeroInner {
@@ -572,12 +572,12 @@
   min-height: 76px;
   padding: 17px 22px;
   color: #fff;
-  background: #2c5341;
+  background: #e95513;
 }
 
-.layerStack > div:nth-child(2) { margin-inline: 18px; background: #3d6653; }
-.layerStack > div:nth-child(3) { margin-inline: 36px; background: #557b68; }
-.layerStack > div:nth-child(4) { margin-inline: 54px; background: #708f7f; }
+.layerStack > div:nth-child(2) { margin-inline: 18px; background: #e95513; }
+.layerStack > div:nth-child(3) { margin-inline: 36px; background: #6e655a; }
+.layerStack > div:nth-child(4) { margin-inline: 54px; background: #6e655a; }
 
 .layerStack span {
   color: #f0b185;
@@ -590,13 +590,13 @@
 }
 
 .layerStack small {
-  color: #dce5df;
+  color: #eadbca;
   line-height: 1.55;
 }
 
 .platformRoadmap {
   padding: 72px;
-  background: #eef3ef;
+  background: #eadbca;
 }
 
 .platformRoadmap > div {
@@ -626,7 +626,7 @@
   align-items: center;
   min-height: 115px;
   padding: 20px 20px 20px 0;
-  border-top: 1px solid #afc1b6;
+  border-top: 1px solid #eadbca;
 }
 
 .platformRoadmap li > span {
@@ -640,13 +640,13 @@
 
 .platformRoadmap li strong {
   max-width: 165px;
-  color: #29483b;
+  color: #4d4d4d;
   font-size: 14px;
   line-height: 1.6;
 }
 
 .platformRoadmap li svg {
-  color: #758f80;
+  color: #6e655a;
 }
 
 .contactAction {
@@ -658,7 +658,7 @@
   margin-bottom: 92px;
   padding: 34px 38px;
   border-top: 3px solid #ca6224;
-  background: #283f35;
+  background: #e95513;
   color: #fff;
 }
 
@@ -804,7 +804,7 @@
   .inventoryFlow li {
     min-height: 150px;
     border-right: 0;
-    border-bottom: 1px solid #d7e0da;
+    border-bottom: 1px solid #eadbca;
   }
 
   .inventoryFlow li:last-child {
@@ -865,7 +865,7 @@
     min-height: 0;
     padding: 28px 0;
     border-right: 0;
-    border-bottom: 1px solid #bdcbc2;
+    border-bottom: 1px solid #eadbca;
   }
 
   .responsibilityMatrix p {
@@ -1255,7 +1255,7 @@
 .presentation02 li h3 { margin: 0; }
 .presentation02 li p { font-size: 14px; }
 
-.presentation03 { padding: 58px; color: #fff; background: #2f2a24; border: 0; }
+.presentation03 { padding: 58px; color: #fff; background: #e95513; border: 0; }
 .presentation03 header h2 { color: #fff; }
 .presentation03 header p, .presentation03 li p { color: #cec7bf; }
 .presentation03 ol { border-color: rgba(255,255,255,.24); }
@@ -1264,14 +1264,14 @@
 .presentation03 li > span, .presentation03 header > span { color: #f8a968; }
 
 .presentation04 { align-items: center; }
-.presentation04 ol { display: flex; flex-direction: column; gap: 8px; padding: 30px; border: 0; background: #243d35; }
+.presentation04 ol { display: flex; flex-direction: column; gap: 8px; padding: 30px; border: 0; background: #e95513; }
 .presentation04 li { display: grid; width: 100%; min-height: 90px; grid-template-columns: 42px minmax(150px,.6fr) 1fr; gap: 18px; align-items: center; border: 1px solid rgba(255,255,255,.18); background: rgba(255,255,255,.08); }
 .presentation04 li:nth-child(2) { width: 94%; margin-left: auto; background: rgba(255,255,255,.12); }
 .presentation04 li:nth-child(3) { width: 88%; margin-left: auto; background: rgba(255,255,255,.16); }
 .presentation04 li:nth-child(4) { width: 82%; margin-left: auto; background: rgba(248,169,104,.25); }
 .presentation04 li > span { color: #ffb36f; }
 .presentation04 li h3 { color: #fff; }
-.presentation04 li p { color: #d5ded9; }
+.presentation04 li p { color: #eadbca; }
 .presentation04 li h3 { margin: 0; }
 .presentation04 li p { font-size: 14px; }
 
@@ -1350,7 +1350,7 @@
   margin: 64px auto;
   padding: 36px 42px;
   color: #fff;
-  background: #2f2a24;
+  background: #e95513;
 }
 
 .solutionOutcomes {

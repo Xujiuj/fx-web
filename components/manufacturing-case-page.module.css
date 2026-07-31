@@ -1,7 +1,7 @@
 .page {
   overflow: hidden;
   background: #fff;
-  color: #2a3540;
+  color: #4d4d4d;
 }
 
 .hero {
@@ -36,7 +36,7 @@
   z-index: 4;
   left: 48px;
   bottom: 70px;
-  color: #244c3b;
+  color: #4d4d4d;
 }
 
 .heroCopy p,
@@ -80,7 +80,7 @@
 
 .introduction p {
   margin: 0;
-  color: #58636d;
+  color: #4d4d4d;
   font-size: 17px;
   line-height: 1.95;
 }
@@ -93,7 +93,7 @@
 
 .sectionHeading h2 {
   margin: 0;
-  color: #244c3b;
+  color: #4d4d4d;
   font-size: 32px;
   line-height: 1.35;
 }
@@ -110,8 +110,8 @@
   grid-template-columns: 1fr;
   align-content: start;
   overflow: hidden;
-  border: 1px solid #dce3de;
-  background: #f8faf8;
+  border: 1px solid #eadbca;
+  background: #eadbca;
 }
 
 .caseItem:nth-child(4n + 1),
@@ -122,9 +122,9 @@
 
 .caseCopy { position: relative; padding: 30px 30px 32px 62px; }
 .caseCopy > span { position: absolute; top: 31px; left: 28px; color: #b77c49; font-size: 13px; font-weight: 800; }
-.caseCopy svg { margin-bottom: 11px; color: #49735c; }
-.caseCopy h3 { margin: 0; color: #244c3b; font-size: 22px; line-height: 1.35; }
-.caseCopy p { margin: 13px 0 0; color: #5d6770; font-size: 15px; line-height: 1.85; }
+.caseCopy svg { margin-bottom: 11px; color: #4d4d4d; }
+.caseCopy h3 { margin: 0; color: #4d4d4d; font-size: 22px; line-height: 1.35; }
+.caseCopy p { margin: 13px 0 0; color: #6e655a; font-size: 15px; line-height: 1.85; }
 
 .caseArtwork {
   position: relative;

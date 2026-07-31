@@ -26,14 +26,14 @@
 
 .caption h2 {
   margin: 0 0 10px;
-  color: #203c35;
+  color: #4d4d4d;
   font-size: clamp(24px, 2.6vw, 34px);
   line-height: 1.3;
 }
 
 .caption p {
   margin: 0;
-  color: #66766f;
+  color: rgba(77, 77, 77, 0.78);
   font-size: 15px;
   line-height: 1.8;
 }
@@ -43,8 +43,8 @@
   display: block;
   overflow: hidden;
   padding: clamp(12px, 2vw, 24px);
-  border: 1px solid #dce7e2;
-  background: #f7faf8;
+  border: 1px solid #eadbca;
+  background: #fff8ee;
 }
 
 .canvas img {

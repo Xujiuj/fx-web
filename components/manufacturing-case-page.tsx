@@ -38,6 +38,21 @@ const defaultCaseModules = [
   }
 ];
 
+function createSingleEntryTrigger(trigger: Element, start: string, onEnter: () => void) {
+  let hasEntered = false;
+
+  return ScrollTrigger.create({
+    trigger,
+    start,
+    once: true,
+    onEnter: () => {
+      if (hasEntered) return;
+      hasEntered = true;
+      onEnter();
+    }
+  });
+}
+
 function HeroArtwork({ image }: { image?: string }) {
   return (
     <div className={styles.heroArtwork} aria-hidden="true">
@@ -85,66 +100,78 @@ export function ManufacturingCasePage({ page }: { page: Subpage }) {
     const clearProps = "transform,opacity,visibility,clipPath";
 
     media.add("(prefers-reduced-motion: no-preference)", () => {
+      const compact = window.matchMedia("(max-width: 760px)").matches;
+
       gsap.timeline()
         .fromTo(query(`.${styles.heroCopy}`), {
           autoAlpha: 0,
-          x: -34
+          x: compact ? 0 : -44,
+          y: compact ? 30 : 0,
+          filter: "blur(7px)"
         }, {
           autoAlpha: 1,
           x: 0,
-          duration: 0.9,
+          y: 0,
+          filter: "blur(0px)",
+          duration: compact ? 0.9 : 1.08,
           ease: "power3.out",
-          clearProps
+          clearProps: `${clearProps},filter`
         })
         .fromTo(query(`.${styles.heroArtwork} img`), {
           autoAlpha: 0,
-          x: 42,
-          scale: 1.06,
-          clipPath: "inset(0 0 0 12%)"
+          x: compact ? 0 : 54,
+          y: compact ? 34 : 0,
+          scale: compact ? 1.08 : 1.12,
+          clipPath: compact ? "inset(10% 0 0 0)" : "inset(0 0 0 14%)"
         }, {
           autoAlpha: 1,
           x: 0,
+          y: 0,
           scale: 1,
           clipPath: "inset(0 0 0 0)",
-          duration: 1.25,
-          ease: "power3.out",
+          duration: compact ? 1.12 : 1.5,
+          ease: "power2.out",
           clearProps
-        }, 0.1);
+        }, 0.14);
 
       gsap.utils.toArray<HTMLElement>(query(`.${styles.introduction} p`)).forEach((element) => {
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 90%",
-          once: true,
-          onEnter: () => gsap.fromTo(element, {
+        createSingleEntryTrigger(element, compact ? "top 92%" : "top 84%", () => {
+          gsap.fromTo(element, {
             autoAlpha: 0,
-            x: -22
+            x: compact ? 0 : -34,
+            y: compact ? 24 : 0,
+            filter: "blur(5px)"
           }, {
             autoAlpha: 1,
             x: 0,
-            duration: 0.72,
+            y: 0,
+            filter: "blur(0px)",
+            duration: compact ? 0.76 : 0.94,
             ease: "power3.out",
-            clearProps
-          })
+            clearProps: `${clearProps},filter`
+          });
         });
       });
 
-      const sectionHeading = query(`.${styles.sectionHeading}`);
-      ScrollTrigger.create({
-        trigger: sectionHeading,
-        start: "top 90%",
-        once: true,
-        onEnter: () => gsap.fromTo(sectionHeading, {
-          autoAlpha: 0,
-          x: -26
-        }, {
-          autoAlpha: 1,
-          x: 0,
-          duration: 0.76,
-          ease: "power3.out",
-          clearProps
-        })
-      });
+      const sectionHeading = query<HTMLElement>(`.${styles.sectionHeading}`)[0];
+      if (sectionHeading) {
+        createSingleEntryTrigger(sectionHeading, compact ? "top 92%" : "top 84%", () => {
+          gsap.fromTo(sectionHeading, {
+            autoAlpha: 0,
+            x: compact ? 0 : -38,
+            y: compact ? 24 : 0,
+            filter: "blur(5px)"
+          }, {
+            autoAlpha: 1,
+            x: 0,
+            y: 0,
+            filter: "blur(0px)",
+            duration: compact ? 0.78 : 0.98,
+            ease: "power3.out",
+            clearProps: `${clearProps},filter`
+          });
+        });
+      }
 
       gsap.utils.toArray<HTMLElement>(query(`.${styles.caseItem}`)).forEach((element, index) => {
         const artwork = element.querySelector<HTMLElement>(`.${styles.caseArtwork}`);
@@ -156,40 +183,42 @@ export function ManufacturingCasePage({ page }: { page: Subpage }) {
         ];
         const origin = origins[index % origins.length];
 
-        ScrollTrigger.create({
-          trigger: element,
-          start: "top 90%",
-          once: true,
-          onEnter: () => {
-            const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
-            if (artwork) {
-              timeline.fromTo(artwork, {
-                autoAlpha: 0,
-                ...origin
-              }, {
-                autoAlpha: 1,
-                x: 0,
-                y: 0,
-                clipPath: "inset(0 0 0 0)",
-                duration: 0.86,
-                clearProps
-              });
-              const image = artwork.querySelector("img");
-              if (image) {
-                timeline.fromTo(image, { scale: 1.07 }, { scale: 1, duration: 1.05, clearProps: "transform" }, 0);
-              }
+        createSingleEntryTrigger(element, compact ? "top 92%" : "top 84%", () => {
+          const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+          if (artwork) {
+            timeline.fromTo(artwork, {
+              autoAlpha: 0,
+              ...origin
+            }, {
+              autoAlpha: 1,
+              x: 0,
+              y: 0,
+              clipPath: "inset(0 0 0 0)",
+              duration: compact ? 0.86 : 1.08,
+              clearProps
+            });
+            const image = artwork.querySelector("img");
+            if (image) {
+              timeline.fromTo(image, { scale: compact ? 1.07 : 1.11 }, {
+                scale: 1,
+                duration: compact ? 1.08 : 1.38,
+                ease: "power2.out",
+                clearProps: "transform"
+              }, 0);
             }
-            if (copy) {
-              timeline.fromTo(copy, {
-                autoAlpha: 0,
-                y: 18
-              }, {
-                autoAlpha: 1,
-                y: 0,
-                duration: 0.68,
-                clearProps
-              }, artwork ? 0.16 : 0);
-            }
+          }
+          if (copy) {
+            timeline.fromTo(copy, {
+              autoAlpha: 0,
+              y: compact ? 24 : 30,
+              filter: "blur(4px)"
+            }, {
+              autoAlpha: 1,
+              y: 0,
+              filter: "blur(0px)",
+              duration: compact ? 0.72 : 0.88,
+              clearProps: `${clearProps},filter`
+            }, artwork ? (compact ? 0.18 : 0.24) : 0);
           }
         });
       });

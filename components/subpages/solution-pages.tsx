@@ -226,11 +226,11 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      <nav className={styles.solutionStageNav} aria-label="企业碳管理能力建设路径">
-        <p>我们提供从Excel工具到数字化平台的全阶段解决方案，企业可依据自身发展阶段与管理成熟度，选择最适配的能力建设路径，实现渐进式、可持续的碳管理能力提升。</p>
-        <ol>
+      <nav className={styles.solutionStageNav} aria-label="企业碳管理能力建设路径" data-motion-group="solution-stage-nav">
+        <p data-motion-role="copy">我们提供从Excel工具到数字化平台的全阶段解决方案，企业可依据自身发展阶段与管理成熟度，选择最适配的能力建设路径，实现渐进式、可持续的碳管理能力提升。</p>
+        <ol data-motion-role="visual">
           {solutionStages.map((stage) => <li key={stage.sequence} className={stage.sequence === framework.sequence ? styles.activeStage : undefined}>
-            <Link href={stage.href} aria-current={stage.sequence === framework.sequence ? "page" : undefined}>
+            <Link href={stage.href} aria-current={stage.sequence === framework.sequence ? "page" : undefined} data-motion-role="item">
               <span>{stage.sequence}</span><div><strong>{stage.label}</strong><small>{stage.caption}</small></div><ChevronRight size={16} aria-hidden="true" />
             </Link>
           </li>)}
@@ -299,7 +299,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
       ) : null}
 
       <section className={`${styles.solutionOutcomes} ${styles[`outcomes${framework.sequence}`] ?? ""}`} aria-labelledby="solution-outcomes-title" data-motion-group={`solution-outcomes-${framework.sequence}`}>
-        <div><span>OUTCOMES</span><h2 id="solution-outcomes-title">{framework.outcomeLabel}</h2></div>
+        <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{framework.outcomeLabel}</h2></div>
         <ol>{framework.outcomes.map((outcome, index) => <li key={outcome} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><Check size={20} aria-hidden="true" /><strong>{outcome}</strong></li>)}</ol>
       </section>
 

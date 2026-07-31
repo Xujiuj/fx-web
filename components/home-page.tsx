@@ -18,10 +18,14 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
 import { homeEditorialContent, type HomeContent, type HomeEditorialContent, type IconKey } from "@/lib/cms-content";
 import { AnimatedTimeline } from "./animated-timeline";
 import { SectionOrchestrator } from "./section-orchestrator";
 import { SiteFooter } from "./site-footer";
+
+gsap.registerPlugin(useGSAP);
 
 const iconMap = {
   chart: BarChart3,
@@ -36,9 +40,11 @@ const iconMap = {
 } satisfies Record<IconKey, typeof BarChart3>;
 
 export function HomePage({ content }: { content: HomeContent }) {
+  const [pageElement, setPageElement] = useState<HTMLElement | null>(null);
+
   return (
-    <main>
-      <SectionOrchestrator />
+    <main ref={setPageElement}>
+      <SectionOrchestrator scope={pageElement} />
       <HeroCarousel slides={content.heroSlides} />
       <AnimatedTimeline
         eyebrow={homeEditorialContent.path.eyebrow}
@@ -62,12 +68,58 @@ export function HomePage({ content }: { content: HomeContent }) {
 
 function HeroCarousel({ slides }: { slides: HomeContent["heroSlides"] }) {
   const [selected, setSelected] = useState(0);
+  const heroRef = useRef<HTMLElement>(null);
   const slide = slides[selected];
+
+  useGSAP(() => {
+    const hero = heroRef.current;
+    if (!hero) return;
+
+    const media = gsap.matchMedia();
+    let activeDotTween: gsap.core.Tween | undefined;
+    media.add("(prefers-reduced-motion: no-preference)", () => {
+      const query = gsap.utils.selector(hero);
+      const copyItems = query<HTMLElement>(".hero-copy-eyebrow, .hero-copy-title, .hero-copy-body, .hero-copy-actions");
+      const activeDot = query<HTMLElement>(".hero-dots button.is-active")[0];
+
+      gsap.set(copyItems, { animation: "none", autoAlpha: 0 });
+      const timeline = gsap.timeline({ defaults: { ease: "power3.out" } });
+      timeline.fromTo(copyItems, {
+        autoAlpha: 0,
+        x: -28,
+        y: 24,
+        filter: "blur(7px)"
+      }, {
+        autoAlpha: 1,
+        x: 0,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.16,
+        stagger: 0.2,
+        clearProps: "transform,opacity,visibility,filter"
+      });
+
+      if (activeDot) {
+        activeDotTween = gsap.to(activeDot, {
+          scaleX: 1.24,
+          duration: 4.8,
+          ease: "sine.inOut",
+          repeat: -1,
+          yoyo: true
+        });
+      }
+    });
+
+    return () => {
+      activeDotTween?.kill();
+      media.revert();
+    };
+  }, { scope: heroRef, dependencies: [selected], revertOnUpdate: true });
 
   if (!slide) return null;
 
   return (
-    <section className="hero" id="home">
+    <section ref={heroRef} className="hero" id="home">
       <div className="hero-gradient" aria-hidden="true" />
       <div className="hero-fade-stage">
         <article className="hero-slide is-active" key={slide.title}>
@@ -215,6 +267,7 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
         <div className="latest-updates-list">
           {items.map((item, index) => (
             <Link className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
+              <span className="latest-update-drawer" aria-hidden="true" />
               <Image
                 src={item.image}
                 alt=""
@@ -288,8 +341,8 @@ export function ContactSection({ contact, id = "contact" }: { contact: HomeConte
   }
 
   return (
-    <section className="contact-section" id={id}>
-      <div className="contact-intro">
+    <section className="contact-section" id={id} data-motion-group="contact-form">
+      <div className="contact-intro" data-motion-role="copy">
         <div className="contact-mark" aria-hidden="true"><Mail size={22} /></div>
         <span className="contact-kicker">CONSULTATION</span>
         <h2>{contact.title}</h2>
@@ -299,29 +352,29 @@ export function ContactSection({ contact, id = "contact" }: { contact: HomeConte
           {email ? <a href={`mailto:${email}`}><Mail size={17} aria-hidden="true" /><span><small>电子邮箱</small>{email}</span></a> : null}
         </div> : null}
       </div>
-      <div className="contact-form-panel">
-        <div className="contact-form-heading">
+      <div className="contact-form-panel" data-motion-role="visual">
+        <div className="contact-form-heading" data-motion-role="heading">
           <span>在线咨询</span>
           <p>填写基本信息，我们将尽快与您联系。</p>
         </div>
         <form onSubmit={handleSubmit}>
-          <div className="contact-field">
+          <div className="contact-field" data-motion-role="item">
             <label htmlFor="contact-name">联系人</label>
             <input id="contact-name" name="name" placeholder={contact.namePlaceholder} required />
           </div>
-          <div className="contact-field">
+          <div className="contact-field" data-motion-role="item">
             <label htmlFor="contact-company">企业名称（选填）</label>
             <input id="contact-company" name="company" placeholder={contact.companyPlaceholder} />
           </div>
-          <div className="contact-field">
+          <div className="contact-field" data-motion-role="item">
             <label htmlFor="contact-method">联系电话</label>
             <input id="contact-method" name="contact" placeholder={contact.contactPlaceholder} inputMode="tel" required />
           </div>
-          <div className="contact-field">
+          <div className="contact-field" data-motion-role="item">
             <label htmlFor="contact-email">联系邮箱（选填）</label>
             <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} />
           </div>
-          <div className="contact-field contact-field-message">
+          <div className="contact-field contact-field-message" data-motion-role="item">
             <label htmlFor="contact-message">企业需求</label>
             <textarea id="contact-message" name="message" placeholder={contact.messagePlaceholder} required />
           </div>
