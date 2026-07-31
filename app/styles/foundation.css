@@ -99,15 +99,8 @@ img {
   margin-right: auto;
   margin-left: clamp(26px, 3vw, 56px);
   height: 100%;
-  --nav-anchor: 2.5;
+  overflow: visible;
 }
-
-.desktop-nav[data-active-index="0"] { --nav-anchor: 0; }
-.desktop-nav[data-active-index="1"] { --nav-anchor: 1; }
-.desktop-nav[data-active-index="2"] { --nav-anchor: 2; }
-.desktop-nav[data-active-index="3"] { --nav-anchor: 3; }
-.desktop-nav[data-active-index="4"] { --nav-anchor: 4; }
-.desktop-nav[data-active-index="5"] { --nav-anchor: 5; }
 
 .nav-list {
   display: flex;
@@ -116,6 +109,10 @@ img {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.nav-list > li {
+  position: relative;
 }
 
 .nav-link,
@@ -166,30 +163,13 @@ img {
 }
 
 .nav-content {
-  position: relative;
-  width: auto;
-}
-
-.nav-viewport-position {
   position: absolute;
   z-index: 20;
   top: 78px;
-  left: clamp(235px, calc((var(--nav-anchor) + 0.5) * 106px), calc(100% - 235px));
+  left: 50%;
   width: max-content;
   transform: translateX(-50%);
   perspective: 2000px;
-  transition: left 480ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.nav-viewport {
-  position: relative;
-  width: var(--radix-navigation-menu-viewport-width);
-  min-width: 310px;
-  height: auto;
-  min-height: 0;
-  overflow: hidden;
-  border-radius: 0 0 6px 6px;
-  transition: width 460ms cubic-bezier(0.22, 1, 0.36, 1), height 460ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .nav-panel {

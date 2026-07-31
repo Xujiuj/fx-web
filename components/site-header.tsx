@@ -11,7 +11,6 @@ import type { HomeContent } from "@/lib/cms-content";
 export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "navItems"> }) {
   const [activeNav, setActiveNav] = useState("");
   const visibleNavItems = content.navItems.filter((item) => !item.hidden);
-  const activeIndex = visibleNavItems.findIndex((item) => item.label === activeNav);
 
   return (
     <header className="site-header">
@@ -23,7 +22,6 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
         <NavigationMenu.Root
         className="desktop-nav"
         value={activeNav}
-        data-active-index={activeIndex}
         onValueChange={setActiveNav}
         delayDuration={120}
         skipDelayDuration={320}
@@ -34,9 +32,6 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
             <NavigationItem item={item} key={item.label} onActivate={setActiveNav} />
           ))}
         </NavigationMenu.List>
-        <div className="nav-viewport-position">
-          <NavigationMenu.Viewport className="nav-viewport" />
-        </div>
         </NavigationMenu.Root>
 
         <div className="header-actions">

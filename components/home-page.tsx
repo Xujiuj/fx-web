@@ -128,8 +128,6 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
 
   if (!activeTab) return null;
 
-  const activeIndex = tabs.findIndex((tab) => tab.value === activeTab.value) + 1;
-
   return (
     <section className="about-section" id="about">
       <Tabs.Root className="about-tabs" value={activeValue} onValueChange={setActiveValue}>
@@ -161,16 +159,18 @@ function AboutSection({ tabs }: { tabs: HomeContent["aboutTabs"] }) {
                 <h2>{activeTab.title}</h2>
                 <p>{activeTab.body}</p>
               </motion.div>
-              <motion.aside
-                className="about-panel-mark"
+              <motion.div
+                className={`about-media about-diagram about-diagram-${activeTab.value}`}
                 aria-label={activeTab.label}
                 initial={shouldReduceMotion ? false : { opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: shouldReduceMotion ? 0 : 0.5, delay: shouldReduceMotion ? 0 : 0.12, ease: [0.22, 1, 0.36, 1] }}
               >
-                <span>{String(activeIndex).padStart(2, "0")}</span>
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
+                <span aria-hidden="true" />
                 <strong>{activeTab.label}</strong>
-              </motion.aside>
+              </motion.div>
             </motion.div>
           </AnimatePresence>
         </div>

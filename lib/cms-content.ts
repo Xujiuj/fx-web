@@ -95,10 +95,10 @@ const legacyCertificateImages = new Set([
 ]);
 const legacyPartnerLabels = new Set(["制造企业", "集团企业", "园区平台", "咨询机构", "产业链伙伴"]);
 const defaultPageMedia: Record<string, PageMedia> = {
-  "solution-standard": {},
-  "solution-practical": {},
-  "solution-consulting": {},
-  "solution-platform": {},
+  "solution-standard": { diagram: "/media/reference-diagrams/data-modeling-flow.svg" },
+  "solution-practical": { diagram: "/media/reference-diagrams/agile-implementation.svg" },
+  "solution-consulting": { diagram: "/media/reference-diagrams/group-implementation.svg" },
+  "solution-platform": { diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
   "excel-accounting-tool": { screenshot: "/media/product-excel-report.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
   "carbon-management-platform": { screenshot: "/media/product-platform-dashboard.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
   "customer-cases": {
@@ -353,9 +353,9 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "company-honors", layout: "honors", navLabel: "企业荣誉", eyebrow: "HONORS", title: "企业荣誉", summary: "我们重视每一项可核验的专业认可，相关资质与荣誉将以有效文件为准持续更新。", image: heroPlatform, icon: "shield", metrics: [], features: [], steps: [], sections: [{ id: "honors", kind: "gallery", title: "荣誉展示", description: "已公开展示的证书、资质和荣誉，均可在后台独立维护。", items: [] }] },
   { slug: "company-partners", layout: "partners", navLabel: "合作伙伴", eyebrow: "PARTNERS", title: "合作伙伴", summary: "与客户及生态伙伴的合作，以项目实际需求和双方确认的信息为基础。", image: heroVisual, icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "partners", kind: "gallery", title: "合作伙伴", description: "感谢每一位与峰行智成共同推进企业碳管理建设的伙伴。", items: [] }] },
   { slug: "company-contact", layout: "contact", navLabel: "联系我们", eyebrow: "CONTACT", title: "联系我们", summary: "围绕温室气体核算、碳管理咨询和数字化建设，欢迎与我们沟通您的业务需求。", image: heroVisual, icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "contact", kind: "contacts", title: "联系信息", description: "我们将在收到信息后尽快与您沟通。", items: [{ title: "业务咨询", value: "15099663016", description: "工作日可通过电话联系" }, { title: "电子邮箱", value: "gongyafeng@fengxingdata.com", description: "可发送项目资料或合作需求" }] }] },
-  { slug: "service-capability-path", layout: "service", navLabel: "能力建设路径", eyebrow: "IMPLEMENTATION", title: "能力建设路径", summary: "从核算基础、数据治理到持续运营，结合企业实际阶段建立可持续使用的碳管理能力。", image: "/media/service-capability-path-hero.png", icon: "workflow", metrics: [], features: [], steps: [], sections: [{ id: "capability-visual", kind: "gallery", title: "能力建设", items: [{ title: "企业碳数据治理路径", description: "围绕数据边界、责任分工、数据质量和持续更新，逐步沉淀可用于核算、分析和管理的碳数据基础。", image: "/media/service-capability-path-content.png" }] }] },
-  { slug: "service-training-consulting", layout: "service", navLabel: "培训与咨询实施", eyebrow: "IMPLEMENTATION", title: "培训与咨询实施", summary: "围绕企业温室气体核算与碳管理需求，提供培训、数据梳理、方法辅导和过程复核支持。", image: "/media/service-training-consulting-hero.png", icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "training-visual", kind: "gallery", title: "实施流程", items: [{ title: "核算培训与实操流程", description: "以统一方法、业务数据和过程复核为基础，将培训内容转化为企业可以延续使用的核算工作流程。", image: "/media/service-training-consulting-content.png" }] }] },
-  { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [{ id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/service-platform-delivery-content.png" }] }] }
+  { slug: "service-capability-path", layout: "service", navLabel: "能力建设路径", eyebrow: "IMPLEMENTATION", title: "能力建设路径", summary: "从核算基础、数据治理到持续运营，结合企业实际阶段建立可持续使用的碳管理能力。", image: "/media/service-capability-path-hero.png", icon: "workflow", metrics: [], features: [], steps: [], sections: [{ id: "capability-visual", kind: "gallery", title: "能力建设", items: [{ title: "企业温室气体核算三层实施架构", description: "围绕核算基础、数据治理和持续运营组织实施工作，逐步沉淀可用于核算、分析和管理的碳数据基础。", image: "/media/reference-diagrams/three-layer-implementation.svg" }] }] },
+  { slug: "service-training-consulting", layout: "service", navLabel: "培训与咨询实施", eyebrow: "IMPLEMENTATION", title: "培训与咨询实施", summary: "围绕企业温室气体核算与碳管理需求，提供培训、数据梳理、方法辅导和过程复核支持。", image: "/media/service-training-consulting-hero.png", icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "training-visual", kind: "gallery", title: "实施流程", items: [{ title: "温室气体核算服务流程", description: "以统一方法、业务数据和过程复核为基础，将培训与咨询内容转化为企业可以延续使用的核算工作流程。", image: "/media/reference-diagrams/service-process.svg" }] }] },
+  { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [{ id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台功能架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/reference-diagrams/platform-function-architecture.svg" }] }] }
 ]);
 
 function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {

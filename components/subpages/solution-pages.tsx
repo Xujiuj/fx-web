@@ -7,6 +7,7 @@ import {
   Wrench,
 } from "lucide-react";
 import Link from "next/link";
+import { ReferenceDiagram } from "@/components/reference-diagram";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./solution-pages.module.css";
 
@@ -21,6 +22,14 @@ type SolutionFramework = {
   deliverable: string;
   deliverableDescription: string;
   services: string[];
+};
+
+type SolutionDiagram = {
+  eyebrow: string;
+  title: string;
+  description: string;
+  src: string;
+  alt: string;
 };
 
 const solutionFrameworks: Record<string, SolutionFramework> = {
@@ -66,6 +75,37 @@ const solutionFrameworks: Record<string, SolutionFramework> = {
   },
 };
 
+const solutionDiagrams: Record<string, SolutionDiagram> = {
+  "solution-standard": {
+    eyebrow: "核算方法",
+    title: "温室气体核算数据建模流程",
+    description: "以活动数据、排放因子、计算规则和核算结果为主线，明确企业首次开展核算时需要建立的数据关系。",
+    src: "/media/reference-diagrams/data-modeling-flow.svg",
+    alt: "企业温室气体核算数据建模流程图",
+  },
+  "solution-practical": {
+    eyebrow: "实施流程",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    src: "/media/reference-diagrams/agile-implementation.svg",
+    alt: "企业温室气体核算敏捷实施技术路线图",
+  },
+  "solution-consulting": {
+    eyebrow: "集团协同",
+    title: "集团和分子公司实施路径",
+    description: "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
+    src: "/media/reference-diagrams/group-implementation.svg",
+    alt: "集团和分子公司温室气体核算实施路径图",
+  },
+  "solution-platform": {
+    eyebrow: "数据治理",
+    title: "企业碳数据治理与标准体系",
+    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    src: "/media/reference-diagrams/carbon-data-governance.svg",
+    alt: "企业碳数据治理与标准体系图",
+  },
+};
+
 function getFramework(page: Subpage): SolutionFramework {
   return solutionFrameworks[page.slug] ?? {
     sequence: page.eyebrow.replace(/\D/g, "") || "01",
@@ -81,6 +121,7 @@ function getFramework(page: Subpage): SolutionFramework {
 
 function SolutionDetailPage({ page }: SolutionPageProps) {
   const framework = getFramework(page);
+  const diagram = solutionDiagrams[page.slug];
 
   return (
     <>
@@ -140,6 +181,16 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </ol>
         </div>
       </section>
+
+      {diagram ? (
+        <ReferenceDiagram
+          eyebrow={diagram.eyebrow}
+          title={diagram.title}
+          description={diagram.description}
+          src={page.media?.diagram ?? diagram.src}
+          alt={diagram.alt}
+        />
+      ) : null}
 
       <section className={`${styles.solutionCta} page-reveal`} aria-label="联系顾问">
         <div>
