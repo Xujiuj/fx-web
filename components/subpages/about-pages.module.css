@@ -152,32 +152,91 @@
   object-fit: contain;
 }
 
-.contactGrid {
+.contactLayout {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 0 44px;
+  align-items: start;
+}
+
+.contactLead {
+  grid-column: span 5;
+  padding: 14px 38px 24px 0;
+  border-top: 3px solid #e95513;
+}
+
+.contactLead > span {
+  display: block;
+  margin-top: 22px;
+  color: #bf3f08;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.contactLead h2 {
+  margin: 10px 0 16px;
+  color: #29483a;
+  font-size: 28px;
+  line-height: 1.42;
+}
+
+.contactLead p {
+  margin: 0;
+  color: #708077;
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+.contactLead a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 30px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #bf3f08;
+  color: #9c3d0a;
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.contactLead a:hover {
+  color: #e95513;
+}
+
+.contactLead a:focus-visible {
+  outline: 3px solid #e2924d;
+  outline-offset: 4px;
+}
+
+.contactGrid {
+  display: grid;
+  grid-column: span 7;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
-  width: min(100%, 900px);
-  margin: 0 auto;
 }
 
 .contactCard {
   display: grid;
-  grid-column: span 6;
-  justify-items: center;
+  justify-items: start;
   align-content: start;
-  min-height: 260px;
-  padding: 34px 28px;
+  min-height: 270px;
+  padding: 34px 30px;
   border: 1px solid #d8e2dc;
-  text-align: center;
+  background: #fff;
 }
 
 .contactCard:nth-child(odd) {
-  grid-column: span 5;
+  background: #f3f7f4;
 }
 
-.contactCard:nth-child(even) {
-  grid-column: span 7;
-  background: #f3f7f4;
+.contactIcon {
+  display: grid;
+  width: 42px;
+  height: 42px;
+  margin-bottom: 28px;
+  place-items: center;
+  color: #fff;
+  background: #bf3f08;
 }
 
 .contactCard h3 {
@@ -189,7 +248,7 @@
   display: block;
   margin-top: 8px;
   color: #b7551b;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   line-height: 1.45;
   word-break: break-word;
@@ -223,6 +282,20 @@
 
   .partnerGrid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .contactLayout {
+    gap: 36px;
+  }
+
+  .contactLead {
+    grid-column: span 12;
+    max-width: 620px;
+    padding-right: 0;
+  }
+
+  .contactGrid {
+    grid-column: span 12;
   }
 }
 
@@ -258,10 +331,12 @@
   }
 
   .honorCard:nth-child(n),
-  .contactCard,
-  .contactCard:nth-child(odd),
-  .contactCard:nth-child(even) {
+  .contactCard {
     grid-column: auto;
+  }
+
+  .contactLead h2 {
+    font-size: 24px;
   }
 
   .honorCard > img {

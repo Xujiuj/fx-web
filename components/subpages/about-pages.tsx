@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Mail, Phone } from "lucide-react";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
 import styles from "./about-pages.module.css";
 
@@ -77,12 +79,20 @@ export function ContactPage({ page }: AboutPageProps) {
     <>
       <AboutPageHero page={page} />
       <section className={styles.content} aria-label={section.title} data-motion-group="contact-grid">
-        <div className={styles.contactGrid}>
+        <div className={styles.contactLayout}>
+          <div className={`${styles.contactLead} page-reveal`} data-motion-role="item">
+            <span>LET&apos;S TALK</span>
+            <h2>{page.summary}</h2>
+            {section.description ? <p>{section.description}</p> : null}
+            <Link href="/#contact">提交咨询 <ArrowRight size={17} aria-hidden="true" /></Link>
+          </div>
+          <div className={styles.contactGrid}>
           {section.items.map((item) => {
             const isEmail = item.value?.includes("@");
             const href = item.value ? isEmail ? `mailto:${item.value}` : `tel:${item.value.replace(/[^\d+]/g, "")}` : undefined;
             return (
               <article className={`${styles.contactCard} page-reveal`} key={`${item.title}-${item.value ?? ""}`} data-motion-role="item">
+                <div className={styles.contactIcon} aria-hidden="true">{isEmail ? <Mail size={21} /> : <Phone size={21} />}</div>
                 <h3>{item.title}</h3>
                 {href ? <a href={href}>{item.value}</a> : <strong>{item.value}</strong>}
                 {item.description ? <p>{item.description}</p> : null}
@@ -90,6 +100,7 @@ export function ContactPage({ page }: AboutPageProps) {
               </article>
             );
           })}
+          </div>
         </div>
       </section>
     </>

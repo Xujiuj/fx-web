@@ -12,6 +12,7 @@ import {
   Layers3,
   LineChart,
   Mail,
+  Phone,
   Send,
   ShieldCheck,
   Sparkles,
@@ -327,6 +328,8 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
   const [hasError, setHasError] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const successDialogRef = useRef<HTMLDialogElement>(null);
+  const phone = contact.description.match(/1\d{10}/)?.[0];
+  const email = contact.description.match(/[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/)?.[0];
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -352,38 +355,49 @@ function ContactSection({ contact }: { contact: HomeContent["contact"] }) {
 
   return (
     <section className="contact-section" id="contact">
-      <div>
-        <Mail size={28} />
+      <div className="contact-intro">
+        <div className="contact-mark" aria-hidden="true"><Mail size={22} /></div>
+        <span className="contact-kicker">CONSULTATION</span>
         <h2>{contact.title}</h2>
         <p>{contact.description}</p>
+        {(phone || email) ? <div className="contact-channels" aria-label="联系渠道">
+          {phone ? <a href={`tel:${phone}`}><Phone size={17} aria-hidden="true" /><span><small>业务咨询</small>{phone}</span></a> : null}
+          {email ? <a href={`mailto:${email}`}><Mail size={17} aria-hidden="true" /><span><small>电子邮箱</small>{email}</span></a> : null}
+        </div> : null}
       </div>
-      <form onSubmit={handleSubmit}>
-        <div className="contact-field">
-          <label htmlFor="contact-name">联系人</label>
-          <input id="contact-name" name="name" placeholder={contact.namePlaceholder} required />
+      <div className="contact-form-panel">
+        <div className="contact-form-heading">
+          <span>在线咨询</span>
+          <p>填写基本信息，我们将尽快与您联系。</p>
         </div>
-        <div className="contact-field">
-          <label htmlFor="contact-company">企业名称（选填）</label>
-          <input id="contact-company" name="company" placeholder={contact.companyPlaceholder} />
-        </div>
-        <div className="contact-field">
-          <label htmlFor="contact-method">手机号 / 微信号</label>
-          <input id="contact-method" name="contact" placeholder={contact.contactPlaceholder} inputMode="tel" required />
-        </div>
-        <div className="contact-field">
-          <label htmlFor="contact-email">联系邮箱</label>
-          <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} required />
-        </div>
-        <div className="contact-field">
-          <label htmlFor="contact-message">咨询需求</label>
-          <textarea id="contact-message" name="message" placeholder={contact.messagePlaceholder} required />
-        </div>
-        <button type="submit" disabled={submitting}>
-          {contact.submitLabel}
-          <Send size={15} />
-        </button>
-        {hasError ? <p className="form-state">{contact.errorLabel}</p> : null}
-      </form>
+        <form onSubmit={handleSubmit}>
+          <div className="contact-field">
+            <label htmlFor="contact-name">联系人</label>
+            <input id="contact-name" name="name" placeholder={contact.namePlaceholder} required />
+          </div>
+          <div className="contact-field">
+            <label htmlFor="contact-company">企业名称（选填）</label>
+            <input id="contact-company" name="company" placeholder={contact.companyPlaceholder} />
+          </div>
+          <div className="contact-field">
+            <label htmlFor="contact-method">手机号 / 微信号</label>
+            <input id="contact-method" name="contact" placeholder={contact.contactPlaceholder} inputMode="tel" required />
+          </div>
+          <div className="contact-field">
+            <label htmlFor="contact-email">联系邮箱</label>
+            <input id="contact-email" name="email" type="email" placeholder={contact.emailPlaceholder} required />
+          </div>
+          <div className="contact-field contact-field-message">
+            <label htmlFor="contact-message">咨询需求</label>
+            <textarea id="contact-message" name="message" placeholder={contact.messagePlaceholder} required />
+          </div>
+          <button type="submit" disabled={submitting}>
+            {contact.submitLabel}
+            <Send size={15} />
+          </button>
+          {hasError ? <p className="form-state">{contact.errorLabel}</p> : null}
+        </form>
+      </div>
       <dialog ref={successDialogRef} className="contact-success-dialog" aria-labelledby="contact-success-title">
         <div className="contact-success-dialog-content">
           <CheckCircle2 size={32} aria-hidden="true" />
