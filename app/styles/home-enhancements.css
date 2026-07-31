@@ -690,6 +690,31 @@
   }
 }
 
+/* Cases read as one full-width editorial band; the content keeps its measure. */
+.home-cases {
+  width: 100%;
+  box-sizing: border-box;
+  padding-inline: max(24px, calc((100% - 1200px) / 2));
+  background: #fff6e9;
+}
+
+.home-cases::before {
+  display: none;
+}
+
+.home-cases-heading,
+.home-case-grid {
+  width: min(100%, 1200px);
+  margin-inline: auto;
+}
+
+@media (max-width: 720px) {
+  .home-cases {
+    width: 100%;
+    padding-inline: 18px;
+  }
+}
+
 .timeline-entry-copy h3 {
   color: #29483a;
   font-size: 20px;

@@ -1508,3 +1508,174 @@
     transition: none;
   }
 }
+
+/* Case scope: a compact question matrix instead of a full-height dark list. */
+.caseScope {
+  margin-top: 64px;
+  padding: 66px 0;
+  color: #29483a;
+  background: #f3f7f4;
+  border-block: 1px solid #d9e2dc;
+}
+
+.caseScope > div {
+  grid-template-columns: minmax(250px, 0.72fr) minmax(0, 1.28fr);
+  gap: clamp(42px, 7vw, 88px);
+  align-items: start;
+}
+
+.caseScope .sectionLabel {
+  color: #bf3f08;
+}
+
+.caseScopeHeading h2 {
+  max-width: 430px;
+  color: #29483a;
+  font-size: 39px;
+}
+
+.caseScopeHeading > p:last-child {
+  color: #68776f;
+}
+
+.caseScope ol {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-top: 2px solid #e95513;
+  border-left: 1px solid #d3ded7;
+}
+
+.caseScope li {
+  grid-template-columns: 34px 1fr;
+  gap: 14px;
+  min-height: 148px;
+  align-content: start;
+  padding: 22px 22px 20px;
+  border-right: 1px solid #d3ded7;
+  border-bottom: 1px solid #d3ded7;
+  background: #fff;
+}
+
+.caseScope li:nth-child(3n) {
+  background: #fffaf4;
+}
+
+.caseScope li > span {
+  color: #bf3f08;
+}
+
+.caseScope li strong {
+  color: #29483a;
+  font-size: 17px;
+}
+
+.caseScope li p {
+  grid-column: 2;
+  color: #68776f;
+  font-size: 13px;
+}
+
+/* Core capabilities use a readable sequence and are not trapped in card tiles. */
+.serviceBand {
+  padding: 66px 0;
+}
+
+.serviceBand > div {
+  grid-template-columns: minmax(240px, 0.7fr) minmax(0, 1.3fr);
+  gap: clamp(42px, 7vw, 92px);
+}
+
+.serviceBandHeading h2 {
+  max-width: 360px;
+  font-size: 40px;
+}
+
+.serviceList {
+  grid-template-columns: 1fr;
+  border-top: 2px solid rgba(255, 255, 255, 0.38);
+  border-left: 0;
+}
+
+.serviceList article {
+  display: grid;
+  grid-template-columns: 40px minmax(145px, 0.72fr) minmax(0, 1.28fr) 32px;
+  gap: 16px;
+  align-items: center;
+  min-height: 104px;
+  padding: 17px 0;
+  border-right: 0;
+  background: transparent;
+}
+
+.serviceList article:nth-child(even) {
+  background: transparent;
+}
+
+.serviceList h3,
+.serviceList p {
+  max-width: none;
+  margin: 0;
+}
+
+.serviceList h3 {
+  font-size: 18px;
+}
+
+.serviceList p {
+  font-size: 14px;
+}
+
+.serviceList i {
+  position: static;
+  width: 28px;
+}
+
+@media (max-width: 680px) {
+  .caseScope {
+    margin-top: 50px;
+    padding: 56px 0;
+  }
+
+  .caseScope > div {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .caseScopeHeading h2 {
+    font-size: 34px;
+  }
+
+  .caseScope ol {
+    grid-template-columns: 1fr;
+  }
+
+  .caseScope li {
+    min-height: 116px;
+  }
+
+  .serviceBand {
+    padding: 56px 0;
+  }
+
+  .serviceBand > div {
+    grid-template-columns: 1fr;
+    gap: 34px;
+  }
+
+  .serviceList article {
+    grid-template-columns: 34px minmax(0, 1fr) 28px;
+    gap: 12px;
+    min-height: 0;
+    padding: 19px 0;
+  }
+
+  .serviceList h3 {
+    font-size: 17px;
+  }
+
+  .serviceList p {
+    grid-column: 2 / -1;
+    margin-top: 4px;
+    font-size: 13px;
+  }
+}
