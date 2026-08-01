@@ -670,6 +670,49 @@
   color: #bf3f08;
 }
 
+/* Positioning and consultation form one continuous closing sequence. */
+main .home-positioning {
+  position: relative;
+  z-index: 0;
+}
+
+main .home-positioning-inner {
+  width: min(calc(100% - 48px), 1120px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 64px;
+  padding: 72px 0 136px;
+}
+
+main .home-positioning + .contact-section {
+  position: relative;
+  z-index: 1;
+  margin: -72px auto 112px;
+  border-top-color: #f7b52c;
+  box-shadow: 0 22px 54px rgba(123, 52, 11, 0.14);
+}
+
+main .home-positioning + .contact-section .contact-intro {
+  background: #fff6e9;
+}
+
+@media (max-width: 720px) {
+  main .home-positioning-inner {
+    width: calc(100% - 36px);
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 52px 0 82px;
+  }
+
+  main .home-positioning + .contact-section {
+    width: calc(100% - 36px);
+    margin: -30px auto 72px;
+  }
+
+  main .home-positioning + .contact-section .contact-channels span {
+    font-size: 14px;
+  }
+}
+
 /* Keep the positioning statement legible on its orange brand surface. */
 main .home-positioning {
   color: #fff;
