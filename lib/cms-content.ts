@@ -223,7 +223,7 @@ export const homeEditorialContent: HomeEditorialContent = {
     { title: "培训赋能", description: "建立温室气体核算能力", href: "/solution-standard", icon: "users" },
     { title: "咨询实施", description: "建立统一核算体系", href: "/solution-consulting", icon: "building" },
     { title: "数字化平台", description: "构建企业碳管理数字化能力", href: "/solution-platform", icon: "database" },
-    { title: "持续运营", description: "推动碳数据价值释放", href: "/service-platform-delivery", icon: "workflow" }
+    { title: "持续运营", description: "推动碳数据价值释放", href: "/solution-platform", icon: "workflow" }
   ],
   cases: [
     { title: "培训赋能案例", description: "从方法认知与标准理解开始，培养企业内部核算人才。", href: "/customer-cases#training-case", icon: "users" },
