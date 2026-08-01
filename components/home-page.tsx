@@ -233,7 +233,7 @@ function ServicesSection({ items }: { items: HomeEditorialContent["services"] })
       <div className="home-service-list">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] ?? BarChart3;
-          return <Link href={item.href} key={item.title}><span>{String(index + 1).padStart(2, "0")}</span><Icon size={27} aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.description}</p></div><ArrowRight size={19} aria-hidden="true" /></Link>;
+          return <a href={item.href} key={item.title}><span>{String(index + 1).padStart(2, "0")}</span><Icon size={27} aria-hidden="true" /><div><h3>{item.title}</h3><p>{item.description}</p></div><ArrowRight size={19} aria-hidden="true" /></a>;
         })}
       </div>
     </section>
