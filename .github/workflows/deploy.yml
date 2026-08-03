@@ -62,10 +62,15 @@ jobs:
 
       - name: Replace production service
         uses: appleboy/ssh-action@v1
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+          SMTP_FROM: ${{ secrets.SMTP_FROM }}
         with:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM
           command_timeout: 10m
           script_stop: true
           script: |
@@ -90,6 +95,20 @@ jobs:
               mv "$legacy_target/.env" "$target/.env"
               chown fx-web:fx-web "$target/.env"
             fi
+
+            : "${SMTP_USER:?Missing SMTP_USER secret}"
+            : "${SMTP_PASSWORD:?Missing SMTP_PASSWORD secret}"
+            : "${SMTP_FROM:?Missing SMTP_FROM secret}"
+            smtp_env=$(mktemp)
+            {
+              if [ -f "$target/.env" ]; then
+                sed -E '/^SMTP_(HOST|PORT|SECURE|USER|PASSWORD|FROM)=/d' "$target/.env"
+              fi
+              printf '%s\n' 'SMTP_HOST=smtp.qq.com' 'SMTP_PORT=465' 'SMTP_SECURE=true'
+              printf 'SMTP_USER=%s\nSMTP_PASSWORD=%s\nSMTP_FROM=%s\n' "$SMTP_USER" "$SMTP_PASSWORD" "$SMTP_FROM"
+            } > "$smtp_env"
+            install -o fx-web -g fx-web -m 0600 "$smtp_env" "$target/.env"
+            rm -f "$smtp_env"
 
             install -d -o fx-web -g fx-web "$data_dir"
             if [ ! -f "$database" ] && [ -f "$legacy_database" ]; then

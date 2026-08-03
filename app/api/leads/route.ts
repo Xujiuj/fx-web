@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { sendContactLeadNotification } from "@/lib/contact-lead-mailer";
 import { prisma } from "@/lib/prisma";
 import { createFixedWindowLimiter, getClientIp, readJsonBody } from "@/lib/request-security";
 
@@ -71,6 +72,16 @@ export async function POST(request: Request) {
       message
     }
   });
+
+  try {
+    const delivery = await sendContactLeadNotification(lead);
+    if (delivery !== "sent") console.warn("Contact lead notification was not sent", { leadId: lead.id, delivery });
+  } catch (error) {
+    console.error("Contact lead notification failed", {
+      leadId: lead.id,
+      message: error instanceof Error ? error.message : "Unknown mail delivery error"
+    });
+  }
 
   return NextResponse.json({ id: lead.id }, { status: 201 });
 }
