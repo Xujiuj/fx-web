@@ -169,14 +169,14 @@ function ProductResources({ product }: { product: string }) {
       <header className={styles.sectionHeading}>
         <span>RESOURCE CENTER</span>
         <h2 id={`${product}-resources-title`}>产品资料下载</h2>
-        <p>产品手册、功能清单与试用说明将在此持续更新；当前可联系顾问获取最新版本。</p>
+        <p>产品手册、功能清单与部署说明统一在资料下载中心维护，后续上传新版本后可直接更新下载入口。</p>
       </header>
       <div className={styles.resourceRows}>
         {["产品手册", "功能与版本清单", "部署及试用说明"].map((name) => (
-          <Link href="/#contact" key={name}>
+          <Link href="/knowledge-center#downloads" key={name}>
             <Download size={19} aria-hidden="true" />
             <strong>{name}</strong>
-            <span>联系获取</span>
+            <span>前往下载中心</span>
             <ArrowRight size={17} aria-hidden="true" />
           </Link>
         ))}
