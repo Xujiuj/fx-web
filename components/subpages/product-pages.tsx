@@ -519,7 +519,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.platformHeroActions}>
-              <Link className={styles.platformHeroLink} href="/enterprise/">
+              <Link className={styles.platformHeroLink} href="/sample/">
                 进入企业端平台 <ExternalLink size={18} aria-hidden="true" />
               </Link>
               <Link className={styles.platformSecondaryLink} href={platformTrialUrl}>申请试用账号</Link>
@@ -584,7 +584,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           <p>企业端作为独立应用部署，与官网服务和数据完全隔离；需要试用账号时可提交申请。</p>
         </div>
         <div className={styles.publicDemoActions}>
-          <Link href="/enterprise/">进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
+          <Link href="/sample/">进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
           <Link href={platformTrialUrl}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
