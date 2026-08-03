@@ -1,4 +1,5 @@
 ﻿import { prisma } from "@/lib/prisma";
+import { knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
 export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "shield" | "sparkles" | "users" | "workflow";
 
 export type NavChild = { label: string; href: string; hidden?: boolean; group?: string };
@@ -54,7 +55,16 @@ export type SubpageSection = {
   kind: "metrics" | "capabilities" | "process" | "resources" | "timeline" | "gallery" | "contacts";
   title: string;
   description?: string;
-  items: Array<{ title: string; description?: string; value?: string; image?: string }>;
+  items: Array<{ title: string; description?: string; value?: string; image?: string; details?: Record<string, string> }>;
+};
+
+export type ProductScreenshot = { src: string; label: string; alt: string; width?: number; height?: number };
+export type ProductPageConfig = {
+  screenshots?: ProductScreenshot[];
+  videoUrl?: string;
+  videoPoster?: string;
+  enterpriseUrl?: string;
+  trialUrl?: string;
 };
 
 export type Subpage = {
@@ -71,6 +81,7 @@ export type Subpage = {
   steps: string[];
   sections: SubpageSection[];
   media?: PageMedia;
+  product?: ProductPageConfig;
 };
 
 type StoredSubpage = Omit<Subpage, "layout" | "sections"> & Partial<Pick<Subpage, "layout" | "sections">>;
@@ -80,6 +91,7 @@ const heroPlatform = "/media/fengxing-hero-management.png";
 const platformImage = heroVisual;
 const dataImage = heroPlatform;
 const excelImage = "/media/about-philosophy-generated.png";
+const isProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
 const standardFooter: FooterContent = {
   copyright: "© 新疆峰行智成数据科技有限责任公司 版权所有",
   icpText: "新ICP备2026004234号-1",
@@ -408,8 +420,8 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "solution-practical", navLabel: "实战营（Excel单公司版）", eyebrow: "SOLUTION 02", title: "实战营（Excel单公司版）", summary: "帮助企业完成首次核算闭环。", image: excelImage, icon: "chart", metrics: [{ label: "适用组织", value: "单一法人" }, { label: "交付工具", value: "Excel 模板" }, { label: "交付成果", value: "核算报告" }], features: ["活动数据台账梳理", "Excel 单公司版配置", "历史年度数据整理", "范围一、范围二及适用范围三核算"], steps: ["梳理核算边界", "收集并复核活动数据", "配置排放因子与计算规则", "交付核算报告和工作底稿"] },
   { slug: "solution-consulting", navLabel: "咨询版（Excel集团版）", eyebrow: "SOLUTION 03", title: "咨询版（Excel集团版）", summary: "建立集团统一核算管理体系。", image: dataImage, icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"] },
   { slug: "solution-platform", navLabel: "平台版（数字化升级）", eyebrow: "SOLUTION 04", title: "平台版（数字化升级）", summary: "建设企业长期碳管理能力。", image: platformImage, icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"] },
-  { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版", "集团版", "自动汇总", "多年度分析", "可持续积累"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"], sections: [{ id: "product-resources", kind: "resources", title: "产品资料", items: [{ title: "产品手册", description: "产品介绍与使用说明" }, { title: "功能与版本清单", description: "功能范围与版本说明" }, { title: "部署及试用说明", description: "部署要求与试用指引" }] }] },
-  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "统一" }, { label: "管理平台", value: "统一" }], features: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"], sections: [{ id: "product-resources", kind: "resources", title: "产品资料", items: [{ title: "产品手册", description: "产品介绍与使用说明" }, { title: "功能与版本清单", description: "功能范围与版本说明" }, { title: "部署及试用说明", description: "部署要求与试用指引" }] }] },
+  { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版", "集团版", "自动汇总", "多年度分析", "可持续积累"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"], product: { screenshots: [{ src: "/materials/20260803/资料20260803/产品/单公司版产品截图-01.svg", label: "单公司版", alt: "Excel温室气体核算工具单公司版完整界面", width: 981, height: 499 }, { src: "/materials/20260803/资料20260803/产品/集团版版产品截图-01.svg", label: "集团版", alt: "Excel温室气体核算工具集团版完整界面", width: 887, height: 703 }] }, sections: [{ id: "product-resources", kind: "resources", title: "产品资料", items: [{ title: "产品手册", description: "产品介绍与使用说明" }, { title: "功能与版本清单", description: "功能范围与版本说明" }, { title: "部署及试用说明", description: "部署要求与试用指引" }] }] },
+  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "统一" }, { label: "管理平台", value: "统一" }], features: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"], product: { videoUrl: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4", videoPoster: "/materials/20260803/资料20260803/产品/平台截图/2.png", enterpriseUrl: "/sample/", trialUrl: "/#contact", screenshots: Array.from({ length: 7 }, (_, index) => ({ src: `/materials/20260803/资料20260803/产品/平台截图/${index + 1}.png`, alt: `企业碳管理数字化平台界面截图${index + 1}`, label: ["数据维护", "分析首页", "分析目录", "排放总览", "排放明细", "趋势分析", "强度分析"][index], width: 3840, height: 2040 })) }, sections: [{ id: "product-resources", kind: "resources", title: "产品资料", items: [{ title: "产品手册", description: "产品介绍与使用说明" }, { title: "功能与版本清单", description: "功能范围与版本说明" }, { title: "部署及试用说明", description: "部署要求与试用指引" }] }] },
   { slug: "customer-cases", layout: "cases", navLabel: "客户案例", eyebrow: "CLIENT CASES", title: "客户案例", summary: "围绕企业碳管理能力建设的不同阶段，按培训赋能、Excel单公司版、Excel集团版和数字化平台四类展示项目案例。", image: dataImage, icon: "building", metrics: [{ label: "案例分类", value: "4类" }, { label: "统一结构", value: "6项" }], features: ["培训赋能案例", "Excel单公司版案例", "Excel集团版案例", "数字化平台案例"], steps: ["项目背景", "面临问题", "建设内容", "实施过程", "建设成果", "客户价值"], sections: defaultCustomerCaseSections },
   { slug: "knowledge-center", navLabel: "知识课堂", eyebrow: "KNOWLEDGE", title: "企业碳管理学习与能力提升平台", summary: "围绕企业碳管理所需的政策、方法、工具与实践，提供双碳专栏、视频课程和资料下载。", image: dataImage, icon: "sparkles", metrics: [{ label: "内容栏目", value: "3类" }, { label: "课程方向", value: "5类" }, { label: "服务对象", value: "企业" }], features: ["双碳政策解读", "温室气体核算", "ESG管理", "CDP问卷", "CBAM", "碳市场动态"], steps: ["企业碳核算入门", "Excel核算实战", "集团核算体系建设", "数字化平台培训", "ESG基础课程"], sections: [{ id: "downloads", kind: "resources", title: "资料下载", items: [{ title: "产品手册" }, { title: "解决方案" }, { title: "Excel核算工具" }] }] },
   { slug: "company-profile", navLabel: "公司介绍", eyebrow: "ABOUT", title: "新疆峰行智成数据科技有限责任公司", summary: "企业碳管理数字化服务商", image: platformImage, icon: "users", metrics: [{ label: "企业定位", value: "企业碳管理数字化服务商" }, { label: "企业使命", value: "以智慧驱动业务增长" }, { label: "企业愿景", value: "成为企业绿色低碳转型可信赖的长期合作伙伴" }], features: ["温室气体核算", "碳管理咨询", "数字化平台", "实施运营"], steps: [], sections: [
@@ -429,52 +441,26 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [{ id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台功能架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/reference-diagrams/platform-function-architecture.svg" }] }] }
 ]);
 
-const documentLockedSlugs = new Set([
-  "solution-standard",
-  "solution-practical",
-  "solution-consulting",
-  "solution-platform",
-  "excel-accounting-tool",
-  "carbon-management-platform",
-  "customer-cases",
-  "knowledge-center",
-  "company-profile",
-  "company-honors",
-  "company-contact"
-]);
-
 function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
   const stored = normalizeSubpagesContent(content).map((page) => {
     const fallback = defaultSubpages.find((entry) => entry.slug === page.slug);
-    const withDefaultSections = fallback?.sections.length && (page.sections.length === 0 || documentLockedSlugs.has(page.slug))
+    const withDefaultSections = fallback?.sections.length && page.sections.length === 0
       ? { ...page, sections: fallback.sections }
       : page;
     const withDefaultMedia = fallback?.media
       ? { ...withDefaultSections, media: { ...fallback.media, ...withDefaultSections.media } }
       : withDefaultSections;
-    const withDocumentDefaults = fallback && documentLockedSlugs.has(withDefaultMedia.slug)
-      ? {
-          ...withDefaultMedia,
-          navLabel: fallback.navLabel,
-          eyebrow: fallback.eyebrow,
-          title: fallback.title,
-          summary: fallback.summary,
-          metrics: fallback.metrics,
-          features: fallback.features,
-          steps: fallback.steps,
-          sections: fallback.sections
-        }
-      : withDefaultMedia;
-    return withDocumentDefaults.slug === "carbon-management-platform" && withDocumentDefaults.image === platformImage
-      ? { ...withDocumentDefaults, image: "/media/product-platform-hero.webp" }
-      : withDocumentDefaults;
+    const withDefaultProduct = fallback?.product ? { ...withDefaultMedia, product: { ...fallback.product, ...withDefaultMedia.product } } : withDefaultMedia;
+    return withDefaultProduct.slug === "carbon-management-platform" && withDefaultProduct.image === platformImage
+      ? { ...withDefaultProduct, image: "/media/product-platform-hero.webp" }
+      : withDefaultProduct;
   });
   const storedSlugs = new Set(stored.map((page) => page.slug));
   return [...stored, ...defaultSubpages.filter((page) => !storedSlugs.has(page.slug))];
 }
 
-export type ContentVersions = { home: number; subpages: number };
-export type SiteContentBundle = { home: HomeContent; subpages: Subpage[]; versions: ContentVersions };
+export type ContentVersions = { home: number; subpages: number; knowledge: number };
+export type SiteContentBundle = { home: HomeContent; subpages: Subpage[]; knowledge: KnowledgeEntry[]; versions: ContentVersions };
 
 export class ContentConflictError extends Error {
   constructor() {
@@ -492,6 +478,7 @@ function parseConfig<T>(value: string, fallback: T): T {
 }
 
 export async function getHomeContent(): Promise<HomeContent> {
+  if (isProductionBuild) return defaultHomeContent;
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "home" } });
     return normalizeHomeContent(record ? parseConfig(record.value, defaultHomeContent) : defaultHomeContent);
@@ -501,6 +488,7 @@ export async function getHomeContent(): Promise<HomeContent> {
 }
 
 async function loadSubpages(): Promise<Subpage[]> {
+  if (isProductionBuild) return defaultSubpages;
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "subpages" } });
     return record ? normalizeStoredSubpages(parseConfig(record.value, defaultSubpages)) : defaultSubpages;
@@ -513,35 +501,64 @@ export function getSubpagesContent(): Promise<Subpage[]> {
   return loadSubpages();
 }
 
+function normalizeKnowledgeEntries(entries: unknown): KnowledgeEntry[] {
+  if (!Array.isArray(entries)) return defaultKnowledgeEntries;
+  const valid = entries.filter((entry): entry is KnowledgeEntry => Boolean(entry && typeof entry === "object" &&
+    typeof (entry as KnowledgeEntry).slug === "string" && /^(?:[a-z0-9]+-)*[a-z0-9]+$/.test((entry as KnowledgeEntry).slug) &&
+    ((entry as KnowledgeEntry).type === "article" || (entry as KnowledgeEntry).type === "course") &&
+    typeof (entry as KnowledgeEntry).category === "string" && typeof (entry as KnowledgeEntry).title === "string" &&
+    typeof (entry as KnowledgeEntry).summary === "string" && typeof (entry as KnowledgeEntry).meta === "string" &&
+    Array.isArray((entry as KnowledgeEntry).sections)));
+  return valid.length ? valid : defaultKnowledgeEntries;
+}
+
+export async function getKnowledgeEntries(): Promise<KnowledgeEntry[]> {
+  if (isProductionBuild) return defaultKnowledgeEntries;
+  try {
+    const record = await prisma.siteContent.findUnique({ where: { key: "knowledge" } });
+    return record ? normalizeKnowledgeEntries(parseConfig(record.value, defaultKnowledgeEntries)) : defaultKnowledgeEntries;
+  } catch {
+    return defaultKnowledgeEntries;
+  }
+}
+
+export async function getKnowledgeEntry(slug: string): Promise<KnowledgeEntry | null> {
+  return (await getKnowledgeEntries()).find((entry) => entry.slug === slug) ?? null;
+}
+
 export async function getSubpageContent(slug: string): Promise<Subpage | null> {
   const subpages = await loadSubpages();
   return subpages.find((page) => page.slug === slug) ?? null;
 }
 
 export async function getSiteContentBundle(): Promise<SiteContentBundle> {
+  if (isProductionBuild) return { home: defaultHomeContent, subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
   try {
-    const records = await prisma.siteContent.findMany({ where: { key: { in: ["home", "subpages"] } } });
+    const records = await prisma.siteContent.findMany({ where: { key: { in: ["home", "subpages", "knowledge"] } } });
     const homeRecord = records.find((record) => record.key === "home");
     const subpagesRecord = records.find((record) => record.key === "subpages");
+    const knowledgeRecord = records.find((record) => record.key === "knowledge");
     return {
       home: normalizeHomeContent(homeRecord ? parseConfig(homeRecord.value, defaultHomeContent) : defaultHomeContent),
       subpages: subpagesRecord ? normalizeStoredSubpages(parseConfig(subpagesRecord.value, defaultSubpages)) : defaultSubpages,
-      versions: { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0 }
+      knowledge: knowledgeRecord ? normalizeKnowledgeEntries(parseConfig(knowledgeRecord.value, defaultKnowledgeEntries)) : defaultKnowledgeEntries,
+      versions: { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0, knowledge: knowledgeRecord?.version ?? 0 }
     };
   } catch {
-    return { home: defaultHomeContent, subpages: defaultSubpages, versions: { home: 0, subpages: 0 } };
+    return { home: defaultHomeContent, subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
   }
 }
 
 export async function saveSiteContentBundle(
-  bundle: Pick<SiteContentBundle, "home" | "subpages">,
+  bundle: Pick<SiteContentBundle, "home" | "subpages" | "knowledge">,
   expectedVersions: ContentVersions
 ): Promise<ContentVersions> {
   return prisma.$transaction(async (tx) => {
-    const records = await tx.siteContent.findMany({ where: { key: { in: ["home", "subpages"] } } });
+    const records = await tx.siteContent.findMany({ where: { key: { in: ["home", "subpages", "knowledge"] } } });
     const homeRecord = records.find((record) => record.key === "home");
     const subpagesRecord = records.find((record) => record.key === "subpages");
-    const current = { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0 };
+    const knowledgeRecord = records.find((record) => record.key === "knowledge");
+    const current = { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0, knowledge: knowledgeRecord?.version ?? 0 };
 
     if (current.home !== expectedVersions.home || current.subpages !== expectedVersions.subpages) {
       throw new ContentConflictError();
@@ -557,7 +574,12 @@ export async function saveSiteContentBundle(
       update: { value: JSON.stringify(bundle.subpages, null, 2), version: { increment: 1 } },
       create: { key: "subpages", value: JSON.stringify(bundle.subpages, null, 2), version: 1 }
     });
+    const knowledge = await tx.siteContent.upsert({
+      where: { key: "knowledge" },
+      update: { value: JSON.stringify(bundle.knowledge, null, 2), version: { increment: 1 } },
+      create: { key: "knowledge", value: JSON.stringify(bundle.knowledge, null, 2), version: 1 }
+    });
 
-    return { home: home.version, subpages: subpages.version };
+    return { home: home.version, subpages: subpages.version, knowledge: knowledge.version };
   });
 }

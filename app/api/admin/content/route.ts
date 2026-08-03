@@ -10,6 +10,7 @@ import {
   type HomeContent,
   type Subpage
 } from "@/lib/cms-content";
+import type { KnowledgeEntry } from "@/lib/knowledge-content";
 import { readJsonBody } from "@/lib/request-security";
 
 async function unauthorized() {
@@ -24,6 +25,10 @@ function isLocalPath(value: unknown) {
   return typeof value === "string" && value.startsWith("/") && !value.startsWith("//");
 }
 
+function isAllowedLink(value: unknown) {
+  return typeof value === "string" && (isLocalPath(value) || /^https:\/\/[^\s]+$/i.test(value));
+}
+
 function isMediaMap(value: unknown) {
   return isRecord(value) && Object.values(value).every(isLocalPath);
 }
@@ -34,7 +39,7 @@ function isNavigationItem(value: unknown) {
     (value.children === undefined || (Array.isArray(value.children) && value.children.every((child) => isRecord(child) && typeof child.label === "string" && typeof child.href === "string" && (child.hidden === undefined || typeof child.hidden === "boolean") && (child.group === undefined || typeof child.group === "string"))));
 }
 
-function validateContent(home: unknown, subpages: unknown): string | null {
+function validateContent(home: unknown, subpages: unknown, knowledge: unknown): string | null {
   if (!isRecord(home) || !isRecord(home.site) || typeof home.site.title !== "string" || typeof home.site.description !== "string") return "站点标题或描述无效";
   if (!isRecord(home.brand) || !isLocalPath(home.brand.logo)) return "品牌配置或 Logo 路径无效";
   for (const key of ["navItems", "heroSlides", "aboutTabs", "timeline", "solutionItems", "newsItems", "products", "capabilities", "certificateImages", "partners"]) {
@@ -58,9 +63,28 @@ function validateContent(home: unknown, subpages: unknown): string | null {
     if (typeof page.title !== "string" || !isLocalPath(page.image)) return "子页面标题或图片路径无效: " + page.slug;
     if (!Array.isArray(page.features) || !Array.isArray(page.steps) || !Array.isArray(page.metrics)) return "子页面结构无效: " + page.slug;
     if (page.media !== undefined && !isMediaMap(page.media)) return "子页面媒体路径无效: " + page.slug;
+    if (page.product !== undefined) {
+      if (!isRecord(page.product)) return "产品配置无效: " + page.slug;
+      for (const key of ["enterpriseUrl", "trialUrl"] as const) {
+        if (page.product[key] !== undefined && !isAllowedLink(page.product[key])) return "产品链接必须是站内路径或 https 地址: " + page.slug;
+      }
+      for (const key of ["videoUrl", "videoPoster"] as const) {
+        if (page.product[key] !== undefined && !isLocalPath(page.product[key])) return "产品视频和封面必须使用站内路径: " + page.slug;
+      }
+      if (page.product.screenshots !== undefined && (!Array.isArray(page.product.screenshots) || !page.product.screenshots.every((item) => isRecord(item) && isLocalPath(item.src) && typeof item.label === "string" && typeof item.alt === "string"))) return "产品截图配置无效: " + page.slug;
+    }
     if (page.sections !== undefined && (!Array.isArray(page.sections) || !page.sections.every((section) => isRecord(section) && Array.isArray(section.items) && section.items.every((item) => isRecord(item) && (item.image === undefined || isLocalPath(item.image)))))) {
       return "子页面模块图片路径无效: " + page.slug;
     }
+  }
+  if (!Array.isArray(knowledge)) return "知识课堂配置必须是数组";
+  const knowledgeSlugs = new Set<string>();
+  for (const entry of knowledge) {
+    if (!isRecord(entry) || typeof entry.slug !== "string" || !/^[a-z0-9-]+$/.test(entry.slug)) return "知识内容 URL 标识无效";
+    if (knowledgeSlugs.has(entry.slug)) return "知识内容 URL 标识不能重复: " + entry.slug;
+    knowledgeSlugs.add(entry.slug);
+    if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !Array.isArray(entry.sections) || (entry.sourceHref !== undefined && !/^https:\/\/[^\s]+$/i.test(String(entry.sourceHref)))) return "知识内容结构无效: " + entry.slug;
+    if (!entry.sections.every((section) => isRecord(section) && typeof section.heading === "string" && (section.paragraphs === undefined || (Array.isArray(section.paragraphs) && section.paragraphs.every((value) => typeof value === "string"))) && (section.bullets === undefined || (Array.isArray(section.bullets) && section.bullets.every((value) => typeof value === "string"))))) return "知识内容正文无效: " + entry.slug;
   }
   return null;
 }
@@ -77,6 +101,7 @@ export async function POST(request: Request) {
     const body = await readJsonBody<{
       home?: unknown;
       subpages?: unknown;
+      knowledge?: unknown;
       versions?: ContentVersions;
       reset?: boolean;
     }>(request, 512 * 1024);
@@ -86,10 +111,10 @@ export async function POST(request: Request) {
     if (!payload.versions) return NextResponse.json({ error: "Missing content versions" }, { status: 400 });
 
     const bundle = payload.reset
-      ? { home: defaultHomeContent, subpages: defaultSubpages }
-      : { home: payload.home as HomeContent, subpages: payload.subpages as Subpage[] };
+      ? { home: defaultHomeContent, subpages: defaultSubpages, knowledge: [] as KnowledgeEntry[] }
+      : { home: payload.home as HomeContent, subpages: payload.subpages as Subpage[], knowledge: payload.knowledge as KnowledgeEntry[] };
 
-    const validationError = validateContent(bundle.home, bundle.subpages);
+    const validationError = validateContent(bundle.home, bundle.subpages, bundle.knowledge);
     if (validationError) return NextResponse.json({ error: validationError }, { status: 400 });
 
     const versions = await saveSiteContentBundle(bundle, payload.versions);

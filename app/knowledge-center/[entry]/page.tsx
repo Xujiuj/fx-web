@@ -3,28 +3,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getHomeContent } from "@/lib/cms-content";
-import { getKnowledgeEntry, knowledgeEntries } from "@/lib/knowledge-content";
+import { getHomeContent, getKnowledgeEntries, getKnowledgeEntry } from "@/lib/cms-content";
+import { knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
 import styles from "./knowledge-entry.module.css";
 
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
-  return knowledgeEntries.map((entry) => ({ entry: entry.slug }));
+  return defaultKnowledgeEntries.map((entry) => ({ entry: entry.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ entry: string }> }) {
   const { entry: slug } = await params;
-  const entry = getKnowledgeEntry(slug);
+  const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
   return { title: `${entry.title} - 峰行智成知识课堂`, description: entry.summary };
 }
 
 export default async function KnowledgeEntryPage({ params }: { params: Promise<{ entry: string }> }) {
   const { entry: slug } = await params;
-  const entry = getKnowledgeEntry(slug);
+  const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
-  const home = await getHomeContent();
+  const [home, knowledgeEntries] = await Promise.all([getHomeContent(), getKnowledgeEntries()]);
   const related = knowledgeEntries.filter((item) => item.type === entry.type && item.slug !== entry.slug).slice(0, 3);
   const EntryIcon = entry.type === "article" ? BookOpen : GraduationCap;
 

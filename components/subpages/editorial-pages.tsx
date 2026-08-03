@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
-import { policyArticles, videoCourses } from "@/lib/knowledge-content";
+import { knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
 import styles from "./editorial-pages.module.css";
 
 type EditorialPageProps = { page: Subpage };
@@ -120,6 +120,7 @@ export function CasesPage({ page }: EditorialPageProps) {
         {categories.map((item, index) => {
           const Icon = caseIcons[index % caseIcons.length];
           const detail = caseDetails[index] ?? caseDetails[0];
+          const configuredDetail = item.details ?? {};
           return (
             <article className="page-reveal" id={caseIds[index]} key={item.title} data-motion-role="item">
               <div className={styles.industryCardTop}>
@@ -129,12 +130,12 @@ export function CasesPage({ page }: EditorialPageProps) {
               <h2>{item.title}</h2>
               <p className={styles.caseLead}>{item.description}</p>
               <dl className={styles.caseDetailGrid}>
-                <div><dt>项目背景</dt><dd>{detail.background}</dd></div>
-                <div><dt>面临问题</dt><dd>{detail.problem}</dd></div>
-                <div><dt>建设内容</dt><dd>{detail.content}</dd></div>
-                <div><dt>实施过程</dt><dd>{detail.process}</dd></div>
-                <div><dt>建设成果</dt><dd>{detail.result}</dd></div>
-                <div><dt>客户价值</dt><dd>{detail.value}</dd></div>
+                <div><dt>项目背景</dt><dd>{configuredDetail["项目背景"] ?? detail.background}</dd></div>
+                <div><dt>面临问题</dt><dd>{configuredDetail["面临问题"] ?? detail.problem}</dd></div>
+                <div><dt>建设内容</dt><dd>{configuredDetail["建设内容"] ?? detail.content}</dd></div>
+                <div><dt>实施过程</dt><dd>{configuredDetail["实施过程"] ?? detail.process}</dd></div>
+                <div><dt>建设成果</dt><dd>{configuredDetail["建设成果"] ?? detail.result}</dd></div>
+                <div><dt>客户价值</dt><dd>{configuredDetail["客户价值"] ?? detail.value}</dd></div>
               </dl>
             </article>
           );
@@ -173,8 +174,10 @@ const knowledgeRoutes = [
   { href: "/#contact", action: "获取Excel核算工具", icon: FileSpreadsheet },
 ];
 
-export function KnowledgePage({ page }: EditorialPageProps) {
+export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries }: EditorialPageProps & { knowledgeEntries?: KnowledgeEntry[] }) {
   const downloads = page.sections.find((section) => section.id === "downloads")?.items ?? [];
+  const policyArticles = knowledgeEntries.filter((entry) => entry.type === "article");
+  const videoCourses = knowledgeEntries.filter((entry) => entry.type === "course");
   const featuredArticle = policyArticles[0];
 
   return (
@@ -196,9 +199,9 @@ export function KnowledgePage({ page }: EditorialPageProps) {
       <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title" data-motion-group="knowledge-index">
         <article className={styles.featuredTopic} data-motion-role="item">
           <div><span>双碳专栏</span><small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small></div>
-          <h2 id="knowledge-featured-title">{featuredArticle.title}</h2>
-          <p>{featuredArticle.summary}</p>
-          <Link href={`/knowledge-center/${featuredArticle.slug}`}>阅读全文 <ArrowRight size={17} aria-hidden="true" /></Link>
+          <h2 id="knowledge-featured-title">{featuredArticle?.title ?? "双碳政策与实践"}</h2>
+          <p>{featuredArticle?.summary ?? "知识内容正在整理中。"}</p>
+          {featuredArticle ? <Link href={`/knowledge-center/${featuredArticle.slug}`}>阅读全文 <ArrowRight size={17} aria-hidden="true" /></Link> : null}
         </article>
         <div className={styles.topicIndex} data-motion-role="visual">
           <header data-motion-role="copy">

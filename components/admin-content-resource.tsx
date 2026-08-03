@@ -3,12 +3,13 @@
 import { useState } from "react";
 import { App, Button, Card, Col, Descriptions, Form, Image, Input, Menu, Modal, Row, Space, Spin, Tabs, Tag, Tooltip, Upload, type MenuProps, type UploadProps } from "antd";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from "@ant-design/icons";
-import { ModalForm, PageContainer, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
+import { ModalForm, PageContainer, ProFormDependency, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
 import { AdminMenuPageManager } from "@/components/admin-menu-page-manager";
 import { getLinkedPageSlugs } from "@/lib/admin-page-menu";
 import type { HomeContent, IconKey, NavItem, NewsItem, PartnerItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
+import type { KnowledgeEntry } from "@/lib/knowledge-content";
 
-export type AdminContentResourceName = "site" | "navigation" | "home" | "solutions" | "products" | "proof" | "pages";
+export type AdminContentResourceName = "site" | "navigation" | "home" | "solutions" | "products" | "proof" | "pages" | "knowledge";
 type RowItem = { id: string };
 type MenuRow = NavItem & RowItem;
 type NewsRow = NewsItem & RowItem;
@@ -19,6 +20,7 @@ type ProductRow = HomeContent["products"][number] & RowItem;
 type CertificateRow = { id: string; image: string };
 type PartnerRow = PartnerItem & RowItem;
 type PageRow = Omit<Subpage, "media"> & RowItem & { exists: boolean; mediaEntries: Array<{ key: string; path: string }> };
+type KnowledgeRow = KnowledgeEntry & RowItem;
 
 const copy: Record<AdminContentResourceName, { title: string; description: string }> = {
   site: { title: "基础设置", description: "维护品牌、联系信息、能力标签与页脚。" },
@@ -27,7 +29,8 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   solutions: { title: "解决方案与动态", description: "解决方案和资讯内容分表管理。" },
   products: { title: "产品中心", description: "管理产品卡片及其前台跳转链接。" },
   proof: { title: "资质与伙伴", description: "管理资质证书和合作伙伴，未配置时前台保留空白。" },
-  pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" }
+  pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" },
+  knowledge: { title: "知识课堂", description: "管理双碳专栏文章、视频课程与详情页正文。" }
 };
 
 function MediaPreview({ src, alt, width = 96, height = 64 }: { src?: string; alt: string; width?: number; height?: number }) {
@@ -35,7 +38,7 @@ function MediaPreview({ src, alt, width = 96, height = 64 }: { src?: string; alt
   return <Image src={src} alt={alt} width={width} height={height} style={{ objectFit: "cover", borderRadius: 6, border: "1px solid #f0f0f0" }} preview={{ mask: "预览" }} />;
 }
 
-function ImageUploadField({ name, label, required = false, hint = "支持 JPG、PNG、WebP 或 GIF，文件不超过 5MB。" }: { name: string; label: string; required?: boolean; hint?: string }) {
+function ImageUploadField({ name, label, required = false, hint = "支持 JPG、PNG、WebP 或 GIF，文件不超过 5MB。" }: { name: string | string[]; label: string; required?: boolean; hint?: string }) {
   const form = Form.useFormInstance();
   const imagePath = Form.useWatch(name, form) as string | undefined;
   const [uploading, setUploading] = useState(false);
@@ -64,8 +67,7 @@ function ImageUploadField({ name, label, required = false, hint = "支持 JPG、
   return <><Form.Item name={name} hidden rules={required ? [{ required: true, message: `请上传${label}` }] : []}><Input /></Form.Item><Form.Item label={label} required={required} extra={hint} validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space align="start" size="middle"><MediaPreview src={imagePath} alt={label} width={128} height={84} /><Space direction="vertical" size={8}><Upload accept="image/jpeg,image/png,image/webp,image/gif" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{imagePath ? "更换图片" : "上传图片"}</Button></Upload>{imagePath ? <Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除图片</Button> : null}</Space></Space></Form.Item></>;
 }
 
-function DocumentUploadField({ name }: { name: string }) {
-  const form = Form.useFormInstance();
+function DocumentUploadField({ onChange }: { onChange?: (path: string) => void }) {
   const [uploading, setUploading] = useState(false);
   const upload: UploadProps["customRequest"] = (options) => {
     void (async () => {
@@ -76,7 +78,7 @@ function DocumentUploadField({ name }: { name: string }) {
         const response = await fetch("/api/admin/media", { method: "POST", body: data });
         const result = await response.json();
         if (!response.ok || typeof result.path !== "string") throw new Error(result.error || "资料上传失败");
-        form.setFieldValue(name, result.path);
+        onChange?.(result.path);
         options.onSuccess?.(result);
       } catch (error) {
         options.onError?.(error instanceof Error ? error : new Error("资料上传失败"));
@@ -110,18 +112,20 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   const [activeResource, setActiveResource] = useState<AdminContentResourceName>(resource ?? "site");
   const [home, setHome] = useState(initialContent.home);
   const [subpages, setSubpages] = useState(initialContent.subpages);
+  const [knowledge, setKnowledge] = useState(initialContent.knowledge);
   const [versions, setVersions] = useState(initialContent.versions);
   const [busy, setBusy] = useState(false);
   const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const { message } = App.useApp();
-  async function persist(nextHome: HomeContent, nextSubpages: Subpage[]) {
+  async function persist(nextHome: HomeContent, nextSubpages: Subpage[], nextKnowledge = knowledge) {
     setBusy(true);
     try {
-      const response = await fetch("/api/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ home: nextHome, subpages: nextSubpages, versions }) });
+      const response = await fetch("/api/admin/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ home: nextHome, subpages: nextSubpages, knowledge: nextKnowledge, versions }) });
       const result = await response.json();
       if (response.status === 409 && result.current) {
         setHome(result.current.home);
         setSubpages(result.current.subpages);
+        setKnowledge(result.current.knowledge);
         setVersions(result.current.versions);
         message.warning("内容已被其他管理员更新，已重新载入最新版本。");
         return;
@@ -132,6 +136,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
       }
       setHome(nextHome);
       setSubpages(nextSubpages);
+      setKnowledge(nextKnowledge);
       setVersions(result.versions);
       message.success("操作已保存。");
     } catch {
@@ -142,6 +147,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   }
   const changeHome = (update: (current: HomeContent) => HomeContent) => persist(update(home), subpages);
   const changePages = (update: (current: Subpage[]) => Subpage[]) => persist(home, update(subpages));
+  const changeKnowledge = (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => persist(home, subpages, update(knowledge));
   const selectedResource = resource ?? activeResource;
   const isStudio = resource === undefined;
   const selectedMenu = activeMenuIndex === null ? undefined : home.navItems[activeMenuIndex];
@@ -151,7 +157,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
     { key: "website-menu", label: "官网栏目", children: home.navItems.map((item, index) => ({ key: `menu-${index}`, label: item.label })) }
   ];
   const resourceContent = <>
-    {isStudio && selectedMenu ? <MenuContentManager menuIndex={activeMenuIndex!} menu={selectedMenu} home={home} pages={subpages} onHomeCommit={changeHome} onPagesCommit={changePages} busy={busy} /> : null}
+    {isStudio && selectedMenu ? <MenuContentManager menuIndex={activeMenuIndex!} menu={selectedMenu} home={home} pages={subpages} knowledge={knowledge} onHomeCommit={changeHome} onPagesCommit={changePages} onKnowledgeCommit={changeKnowledge} busy={busy} /> : null}
     {(!isStudio || !selectedMenu) && selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "navigation" ? <NavigationManager home={home} pages={subpages} onHomeCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
@@ -159,6 +165,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
     {selectedResource === "products" ? <ProductsManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "proof" ? <ProofManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "pages" ? <PagesManager pages={subpages} visibleSlugs={pageSlugs} onCommit={changePages} busy={busy} /> : null}
+    {selectedResource === "knowledge" ? <KnowledgeManager entries={knowledge} onCommit={changeKnowledge} busy={busy} /> : null}
   </>;
   return (
     <PageContainer
@@ -188,7 +195,7 @@ function NavigationManager({ home, pages, onHomeCommit, busy }: { home: HomeCont
   return <Tabs items={[{ key: "menu", label: "菜单配置", children: <MenuManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: <AdminMenuPageManager embedded items={home.navItems} linkedPageCounts={linkedPageCounts} /> }]} />;
 }
 
-function MenuContentManager({ menuIndex, menu, home, pages, onHomeCommit, onPagesCommit, busy }: { menuIndex: number; menu: NavItem; home: HomeContent; pages: Subpage[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; onPagesCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<void>; busy: boolean }) {
+function MenuContentManager({ menuIndex, menu, home, pages, knowledge, onHomeCommit, onPagesCommit, onKnowledgeCommit, busy }: { menuIndex: number; menu: NavItem; home: HomeContent; pages: Subpage[]; knowledge: KnowledgeEntry[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; onPagesCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<void>; onKnowledgeCommit: (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => Promise<void>; busy: boolean }) {
   const pageManager = <PagesManager pages={pages} visibleSlugs={getLinkedPageSlugs(menu)} onCommit={onPagesCommit} busy={busy} />;
 
   switch (menuIndex) {
@@ -201,7 +208,7 @@ function MenuContentManager({ menuIndex, menu, home, pages, onHomeCommit, onPage
     case 3:
       return <Tabs items={[{ key: "path", label: "首页能力路径", children: <TimelineTable home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
     case 4:
-      return pageManager;
+      return <Tabs items={[{ key: "knowledge-content", label: "文章与课程", children: <KnowledgeManager entries={knowledge} onCommit={onKnowledgeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
     case 5:
       return <Tabs items={[{ key: "about", label: "公司介绍", children: <AboutTable home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "proof", label: "资质与伙伴", children: <ProofManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
     default:
@@ -250,6 +257,39 @@ function TimelineTable({ home, onCommit, busy }: { home: HomeContent; onCommit: 
 
 function SolutionsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<void>; busy: boolean }) {
   return <Tabs items={[{ key: "solutions", label: "解决方案", children: <NewsTable title="解决方案" items={home.solutionItems} image="/media/fengxing-hero-management.png" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, solutionItems: items }))} /> }, { key: "news", label: "最新动态", children: <NewsTable title="最新动态" items={home.newsItems} image="/media/fengxing-hero-management.png" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, newsItems: items }))} /> }]} />;
+}
+
+function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry[]; onCommit: (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => Promise<void>; busy: boolean }) {
+  const rows: KnowledgeRow[] = entries.map((entry) => ({ ...entry, id: entry.slug }));
+  return <CrudTable
+    title="文章与课程"
+    rows={rows}
+    busy={busy}
+    columns={[
+      { title: "类型", dataIndex: "type", render: (_, record) => <Tag color={record.type === "article" ? "blue" : "green"}>{record.type === "article" ? "双碳文章" : "视频课程"}</Tag> },
+      { title: "标题", dataIndex: "title" },
+      { title: "栏目", dataIndex: "category" },
+      { title: "详情地址", dataIndex: "slug", renderText: (slug) => `/knowledge-center/${slug}` }
+    ]}
+    createItem={() => ({ id: crypto.randomUUID(), slug: "new-knowledge-entry", type: "article" as const, category: "双碳政策", title: "", summary: "", meta: "", sections: [] })}
+    onCreate={(item) => onCommit((current) => [...current, omitId(item) as KnowledgeEntry])}
+    onUpdate={(item) => onCommit((current) => current.map((entry) => entry.slug === item.id ? omitId(item) as KnowledgeEntry : entry))}
+    onDelete={(item) => onCommit((current) => current.filter((entry) => entry.slug !== item.id))}
+  >
+    <ProFormText name="slug" label="详情 URL 标识" rules={[{ required: true, pattern: /^[a-z0-9-]+$/, message: "仅可使用小写字母、数字和连字符" }]} />
+    <ProFormSelect name="type" label="内容类型" rules={[{ required: true }]} options={[{ label: "双碳专栏文章", value: "article" }, { label: "视频课程", value: "course" }]} />
+    <ProFormText name="category" label="栏目名称" rules={[{ required: true }]} />
+    <ProFormText name="title" label="标题" rules={[{ required: true }]} />
+    <ProFormTextArea name="summary" label="摘要" rules={[{ required: true }]} />
+    <ProFormText name="meta" label="阅读或课程信息" rules={[{ required: true }]} />
+    <ProFormText name="sourceName" label="政策原文名称（文章选填）" />
+    <ProFormText name="sourceHref" label="政策原文链接（文章选填）" rules={[{ type: "url", message: "请输入完整的 https:// 链接" }]} />
+    <ProFormList name="sections" label="详情正文" creatorButtonProps={{ creatorButtonText: "新增正文段落" }}>
+      <ProFormText name="heading" label="小节标题" rules={[{ required: true }]} />
+      <ProFormList name="paragraphs" label="段落" creatorButtonProps={{ creatorButtonText: "新增段落" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
+      <ProFormList name="bullets" label="要点" creatorButtonProps={{ creatorButtonText: "新增要点" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
+    </ProFormList>
+  </CrudTable>;
 }
 
 function NewsTable({ title, items, image, onCommit, busy }: { title: string; items: NewsItem[]; image: string; onCommit: (items: NewsItem[]) => Promise<void>; busy: boolean }) {
@@ -304,6 +344,24 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
     <ProFormText name="title" label="页面标题" rules={[{ required: true }]} />
     <ProFormTextArea name="summary" label="页面摘要" rules={[{ required: true }]} />
     <ImageUploadField name="image" label="页面配图" required hint="建议上传与该页面业务内容相符的明亮企业场景图。" />
+    <ProFormDependency name={["layout"]}>
+      {({ layout }) => layout === "excel" || layout === "product-platform" ? <>
+        <ProFormList name={["product", "screenshots"]} label="产品截图" creatorButtonProps={{ creatorButtonText: "新增截图" }}>
+          <Row gutter={12}>
+            <Col span={8}><ImageUploadField name="src" label="截图" required hint="建议上传清晰的产品界面截图。" /></Col>
+            <Col span={8}><ProFormText name="label" label="截图名称" rules={[{ required: true }]} /><ProFormText name="alt" label="图片说明" rules={[{ required: true }]} /></Col>
+            <Col span={4}><ProFormText name="width" label="原始宽度" /></Col>
+            <Col span={4}><ProFormText name="height" label="原始高度" /></Col>
+          </Row>
+        </ProFormList>
+        {layout === "product-platform" ? <>
+          <ProFormText name={["product", "enterpriseUrl"]} label="企业端入口链接" rules={[{ required: true }]} extra="默认 /sample/；可填写站内相对地址或完整 https:// 地址。" />
+          <ProFormText name={["product", "trialUrl"]} label="试用申请链接" rules={[{ required: true }]} />
+          <ProFormText name={["product", "videoUrl"]} label="平台介绍视频地址" />
+          <ImageUploadField name={["product", "videoPoster"]} label="视频封面" hint="建议上传 16:9 的清晰界面截图。" />
+        </> : null}
+      </> : null}
+    </ProFormDependency>
     <ProFormList name="mediaEntries" label="模板图片" creatorButtonProps={{ creatorButtonText: "新增图片位" }}>
       <Row gutter={12}>
         <Col span={8}><ProFormText name="key" label="图片位名称" rules={[{ required: true }]} /></Col>
@@ -325,7 +383,13 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
           <Col span={8}><ProFormText name="description" label="条目说明" /></Col>
           <Col span={8}><ProFormText name="value" label="下载地址或指标值" /></Col>
         </Row>
-        <Form.Item label="资料文件（产品资料条目上传后自动写入下载地址）"><DocumentUploadField name="value" /></Form.Item>
+        <ProFormTextArea name={["details", "项目背景"]} label="案例：项目背景" />
+        <ProFormTextArea name={["details", "面临问题"]} label="案例：面临问题" />
+        <ProFormTextArea name={["details", "建设内容"]} label="案例：建设内容" />
+        <ProFormTextArea name={["details", "实施过程"]} label="案例：实施过程" />
+        <ProFormTextArea name={["details", "建设成果"]} label="案例：建设成果" />
+        <ProFormTextArea name={["details", "客户价值"]} label="案例：客户价值" />
+        <Form.Item label="资料文件（下载模块上传后自动写入下载地址）" name="value"><DocumentUploadField /></Form.Item>
         <ImageUploadField name="image" label="条目图片或二维码" hint="荣誉页上传证书，伙伴页上传 Logo，联系页可上传二维码。" />
       </ProFormList>
     </ProFormList>

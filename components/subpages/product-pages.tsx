@@ -25,7 +25,7 @@ import {
   type PlatformOverviewItem,
   type ProductMediaItem,
 } from "@/components/product-media-gallery";
-import type { Subpage } from "@/lib/cms-content";
+import type { ProductScreenshot, Subpage } from "@/lib/cms-content";
 import styles from "./product-pages.module.css";
 
 type ProductPageProps = { page: Subpage };
@@ -40,9 +40,7 @@ const platformPrinciples = [
 ];
 
 const materialRoot = "/materials/20260803/资料20260803";
-const platformTrialUrl = process.env.NEXT_PUBLIC_PLATFORM_TRIAL_URL?.trim() || "/#contact";
-
-const excelScreenshots: ProductMediaItem[] = [
+const excelScreenshots: ProductScreenshot[] = [
   {
     src: `${materialRoot}/产品/单公司版产品截图-01.svg`,
     alt: "Excel温室气体核算工具单公司版完整界面",
@@ -59,13 +57,21 @@ const excelScreenshots: ProductMediaItem[] = [
   },
 ];
 
-const platformScreenshots: ProductMediaItem[] = Array.from({ length: 7 }, (_, index) => ({
+const platformScreenshots: ProductScreenshot[] = Array.from({ length: 7 }, (_, index) => ({
   src: `${materialRoot}/产品/平台截图/${index + 1}.png`,
   alt: `企业碳管理数字化平台界面截图${index + 1}`,
   label: ["数据维护", "分析首页", "分析目录", "排放总览", "排放明细", "趋势分析", "强度分析"][index],
   width: 3840,
   height: 2040,
 }));
+
+function screenshotsFor(page: Subpage, fallback: ProductScreenshot[]): ProductMediaItem[] {
+  return (page.product?.screenshots?.length ? page.product.screenshots : fallback).map((item) => ({
+    ...item,
+    width: item.width ?? 1920,
+    height: item.height ?? 1080,
+  }));
+}
 
 function ProductVisual({ page }: ProductPageProps) {
   const screenshot = page.media?.screenshot;
@@ -256,7 +262,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         eyebrow="PRODUCT SCREENSHOTS"
         title="查看两个版本的完整产品界面"
         description="切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"
-        items={excelScreenshots}
+        items={screenshotsFor(page, excelScreenshots)}
       />
 
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
@@ -524,10 +530,10 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.platformHeroActions}>
-              <Link className={styles.platformHeroLink} href="/sample/">
+              <Link className={styles.platformHeroLink} href={page.product?.enterpriseUrl || "/sample/"}>
                 进入企业端平台 <ExternalLink size={18} aria-hidden="true" />
               </Link>
-              <Link className={styles.platformSecondaryLink} href={platformTrialUrl}>申请试用账号</Link>
+              <Link className={styles.platformSecondaryLink} href={page.product?.trialUrl || "/#contact"}>申请试用账号</Link>
             </div>
             <p className={styles.demoSafety}>企业端为独立部署应用，官网不承载企业端数据、接口或用户账号。</p>
           </div>
@@ -563,7 +569,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         eyebrow="PLATFORM SCREENSHOTS"
         title="从数据维护到多维分析的真实界面"
         description="7 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。"
-        items={platformScreenshots}
+        items={screenshotsFor(page, platformScreenshots)}
       />
 
       <section className={`${styles.platformVideo} ${styles.container}`} aria-labelledby="platform-video-title">
@@ -575,8 +581,8 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         <video
           controls
           preload="metadata"
-          poster={`${materialRoot}/产品/平台截图/2.png`}
-          src={`${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
+          poster={page.product?.videoPoster || `${materialRoot}/产品/平台截图/2.png`}
+          src={page.product?.videoUrl || `${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
         >
           您的浏览器暂不支持视频播放。
         </video>
@@ -589,8 +595,8 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           <p>企业端作为独立应用部署，与官网服务和数据完全隔离；需要试用账号时可提交申请。</p>
         </div>
         <div className={styles.publicDemoActions}>
-          <Link href="/sample/">进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
-          <Link href={platformTrialUrl}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
+          <Link href={page.product?.enterpriseUrl || "/sample/"}>进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
+          <Link href={page.product?.trialUrl || "/#contact"}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
 
