@@ -38,6 +38,20 @@ jobs:
       - name: Build standalone release
         run: npm run build
 
+      - name: Check out enterprise UI
+        uses: actions/checkout@v4
+        with:
+          repository: Xujiuj/enterprise-ui
+          ref: main
+          path: enterprise-ui
+
+      - name: Build enterprise UI release
+        working-directory: enterprise-ui
+        run: |
+          npm ci
+          npm run test:unit
+          npm run build:prod
+
       - name: Package release
         run: |
           mkdir -p release/.next
@@ -49,6 +63,10 @@ jobs:
           cp prisma/sqlite-bootstrap.sql release/prisma/
           cp scripts/ensure-sqlite-schema.mjs release/scripts/
           tar -C release -czf fx-web-release.tgz .
+          mkdir -p enterprise-ui-release/nginx
+          cp -R enterprise-ui/dist/. enterprise-ui-release/
+          cp enterprise-ui/nginx/default.conf enterprise-ui-release/nginx/default.conf
+          tar -C enterprise-ui-release -czf enterprise-ui-release.tgz .
 
       - name: Upload release archive
         uses: appleboy/scp-action@v1
@@ -56,7 +74,7 @@ jobs:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: fx-web-release.tgz,deploy/fx-web.service
+          source: fx-web-release.tgz,enterprise-ui-release.tgz,deploy/fx-web.service
           target: /tmp
           overwrite: true
 
@@ -72,7 +90,6 @@ jobs:
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM
           command_timeout: 10m
-          script_stop: true
           script: |
             set -euo pipefail
             service=fx-web.service
@@ -82,13 +99,31 @@ jobs:
             database="$data_dir/site.db"
             legacy_database="$target/prisma/site.db"
             archive=/tmp/fx-web-release.tgz
+            enterprise_archive=/tmp/enterprise-ui-release.tgz
+            enterprise_target=/opt/fx-enterprise-ui/current
+            enterprise_container=fx-enterprise-ui
+            enterprise_port=17001
+            enterprise_network=fx-delivery
+            nginx_site=/etc/nginx/sites-available/fx-web
             unit=/tmp/deploy/fx-web.service
 
             systemctl status "$service" --no-pager || true
             journalctl -u "$service" -n 200 --no-pager || true
 
             test -f "$archive"
+            test -f "$enterprise_archive"
             test -f "$unit"
+
+            # Verify the existing enterprise backend before changing its frontend route.
+            docker network inspect "$enterprise_network" >/dev/null
+            docker inspect enterprise-backend >/dev/null
+            docker ps --filter "name=^/${enterprise_container}$" --filter "name=^/enterprise-backend$"
+            docker logs --tail 200 enterprise-backend
+            docker logs --tail 200 "$enterprise_container" 2>/dev/null || true
+            nginx -T 2>&1 | grep -E 'location[[:space:]]+(\^~[[:space:]]+)?/enterprise/prod-api/'
+            test -f "$nginx_site"
+            grep -F 'server_name fengxingzhicheng.com' "$nginx_site" >/dev/null
+            grep -F 'location / {' "$nginx_site" >/dev/null
 
             install -d -o fx-web -g fx-web "$target"
             if [ ! -f "$target/.env" ] && [ -f "$legacy_target/.env" ]; then
@@ -127,3 +162,47 @@ jobs:
             systemctl is-active --quiet "$service"
             curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 http://127.0.0.1:3010/ > /dev/null
             journalctl -u "$service" -p warning -n 50 --no-pager
+
+            docker pull nginx:1.27-alpine
+            install -d -m 0755 "$enterprise_target"
+            docker rm -f "$enterprise_container" 2>/dev/null || true
+            find "$enterprise_target" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
+            tar -xzf "$enterprise_archive" -C "$enterprise_target"
+            rm -f "$enterprise_archive"
+            docker run --detach \
+              --name "$enterprise_container" \
+              --network "$enterprise_network" \
+              --restart unless-stopped \
+              --publish "127.0.0.1:${enterprise_port}:80" \
+              --volume "$enterprise_target:/usr/share/nginx/html:ro" \
+              --volume "$enterprise_target/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro" \
+              nginx:1.27-alpine
+            curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 "http://127.0.0.1:${enterprise_port}/" > /dev/null
+
+            if ! grep -F 'BEGIN FX_ENTERPRISE_UI' "$nginx_site" >/dev/null; then
+              nginx_backup=$(mktemp)
+              nginx_candidate=$(mktemp)
+              cp "$nginx_site" "$nginx_backup"
+              sed '/^[[:space:]]*location \/ {/i\
+    # BEGIN FX_ENTERPRISE_UI\
+    location = /enterprise {\
+        return 308 /enterprise/;\
+    }\
+\
+    location ^~ /enterprise/ {\
+        proxy_pass http://127.0.0.1:17001/;\
+    }\
+    # END FX_ENTERPRISE_UI\
+' "$nginx_site" > "$nginx_candidate"
+              install -m 0644 "$nginx_candidate" "$nginx_site"
+              if ! nginx -t; then
+                install -m 0644 "$nginx_backup" "$nginx_site"
+                nginx -t
+                rm -f "$nginx_backup" "$nginx_candidate"
+                exit 1
+              fi
+              rm -f "$nginx_backup" "$nginx_candidate"
+            fi
+            nginx -s reload
+            curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 https://fengxingzhicheng.com/enterprise/ > /dev/null
+            docker logs --tail 100 "$enterprise_container"

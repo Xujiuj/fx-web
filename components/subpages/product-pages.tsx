@@ -9,7 +9,6 @@ import {
   Layers3,
   LineChart,
   Network,
-  PlayCircle,
   BarChart3,
   RefreshCcw,
   ShieldCheck,
@@ -41,7 +40,6 @@ const platformPrinciples = [
 ];
 
 const materialRoot = "/materials/20260803/资料20260803";
-const powerBiPublicUrl = process.env.NEXT_PUBLIC_POWER_BI_PUBLIC_URL?.trim() || "/enterprise#power-bi";
 const platformTrialUrl = process.env.NEXT_PUBLIC_PLATFORM_TRIAL_URL?.trim() || "/#contact";
 
 const excelScreenshots: ProductMediaItem[] = [
@@ -521,12 +519,12 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.platformHeroActions}>
-              <Link className={styles.platformHeroLink} href="/enterprise">
-                进入公开体验页 <ExternalLink size={18} aria-hidden="true" />
+              <Link className={styles.platformHeroLink} href="/enterprise/">
+                进入企业端平台 <ExternalLink size={18} aria-hidden="true" />
               </Link>
               <Link className={styles.platformSecondaryLink} href={platformTrialUrl}>申请试用账号</Link>
             </div>
-            <p className={styles.demoSafety}>公开体验页与企业生产数据完全隔离，不连接现有业务系统。</p>
+            <p className={styles.demoSafety}>企业端为独立部署应用，官网不承载企业端数据、接口或用户账号。</p>
           </div>
           <ProductVisual page={page} />
         </div>
@@ -582,12 +580,11 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       <section className={`${styles.publicDemo} ${styles.container}`} id="power-bi" aria-labelledby="public-demo-title">
         <div>
           <span>PUBLIC DEMO</span>
-          <h2 id="public-demo-title">先看平台，再申请试用</h2>
-          <p>公开体验页展示平台首页和 Power BI 分析界面，不包含生产数据；需要完整功能时可申请独立试用账号。</p>
+          <h2 id="public-demo-title">进入独立企业端平台</h2>
+          <p>企业端作为独立应用部署，与官网服务和数据完全隔离；需要试用账号时可提交申请。</p>
         </div>
         <div className={styles.publicDemoActions}>
-          <Link href={powerBiPublicUrl}>查看 Power BI 公共报表 <ExternalLink size={17} aria-hidden="true" /></Link>
-          <Link href="/enterprise"><PlayCircle size={17} aria-hidden="true" />进入平台体验页</Link>
+          <Link href="/enterprise/">进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
           <Link href={platformTrialUrl}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
