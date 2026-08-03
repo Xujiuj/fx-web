@@ -1,61 +1,45 @@
 "use client";
 
-import { useGSAP } from "@gsap/react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { useRef } from "react";
+import { MessageCircle, X } from "lucide-react";
+import Image from "next/image";
+import { useState } from "react";
 import type { FooterContent } from "@/lib/cms-content";
 
-gsap.registerPlugin(ScrollTrigger, useGSAP);
+const consultantAvatar = "/materials/20260803/资料20260803/网站右下角二维码/人像.jpg";
+const wecomQr = "/materials/20260803/资料20260803/网站右下角二维码/企业微信二维码.png";
 
 export function SiteFooter({ footer }: { footer: FooterContent }) {
-  const footerRef = useRef<HTMLElement>(null);
-
-  useGSAP(() => {
-    const element = footerRef.current;
-    if (!element) return;
-
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      const children = Array.from(element.children) as HTMLElement[];
-      gsap.set(children, { autoAlpha: 0 });
-      gsap.timeline({
-        scrollTrigger: {
-          trigger: element,
-          start: "top 94%",
-          once: true
-        }
-      }).fromTo(children, {
-        autoAlpha: 0,
-        y: 24,
-        filter: "blur(4px)"
-      }, {
-        autoAlpha: 1,
-        y: 0,
-        filter: "blur(0px)",
-        duration: 1,
-        stagger: 0.2,
-        ease: "power3.out",
-        clearProps: "transform,opacity,visibility,filter"
-      });
-    });
-
-    media.add("(prefers-reduced-motion: reduce)", () => {
-      gsap.set(element, { clearProps: "all" });
-    });
-
-    element.dataset.motionReady = "true";
-    return () => {
-      media.revert();
-      delete element.dataset.motionReady;
-    };
-  }, { scope: footerRef });
+  const [open, setOpen] = useState(false);
 
   return (
-    <footer ref={footerRef} className="site-footer">
-      <span>{footer.copyright}</span>
-      <a href={footer.icpHref}>{footer.icpText}</a>
-      <span>{footer.ipv6Text}</span>
-    </footer>
+    <>
+      <footer className="site-footer">
+        <span>{footer.copyright}</span>
+        <a href={footer.icpHref}>{footer.icpText}</a>
+        <span>{footer.ipv6Text}</span>
+      </footer>
+
+      <aside className="wecom-consultant" aria-label="企业微信咨询">
+        {open ? (
+          <div className="wecom-panel">
+            <button className="wecom-close" type="button" onClick={() => setOpen(false)} aria-label="收起企业微信咨询">
+              <X size={17} aria-hidden="true" />
+            </button>
+            <Image className="wecom-avatar" src={consultantAvatar} alt="企业顾问" width={72} height={72} />
+            <strong>您的企业碳管理顾问</strong>
+            <p>扫码添加企业微信</p>
+            <div className="wecom-qr-wrap">
+              <Image src={wecomQr} alt="峰行智成企业微信二维码" width={712} height={727} sizes="176px" />
+            </div>
+            <a href="mailto:service@fengxingdata.com">service@fengxingdata.com</a>
+          </div>
+        ) : (
+          <button className="wecom-open" type="button" onClick={() => setOpen(true)} aria-label="打开企业微信咨询" title="企业微信咨询">
+            <MessageCircle size={24} aria-hidden="true" />
+            <span>企业微信</span>
+          </button>
+        )}
+      </aside>
+    </>
   );
 }

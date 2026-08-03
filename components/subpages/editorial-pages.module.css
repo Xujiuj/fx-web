@@ -642,7 +642,7 @@
 }
 
 .topicIndex header,
-.topicIndex article {
+.topicIndex > a {
   display: grid;
   grid-template-columns: 54px 1fr auto;
   gap: 18px;
@@ -663,11 +663,11 @@
   font-weight: 750;
 }
 
-.topicIndex article {
+.topicIndex > a {
   min-height: 121px;
 }
 
-.topicIndex article > span {
+.topicIndex > a > span {
   color: #b7551b;
   font-size: 13px;
   font-weight: 800;
@@ -680,8 +680,24 @@
   line-height: 1.55;
 }
 
-.topicIndex article svg {
+.topicIndex > a svg {
   color: #6e655a;
+}
+
+.topicIndex > a > div {
+  min-width: 0;
+}
+
+.topicIndex > a small {
+  display: block;
+  margin-top: 7px;
+  color: #7d877f;
+  font-size: 12px;
+}
+
+.topicIndex > a:hover h3,
+.topicIndex > a:focus-visible h3 {
+  color: #a94914;
 }
 
 .learningSection {
@@ -697,7 +713,10 @@
 }
 
 .learningHeading .sectionLabel {
-  color: #f2a15c;
+  padding-left: 12px;
+  border-left: 3px solid #fff;
+  color: #fff;
+  font-size: 14px;
 }
 
 .learningHeading h2 {
@@ -723,12 +742,15 @@
 
 .learningPath li {
   position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+}
+
+.learningPath li > a {
   display: grid;
   grid-template-columns: 54px 1fr;
   gap: 18px;
+  min-height: 92px;
   align-items: center;
-  min-height: 74px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.22);
 }
 
 .learningPath span {
@@ -738,8 +760,19 @@
 }
 
 .learningPath strong {
+  display: block;
   padding-right: 25px;
-  font-size: 17px;
+  font-size: 19px;
+}
+
+.learningPath small {
+  display: block;
+  max-width: 580px;
+  margin-top: 6px;
+  padding-right: 30px;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  line-height: 1.65;
 }
 
 .learningPath i {
@@ -1453,7 +1486,7 @@
   }
 
   .topicIndex header,
-  .topicIndex article {
+  .topicIndex > a {
     grid-template-columns: 42px 1fr auto;
     gap: 10px;
   }

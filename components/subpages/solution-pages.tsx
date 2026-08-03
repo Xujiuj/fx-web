@@ -95,11 +95,11 @@ const solutionFrameworks: Record<string, SolutionFramework> = {
 
 const solutionDiagrams: Record<string, SolutionDiagram> = {
   "solution-standard": {
-    eyebrow: "核算方法",
-    title: "温室气体核算数据建模流程",
-    description: "以活动数据、排放因子、计算规则和核算结果为主线，明确企业首次开展核算时需要建立的数据关系。",
-    src: "/media/reference-diagrams/data-modeling-flow.svg",
-    alt: "企业温室气体核算数据建模流程图",
+    eyebrow: "课程介绍",
+    title: "企业温室气体核算实战（Excel版）",
+    description: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
+    src: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
+    alt: "企业温室气体核算实战Excel版课程宣传图",
   },
   "solution-practical": {
     eyebrow: "实施流程",

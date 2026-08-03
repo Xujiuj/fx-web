@@ -1,13 +1,16 @@
 import {
   ArrowRight,
-  BarChart3,
   Building2,
   CheckCircle2,
   Database,
+  Download,
+  ExternalLink,
   Gauge,
   Layers3,
   LineChart,
   Network,
+  PlayCircle,
+  BarChart3,
   RefreshCcw,
   ShieldCheck,
   Table2,
@@ -17,6 +20,12 @@ import Image from "next/image";
 import Link from "next/link";
 import type { LucideIcon } from "lucide-react";
 import { ReferenceDiagram } from "@/components/reference-diagram";
+import {
+  PlatformOverview,
+  ProductMediaGallery,
+  type PlatformOverviewItem,
+  type ProductMediaItem,
+} from "@/components/product-media-gallery";
 import type { Subpage } from "@/lib/cms-content";
 import styles from "./product-pages.module.css";
 
@@ -30,6 +39,35 @@ const platformPrinciples = [
   { title: "统一分析体系", icon: LineChart },
   { title: "统一管理平台", icon: Gauge },
 ];
+
+const materialRoot = "/materials/20260803/资料20260803";
+const powerBiPublicUrl = process.env.NEXT_PUBLIC_POWER_BI_PUBLIC_URL?.trim() || "/enterprise#power-bi";
+const platformTrialUrl = process.env.NEXT_PUBLIC_PLATFORM_TRIAL_URL?.trim() || "/#contact";
+
+const excelScreenshots: ProductMediaItem[] = [
+  {
+    src: `${materialRoot}/产品/单公司版产品截图-01.svg`,
+    alt: "Excel温室气体核算工具单公司版完整界面",
+    label: "单公司版",
+    width: 981,
+    height: 499,
+  },
+  {
+    src: `${materialRoot}/产品/集团版版产品截图-01.svg`,
+    alt: "Excel温室气体核算工具集团版完整界面",
+    label: "集团版",
+    width: 887,
+    height: 703,
+  },
+];
+
+const platformScreenshots: ProductMediaItem[] = Array.from({ length: 7 }, (_, index) => ({
+  src: `${materialRoot}/产品/平台截图/${index + 1}.png`,
+  alt: `企业碳管理数字化平台界面截图${index + 1}`,
+  label: ["数据维护", "分析首页", "分析目录", "排放总览", "排放明细", "趋势分析", "强度分析"][index],
+  width: 3840,
+  height: 2040,
+}));
 
 function ProductVisual({ page }: ProductPageProps) {
   const screenshot = page.media?.screenshot;
@@ -50,43 +88,66 @@ function ProductVisual({ page }: ProductPageProps) {
   );
 }
 
-const platformAdvantages: Array<{
+const platformAdvantages: Array<PlatformOverviewItem & {
   number: string;
   title: string;
-  summary: string;
   shorthand: string;
   eyebrow: string;
-  points: string[];
   icon: LucideIcon;
 }> = [
   {
     number: "01",
     title: "业务数据驱动，降低碳管理成本",
-    summary: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。",
+    label: "业务数据驱动",
     shorthand: "少维护 · 自动核算 · 降低成本",
     eyebrow: "BUSINESS DATA DRIVEN",
-    points: ["数据归集", "因子匹配", "排放计算", "结果分析"],
     icon: Database,
+    summary: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。",
+    points: ["数据归集", "因子匹配", "排放计算", "结果分析"],
+    src: "/media/platform-advantages/business-data-flow.png",
+    alt: "业务数据驱动的自动核算流程",
+    width: 6209,
+    height: 2297,
   },
   {
     number: "02",
     title: "一次核算，多场景复用",
-    summary: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。",
+    label: "一次核算，多场景复用",
     shorthand: "一次治理 · 多标准 · 多场景",
     eyebrow: "ONE MODEL · MANY USES",
-    points: ["全国碳市场履约管理", "ESG与可持续发展信息披露", "CDP气候变化问卷填报", "供应链碳管理", "企业经营决策分析"],
     icon: Workflow,
+    summary: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。",
+    points: ["全国碳市场履约", "ESG信息披露", "供应链碳管理", "企业经营分析"],
+    src: "/media/platform-advantages/reuse-standard-output.png",
+    alt: "一套数据支持多标准核算结果输出",
+    width: 5383,
+    height: 3285,
   },
   {
     number: "03",
     title: "全流程可信可追溯",
-    summary: "平台建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，支持监管报送、第三方核查、ESG披露与内部审计。",
+    label: "全流程可信可追溯",
     shorthand: "全链路 · 可追溯 · 可核查",
     eyebrow: "TRACEABLE DATA LINEAGE",
-    points: ["排放源 → 活动数据", "活动数据 → 排放因子", "排放因子 → 核算结果", "结果回溯原始业务数据与计算逻辑"],
     icon: LineChart,
-  }
+    summary: "平台建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，支持监管报送、第三方核查、ESG披露与内部审计。",
+    points: ["排放源到活动数据", "活动数据到排放因子", "排放因子到核算结果", "结果回溯业务数据与计算逻辑"],
+    src: "/media/platform-advantages/traceability-module-map.png",
+    alt: "排放源、活动数据、排放因子和核算结果的追溯关系",
+    width: 2169,
+    height: 1495,
+  },
 ];
+
+const platformOverviewItems: PlatformOverviewItem[] = platformAdvantages.map((item) => ({
+  label: item.label,
+  summary: item.summary,
+  points: item.points,
+  src: item.src,
+  alt: item.alt,
+  width: item.width,
+  height: item.height,
+}));
 
 function PageCta({ title }: { title: string }) {
   return (
@@ -100,6 +161,28 @@ function PageCta({ title }: { title: string }) {
         预约产品演示
         <ArrowRight size={18} aria-hidden="true" />
       </Link>
+    </section>
+  );
+}
+
+function ProductResources({ product }: { product: string }) {
+  return (
+    <section className={`${styles.productResources} ${styles.container}`} aria-labelledby={`${product}-resources-title`}>
+      <header className={styles.sectionHeading}>
+        <span>RESOURCE CENTER</span>
+        <h2 id={`${product}-resources-title`}>产品资料下载</h2>
+        <p>产品手册、功能清单与试用说明将在此持续更新；当前可联系顾问获取最新版本。</p>
+      </header>
+      <div className={styles.resourceRows}>
+        {["产品手册", "功能与版本清单", "部署及试用说明"].map((name) => (
+          <Link href="/#contact" key={name}>
+            <Download size={19} aria-hidden="true" />
+            <strong>{name}</strong>
+            <span>联系获取</span>
+            <ArrowRight size={17} aria-hidden="true" />
+          </Link>
+        ))}
+      </div>
     </section>
   );
 }
@@ -166,6 +249,13 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
+      <ProductMediaGallery
+        eyebrow="PRODUCT SCREENSHOTS"
+        title="查看两个版本的完整产品界面"
+        description="切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"
+        items={excelScreenshots}
+      />
+
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
         <div className={styles.container}>
           <header className={styles.sectionHeading} data-motion-role="heading">
@@ -197,12 +287,13 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         alt="Excel 温室气体核算工具的数据维护与核算关系图"
       />
 
+      <ProductResources product="excel" />
       <PageCta title={page.title} />
     </>
   );
 }
 
-export function PlatformProductPage({ page }: ProductPageProps) {
+export function LegacyPlatformProductPage({ page }: ProductPageProps) {
   return (
     <>
       <section className={styles.platformHero}>
@@ -415,6 +506,93 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
+      <PageCta title={page.title} />
+    </>
+  );
+}
+
+export function PlatformProductPage({ page }: ProductPageProps) {
+  return (
+    <>
+      <section className={styles.platformHero}>
+        <div className={styles.container}>
+          <div className={styles.platformHeroCopy}>
+            <p className={styles.eyebrow}>企业碳管理数字化平台</p>
+            <h1>{page.title}</h1>
+            <p className={styles.heroSummary}>{page.summary}</p>
+            <div className={styles.platformHeroActions}>
+              <Link className={styles.platformHeroLink} href="/enterprise">
+                进入公开体验页 <ExternalLink size={18} aria-hidden="true" />
+              </Link>
+              <Link className={styles.platformSecondaryLink} href={platformTrialUrl}>申请试用账号</Link>
+            </div>
+            <p className={styles.demoSafety}>公开体验页与企业生产数据完全隔离，不连接现有业务系统。</p>
+          </div>
+          <ProductVisual page={page} />
+        </div>
+      </section>
+
+      <section className={styles.principleBand} aria-labelledby="platform-principles-title">
+        <div className={styles.principleInner}>
+          <header>
+            <span>PLATFORM FOUNDATION</span>
+            <h2 id="platform-principles-title">统一的碳管理底座</h2>
+            <p>数据、核算、分析和管理应用共用同一套口径，减少重复维护。</p>
+          </header>
+          <ol className={styles.principleGrid}>
+            {platformPrinciples.map((principle, index) => {
+              const PrincipleIcon = principle.icon;
+              return (
+                <li key={principle.title}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <PrincipleIcon size={25} strokeWidth={1.6} aria-hidden="true" />
+                  <strong>{principle.title}</strong>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
+      </section>
+
+      <PlatformOverview items={platformOverviewItems} />
+
+      <ProductMediaGallery
+        eyebrow="PLATFORM SCREENSHOTS"
+        title="从数据维护到多维分析的真实界面"
+        description="7 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。"
+        items={platformScreenshots}
+      />
+
+      <section className={`${styles.platformVideo} ${styles.container}`} aria-labelledby="platform-video-title">
+        <header className={styles.sectionHeading}>
+          <span>VIDEO INTRODUCTION</span>
+          <h2 id="platform-video-title">3 分钟了解平台工作方式</h2>
+          <p>通过真实操作画面了解数据维护、核算分析与管理应用。</p>
+        </header>
+        <video
+          controls
+          preload="metadata"
+          poster={`${materialRoot}/产品/平台截图/2.png`}
+          src={`${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
+        >
+          您的浏览器暂不支持视频播放。
+        </video>
+      </section>
+
+      <section className={`${styles.publicDemo} ${styles.container}`} id="power-bi" aria-labelledby="public-demo-title">
+        <div>
+          <span>PUBLIC DEMO</span>
+          <h2 id="public-demo-title">先看平台，再申请试用</h2>
+          <p>公开体验页展示平台首页和 Power BI 分析界面，不包含生产数据；需要完整功能时可申请独立试用账号。</p>
+        </div>
+        <div className={styles.publicDemoActions}>
+          <Link href={powerBiPublicUrl}>查看 Power BI 公共报表 <ExternalLink size={17} aria-hidden="true" /></Link>
+          <Link href="/enterprise"><PlayCircle size={17} aria-hidden="true" />进入平台体验页</Link>
+          <Link href={platformTrialUrl}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
+        </div>
+      </section>
+
+      <ProductResources product="platform" />
       <PageCta title={page.title} />
     </>
   );

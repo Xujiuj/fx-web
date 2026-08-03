@@ -1055,13 +1055,116 @@
   font-size: 12px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .site-footer:not([data-motion-ready="true"]) > * {
-    visibility: hidden;
-    opacity: 0;
-  }
-}
-
 .site-footer a {
   color: #6e655a;
+}
+
+.wecom-consultant {
+  position: fixed;
+  z-index: 70;
+  right: 22px;
+  bottom: 22px;
+}
+
+.wecom-panel {
+  position: relative;
+  width: 238px;
+  padding: 46px 20px 18px;
+  border: 1px solid rgba(16, 60, 50, 0.16);
+  border-radius: 8px;
+  background: #103c32;
+  color: #fff;
+  box-shadow: 0 18px 48px rgba(19, 38, 32, 0.24);
+  text-align: center;
+}
+
+.wecom-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  cursor: pointer;
+}
+
+.wecom-avatar {
+  position: absolute;
+  top: -33px;
+  left: 50%;
+  width: 68px;
+  height: 68px;
+  border: 4px solid #fff;
+  border-radius: 50%;
+  object-fit: cover;
+  transform: translateX(-50%);
+  box-shadow: 0 8px 22px rgba(20, 37, 32, 0.2);
+}
+
+.wecom-panel > strong {
+  display: block;
+  font-size: 17px;
+  line-height: 1.45;
+}
+
+.wecom-panel > p {
+  margin: 7px 0 12px;
+  color: rgba(255, 255, 255, 0.76);
+  font-size: 13px;
+}
+
+.wecom-qr-wrap {
+  padding: 9px;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.wecom-qr-wrap img {
+  width: 100%;
+  height: auto;
+}
+
+.wecom-panel > a {
+  display: block;
+  margin-top: 11px;
+  color: #dceee7;
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.wecom-open {
+  min-width: 54px;
+  min-height: 54px;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  gap: 3px;
+  background: #103c32;
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(19, 38, 32, 0.22);
+  cursor: pointer;
+}
+
+.wecom-open span {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .wecom-consultant {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .wecom-panel {
+    width: min(224px, calc(100vw - 24px));
+  }
 }

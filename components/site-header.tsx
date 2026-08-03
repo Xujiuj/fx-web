@@ -3,7 +3,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as NavigationMenu from "@radix-ui/react-navigation-menu";
 import { ChevronDown, Menu } from "lucide-react";
-import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState } from "react";
 import type { HomeContent } from "@/lib/cms-content";
@@ -76,9 +75,9 @@ function NavigationItem({ item, onActivate }: { item: HomeContent["navItems"][nu
             <ChevronDown size={14} />
           </NavigationMenu.Trigger>
           <NavigationMenu.Content className="nav-content" onPointerEnter={() => onActivate(item.label)}>
-            <motion.div className="nav-panel" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}>
+            <div className="nav-panel">
               {visibleChildren.map((child) => <a href={child.href} key={item.label + "-" + child.label}>{child.label}</a>)}
-            </motion.div>
+            </div>
           </NavigationMenu.Content>
         </>
       ) : <NavigationMenu.Link className="nav-link" href={item.href} onPointerEnter={() => onActivate("")}>{item.label}</NavigationMenu.Link>}

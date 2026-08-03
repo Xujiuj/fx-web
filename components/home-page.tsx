@@ -22,7 +22,6 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { homeEditorialContent, type HomeContent, type HomeEditorialContent, type IconKey } from "@/lib/cms-content";
 import { AnimatedTimeline } from "./animated-timeline";
-import { SectionOrchestrator } from "./section-orchestrator";
 import { SiteFooter } from "./site-footer";
 
 gsap.registerPlugin(useGSAP);
@@ -40,11 +39,8 @@ const iconMap = {
 } satisfies Record<IconKey, typeof BarChart3>;
 
 export function HomePage({ content }: { content: HomeContent }) {
-  const [pageElement, setPageElement] = useState<HTMLElement | null>(null);
-
   return (
-    <main ref={setPageElement}>
-      <SectionOrchestrator scope={pageElement} />
+    <main data-motion-ready="true">
       <HeroCarousel slides={content.heroSlides} />
       <AnimatedTimeline
         eyebrow={homeEditorialContent.path.eyebrow}

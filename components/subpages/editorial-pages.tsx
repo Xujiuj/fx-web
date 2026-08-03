@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import type { Subpage } from "@/lib/cms-content";
+import { policyArticles, videoCourses } from "@/lib/knowledge-content";
 import styles from "./editorial-pages.module.css";
 
 type EditorialPageProps = { page: Subpage };
@@ -173,8 +174,8 @@ const knowledgeRoutes = [
 ];
 
 export function KnowledgePage({ page }: EditorialPageProps) {
-  const topics = page.features;
   const downloads = page.sections.find((section) => section.id === "downloads")?.items ?? [];
+  const featuredArticle = policyArticles[0];
 
   return (
     <>
@@ -194,21 +195,22 @@ export function KnowledgePage({ page }: EditorialPageProps) {
 
       <section id="double-carbon" className={`${styles.wrap} ${styles.knowledgeLead} page-reveal`} aria-labelledby="knowledge-featured-title" data-motion-group="knowledge-index">
         <article className={styles.featuredTopic} data-motion-role="item">
-          <div><span>双碳专栏</span><small>06 TOPICS</small></div>
-          <h2 id="knowledge-featured-title">从政策、核算到披露与市场动态</h2>
-          <p>以企业实际工作为起点，持续整理双碳政策、核算方法与相关管理要求。</p>
+          <div><span>双碳专栏</span><small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small></div>
+          <h2 id="knowledge-featured-title">{featuredArticle.title}</h2>
+          <p>{featuredArticle.summary}</p>
+          <Link href={`/knowledge-center/${featuredArticle.slug}`}>阅读全文 <ArrowRight size={17} aria-hidden="true" /></Link>
         </article>
         <div className={styles.topicIndex} data-motion-role="visual">
           <header data-motion-role="copy">
-            <span>内容索引</span>
-            <small>{String(topics.length).padStart(2, "0")} TOPICS</small>
+            <span>政策文章</span>
+            <small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small>
           </header>
-          {topics.map((topic, index) => (
-            <article key={topic} data-motion-role="item">
+          {policyArticles.map((article, index) => (
+            <Link href={`/knowledge-center/${article.slug}`} key={article.slug} data-motion-role="item">
               <span>{String(index + 1).padStart(2, "0")}</span>
-              <h3>{topic}</h3>
-              <BookOpen size={18} aria-hidden="true" />
-            </article>
+              <div><h3>{article.title}</h3><small>{article.meta}</small></div>
+              <ArrowRight size={18} aria-hidden="true" />
+            </Link>
           ))}
         </div>
       </section>
@@ -221,11 +223,13 @@ export function KnowledgePage({ page }: EditorialPageProps) {
             <p>从入门方法到工具实战、集团体系与平台应用，逐步建立企业内部能力。</p>
           </div>
           <ol className={styles.learningPath}>
-            {page.steps.map((step, index) => (
-              <li key={step} data-motion-role="item">
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{step}</strong>
-                <i aria-hidden="true" />
+            {videoCourses.map((course, index) => (
+              <li key={course.slug} data-motion-role="item">
+                <Link href={`/knowledge-center/${course.slug}`}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div><strong>{course.title}</strong><small>{course.summary}</small></div>
+                  <i aria-hidden="true" />
+                </Link>
               </li>
             ))}
           </ol>
