@@ -184,14 +184,28 @@ jobs:
                 printf '%s\n' '    location ^~ /enterprise/ {' '        alias /opt/fx-enterprise-ui/current/;' '        try_files $uri $uri/ /enterprise/index.html;' '    }'
                 printf '%s\n' '    # END FX_ENTERPRISE_UI'
               } > "$nginx_block"
-              awk -v block="$nginx_block" '
-                /^[[:space:]]*location \/ \{/ && !inserted {
-                  while ((getline line < block) > 0) print line
-                  close(block)
-                  inserted = 1
-                }
-                { print }
-              ' "$nginx_site" > "$nginx_candidate"
+              if grep -E '^[[:space:]]*location[[:space:]]+(\^~[[:space:]]+)?/enterprise/[[:space:]]*\{' "$nginx_site" >/dev/null; then
+                awk -v block="$nginx_block" '
+                  /^[[:space:]]*location[[:space:]]+(\^~[[:space:]]+)?\/enterprise\/[[:space:]]*\{/ && !replaced {
+                    while ((getline line < block) > 0) print line
+                    close(block)
+                    replaced = 1
+                    skipping = 1
+                    next
+                  }
+                  skipping && /^[[:space:]]*}[[:space:]]*$/ { skipping = 0; next }
+                  !skipping { print }
+                ' "$nginx_site" > "$nginx_candidate"
+              else
+                awk -v block="$nginx_block" '
+                  /^[[:space:]]*location \/ \{/ && !inserted {
+                    while ((getline line < block) > 0) print line
+                    close(block)
+                    inserted = 1
+                  }
+                  { print }
+                ' "$nginx_site" > "$nginx_candidate"
+              fi
               install -m 0644 "$nginx_candidate" "$nginx_site"
               if ! nginx -t; then
                 install -m 0644 "$nginx_backup" "$nginx_site"
