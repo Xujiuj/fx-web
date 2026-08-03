@@ -163,20 +163,25 @@ function PageCta({ title }: { title: string }) {
   );
 }
 
-function ProductResources({ product }: { product: string }) {
+function ProductResources({ page }: ProductPageProps) {
+  const resources = page.sections.find((section) => section.id === "product-resources")?.items ?? [
+    { title: "产品手册", description: "产品介绍与使用说明" },
+    { title: "功能与版本清单", description: "功能范围与版本说明" },
+    { title: "部署及试用说明", description: "部署要求与试用指引" },
+  ];
   return (
-    <section className={`${styles.productResources} ${styles.container}`} aria-labelledby={`${product}-resources-title`}>
+    <section className={`${styles.productResources} ${styles.container}`} aria-labelledby={`${page.slug}-resources-title`}>
       <header className={styles.sectionHeading}>
         <span>RESOURCE CENTER</span>
-        <h2 id={`${product}-resources-title`}>产品资料下载</h2>
-        <p>产品手册、功能清单与部署说明统一在资料下载中心维护，后续上传新版本后可直接更新下载入口。</p>
+        <h2 id={`${page.slug}-resources-title`}>产品资料下载</h2>
+        <p>产品手册、功能清单与部署说明由后台独立维护；上传新版本后，用户可直接下载。</p>
       </header>
       <div className={styles.resourceRows}>
-        {["产品手册", "功能与版本清单", "部署及试用说明"].map((name) => (
-          <Link href="/knowledge-center#downloads" key={name}>
+        {resources.map((resource) => (
+          <Link href={resource.value || "/knowledge-center#downloads"} key={resource.title}>
             <Download size={19} aria-hidden="true" />
-            <strong>{name}</strong>
-            <span>前往下载中心</span>
+            <strong>{resource.title}</strong>
+            <span>{resource.value ? "立即下载" : resource.description || "资料准备中"}</span>
             <ArrowRight size={17} aria-hidden="true" />
           </Link>
         ))}
@@ -285,7 +290,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         alt="Excel 温室气体核算工具的数据维护与核算关系图"
       />
 
-      <ProductResources product="excel" />
+      <ProductResources page={page} />
       <PageCta title={page.title} />
     </>
   );
@@ -589,7 +594,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <ProductResources product="platform" />
+      <ProductResources page={page} />
       <PageCta title={page.title} />
     </>
   );
