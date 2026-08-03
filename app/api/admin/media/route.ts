@@ -4,12 +4,20 @@ import path from "node:path";
 import { NextResponse } from "next/server";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024;
 const allowedTypes = new Map([
   ["image/jpeg", ".jpg"],
   ["image/png", ".png"],
   ["image/webp", ".webp"],
   ["image/gif", ".gif"]
+]);
+const allowedDocumentTypes = new Map([
+  ["application/pdf", ".pdf"],
+  ["application/msword", ".doc"],
+  ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx"],
+  ["application/vnd.ms-excel", ".xls"],
+  ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx"],
 ]);
 
 function hasAllowedImageSignature(bytes: Uint8Array, type: string) {
@@ -26,8 +34,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "请求格式必须为 multipart/form-data" }, { status: 400 });
   }
   const declaredLength = Number(request.headers.get("content-length"));
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_FILE_SIZE + 64 * 1024) {
-    return NextResponse.json({ error: "图片大小必须在 5MB 以内" }, { status: 400 });
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_DOCUMENT_SIZE + 64 * 1024) {
+    return NextResponse.json({ error: "文件大小必须在 20MB 以内" }, { status: 400 });
   }
 
   let form: FormData;
@@ -37,21 +45,22 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "图片上传数据无效" }, { status: 400 });
   }
   const file = form.get("file");
-  if (!(file instanceof File)) return NextResponse.json({ error: "Missing image file" }, { status: 400 });
-  if (file.size <= 0 || file.size > MAX_FILE_SIZE) return NextResponse.json({ error: "图片大小必须在 5MB 以内" }, { status: 400 });
+  if (!(file instanceof File)) return NextResponse.json({ error: "Missing file" }, { status: 400 });
+  if (file.size <= 0 || file.size > MAX_DOCUMENT_SIZE) return NextResponse.json({ error: "文件大小必须在 20MB 以内" }, { status: 400 });
 
   const extension = allowedTypes.get(file.type);
-  if (!extension) return NextResponse.json({ error: "仅支持 JPG、PNG、WebP 和 GIF" }, { status: 400 });
+  const documentExtension = allowedDocumentTypes.get(file.type);
+  if (!extension && !documentExtension) return NextResponse.json({ error: "仅支持 JPG、PNG、WebP、GIF、PDF、Word 和 Excel 文件" }, { status: 400 });
 
   const bytes = new Uint8Array(await file.arrayBuffer());
-  if (!hasAllowedImageSignature(bytes, file.type)) {
+  if (extension && (file.size > MAX_IMAGE_SIZE || !hasAllowedImageSignature(bytes, file.type))) {
     return NextResponse.json({ error: "图片文件格式无效" }, { status: 400 });
   }
 
-  const directory = path.join(process.cwd(), "public", "media", "uploads");
+  const directory = path.join(process.cwd(), "public", "media", documentExtension ? "documents" : "uploads");
   await mkdir(directory, { recursive: true });
-  const filename = randomUUID() + extension;
+  const filename = randomUUID() + (extension ?? documentExtension);
   await writeFile(path.join(directory, filename), bytes);
 
-  return NextResponse.json({ path: "/media/uploads/" + filename });
+  return NextResponse.json({ path: `/media/${documentExtension ? "documents" : "uploads"}/${filename}` });
 }

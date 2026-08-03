@@ -64,6 +64,28 @@ function ImageUploadField({ name, label, required = false, hint = "支持 JPG、
   return <><Form.Item name={name} hidden rules={required ? [{ required: true, message: `请上传${label}` }] : []}><Input /></Form.Item><Form.Item label={label} required={required} extra={hint} validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space align="start" size="middle"><MediaPreview src={imagePath} alt={label} width={128} height={84} /><Space direction="vertical" size={8}><Upload accept="image/jpeg,image/png,image/webp,image/gif" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{imagePath ? "更换图片" : "上传图片"}</Button></Upload>{imagePath ? <Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除图片</Button> : null}</Space></Space></Form.Item></>;
 }
 
+function DocumentUploadField({ name }: { name: string }) {
+  const form = Form.useFormInstance();
+  const [uploading, setUploading] = useState(false);
+  const upload: UploadProps["customRequest"] = (options) => {
+    void (async () => {
+      setUploading(true);
+      try {
+        const data = new FormData();
+        data.append("file", options.file as File);
+        const response = await fetch("/api/admin/media", { method: "POST", body: data });
+        const result = await response.json();
+        if (!response.ok || typeof result.path !== "string") throw new Error(result.error || "资料上传失败");
+        form.setFieldValue(name, result.path);
+        options.onSuccess?.(result);
+      } catch (error) {
+        options.onError?.(error instanceof Error ? error : new Error("资料上传失败"));
+      } finally { setUploading(false); }
+    })();
+  };
+  return <Upload accept=".pdf,.doc,.docx,.xls,.xlsx" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>上传资料</Button></Upload>;
+}
+
 function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCreate, onUpdate, onDelete, children, busy, allowCreate = true, canDelete = () => true }: {
   title: string;
   rows: T[];
@@ -301,8 +323,9 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
         <Row gutter={12}>
           <Col span={8}><ProFormText name="title" label="条目标题" rules={[{ required: true }]} /></Col>
           <Col span={8}><ProFormText name="description" label="条目说明" /></Col>
-          <Col span={8}><ProFormText name="value" label="指标值" /></Col>
+          <Col span={8}><ProFormText name="value" label="下载地址或指标值" /></Col>
         </Row>
+        <Form.Item label="资料文件（产品资料条目上传后自动写入下载地址）"><DocumentUploadField name="value" /></Form.Item>
         <ImageUploadField name="image" label="条目图片或二维码" hint="荣誉页上传证书，伙伴页上传 Logo，联系页可上传二维码。" />
       </ProFormList>
     </ProFormList>
