@@ -1,6 +1,7 @@
 import "server-only";
 import nodemailer from "nodemailer";
 import { getHomeContent } from "@/lib/cms-content";
+import { prisma } from "@/lib/prisma";
 
 type ContactLeadNotification = {
   id: string;
@@ -12,7 +13,8 @@ type ContactLeadNotification = {
   createdAt: Date;
 };
 
-type DeliveryResult = "sent" | "not-configured" | "no-recipient";
+type DeliveryStatus = "PENDING" | "SENT" | "SKIPPED" | "FAILED";
+type DeliveryResult = { status: DeliveryStatus; deliveryId: string };
 
 const emailPattern = /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g;
 
@@ -37,12 +39,44 @@ function recipientEmails(contactDescription: string) {
   return [...new Set(contactDescription.match(emailPattern) ?? [])];
 }
 
-export async function sendContactLeadNotification(lead: ContactLeadNotification): Promise<DeliveryResult> {
-  const smtp = configuredSmtp();
-  if (!smtp) return "not-configured";
+function notificationSubject(lead: ContactLeadNotification) {
+  return `网站新咨询：${lead.name}`;
+}
 
+function errorMessage(error: unknown) {
+  const message = error instanceof Error ? error.message : "Unknown mail delivery error";
+  return message.replace(/(password|pass|token|authorization)\s*[:=]\s*\S+/gi, "$1=[REDACTED]").slice(0, 1_000);
+}
+
+export async function sendContactLeadNotification(lead: ContactLeadNotification): Promise<DeliveryResult> {
   const recipients = recipientEmails((await getHomeContent()).contact.description);
-  if (recipients.length === 0) return "no-recipient";
+  const smtp = configuredSmtp();
+  const subject = notificationSubject(lead);
+  const delivery = await prisma.contactLeadEmailDelivery.create({
+    data: {
+      leadId: lead.id,
+      recipients: recipients.join(", "),
+      sender: smtp?.from,
+      subject,
+      status: "PENDING"
+    }
+  });
+
+  if (!smtp) {
+    await prisma.contactLeadEmailDelivery.update({
+      where: { id: delivery.id },
+      data: { status: "SKIPPED", error: "SMTP is not configured." }
+    });
+    return { status: "SKIPPED", deliveryId: delivery.id };
+  }
+
+  if (recipients.length === 0) {
+    await prisma.contactLeadEmailDelivery.update({
+      where: { id: delivery.id },
+      data: { status: "SKIPPED", error: "No recipient is configured in the site contact content." }
+    });
+    return { status: "SKIPPED", deliveryId: delivery.id };
+  }
 
   const transporter = nodemailer.createTransport({
     host: smtp.host,
@@ -51,23 +85,36 @@ export async function sendContactLeadNotification(lead: ContactLeadNotification)
     auth: smtp.auth
   });
 
-  await transporter.sendMail({
-    from: smtp.from,
-    to: recipients,
-    replyTo: lead.email,
-    subject: `网站新咨询：${lead.name}`,
-    text: [
-      "收到一条新的线上咨询。",
-      `联系人：${lead.name}`,
-      `企业名称：${lead.company ?? "未填写"}`,
-      `联系电话/微信：${lead.contact}`,
-      `联系邮箱：${lead.email}`,
-      `提交时间：${lead.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}`,
-      "",
-      "企业需求：",
-      lead.message
-    ].join("\n")
-  });
+  let result: Awaited<ReturnType<typeof transporter.sendMail>>;
+  try {
+    result = await transporter.sendMail({
+      from: smtp.from,
+      to: recipients,
+      replyTo: lead.email,
+      subject,
+      text: [
+        "收到一条新的线上咨询。",
+        `联系人：${lead.name}`,
+        `企业名称：${lead.company ?? "未填写"}`,
+        `联系电话/微信：${lead.contact}`,
+        `联系邮箱：${lead.email}`,
+        `提交时间：${lead.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}`,
+        "",
+        "企业需求：",
+        lead.message
+      ].join("\n")
+    });
+  } catch (error) {
+    await prisma.contactLeadEmailDelivery.update({
+      where: { id: delivery.id },
+      data: { status: "FAILED", error: errorMessage(error) }
+    });
+    return { status: "FAILED", deliveryId: delivery.id };
+  }
 
-  return "sent";
+  await prisma.contactLeadEmailDelivery.update({
+    where: { id: delivery.id },
+    data: { status: "SENT", providerMessageId: result.messageId, sentAt: new Date() }
+  });
+  return { status: "SENT", deliveryId: delivery.id };
 }

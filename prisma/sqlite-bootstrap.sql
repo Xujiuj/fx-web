@@ -8,6 +8,22 @@ CREATE TABLE IF NOT EXISTS "ContactLead" (
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS "ContactLeadEmailDelivery" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "leadId" TEXT NOT NULL,
+    "recipients" TEXT NOT NULL,
+    "sender" TEXT,
+    "subject" TEXT NOT NULL,
+    "status" TEXT NOT NULL,
+    "error" TEXT,
+    "providerMessageId" TEXT,
+    "sentAt" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "ContactLeadEmailDelivery_leadId_fkey" FOREIGN KEY ("leadId") REFERENCES "ContactLead" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS "ContactLeadEmailDelivery_leadId_createdAt_idx" ON "ContactLeadEmailDelivery"("leadId", "createdAt");
+
 CREATE TABLE IF NOT EXISTS "SiteContent" (
     "key" TEXT NOT NULL PRIMARY KEY,
     "value" TEXT NOT NULL,
