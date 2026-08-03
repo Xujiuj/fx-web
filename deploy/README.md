@@ -11,6 +11,13 @@ a release, restart `fx-web.service`, and validate/reload Nginx. Rotate any
 credential that has previously been shared in chat, documentation, or shell
 history.
 
+The host `.env` also contains the outbound-mail configuration. Set
+`SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and
+`SMTP_FROM` there; QQ Mail uses `smtp.qq.com`, port `465`, and an SMTP
+authorization code as `SMTP_PASSWORD`. Contact-form notifications are sent to
+the email address currently published in the site's contact content, so the
+recipient changes automatically when that content is updated.
+
 ## One-time host setup
 
 1. Point the apex and `www` DNS records at the server.
