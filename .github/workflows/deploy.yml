@@ -99,7 +99,6 @@ jobs:
             archive=/tmp/fx-web-release.tgz
             enterprise_archive=/tmp/enterprise-ui-release.tgz
             enterprise_target=/opt/fx-enterprise-ui/current
-            nginx_site=/etc/nginx/sites-available/fx-web
             unit=/tmp/deploy/fx-web.service
 
             systemctl status "$service" --no-pager || true
@@ -111,9 +110,23 @@ jobs:
 
             # Verify the existing enterprise backend before changing its frontend route.
             command -v nginx >/dev/null
-            nginx -T 2>&1 | grep -E 'location[[:space:]]+(\^~[[:space:]]+)?/enterprise/prod-api/'
+            nginx_dump=$(mktemp)
+            nginx -T > "$nginx_dump" 2>&1
+            grep -E 'location[[:space:]]+(\^~[[:space:]]+)?/enterprise/prod-api/' "$nginx_dump"
+            nginx_site=$(awk '
+              /^# configuration file / {
+                file = $0
+                sub(/^# configuration file /, "", file)
+                sub(/:$/, "", file)
+              }
+              /server_name[[:space:]].*fengxingzhicheng\.com/ {
+                print file
+                exit
+              }
+            ' "$nginx_dump")
+            rm -f "$nginx_dump"
+            test -n "$nginx_site"
             test -f "$nginx_site"
-            grep -F 'server_name fengxingzhicheng.com' "$nginx_site" >/dev/null
             grep -F 'location / {' "$nginx_site" >/dev/null
             curl --fail --silent --show-error --max-time 15 https://fengxingzhicheng.com/enterprise/prod-api/ > /dev/null
 
