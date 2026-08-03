@@ -24,7 +24,12 @@ export async function GET(request: Request) {
   const pageSize = parsePositiveInteger(searchParams.get("pageSize"), 20, 100);
   const [total, leads] = await prisma.$transaction([
     prisma.contactLead.count(),
-    prisma.contactLead.findMany({ orderBy: { createdAt: "desc" }, skip: (page - 1) * pageSize, take: pageSize })
+    prisma.contactLead.findMany({
+      orderBy: { createdAt: "desc" },
+      skip: (page - 1) * pageSize,
+      take: pageSize,
+      include: { mailDeliveries: { orderBy: { createdAt: "desc" } } }
+    })
   ]);
 
   return NextResponse.json({ leads, page, pageSize, total });
@@ -75,7 +80,7 @@ export async function POST(request: Request) {
 
   try {
     const delivery = await sendContactLeadNotification(lead);
-    if (delivery !== "sent") console.warn("Contact lead notification was not sent", { leadId: lead.id, delivery });
+    if (delivery.status !== "SENT") console.warn("Contact lead notification was not sent", { leadId: lead.id, ...delivery });
   } catch (error) {
     console.error("Contact lead notification failed", {
       leadId: lead.id,

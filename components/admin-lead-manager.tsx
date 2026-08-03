@@ -1,6 +1,7 @@
 "use client";
 
 import { PageContainer, ProTable, type ProColumns } from "@ant-design/pro-components";
+import { Tag, Tooltip } from "antd";
 
 type ContactLead = {
   id: string;
@@ -10,7 +11,31 @@ type ContactLead = {
   email: string;
   message: string;
   createdAt: string | Date;
+  mailDeliveries: MailDelivery[];
 };
+
+type MailDelivery = {
+  id: string;
+  recipients: string;
+  sender: string | null;
+  subject: string;
+  status: "PENDING" | "SENT" | "SKIPPED" | "FAILED";
+  error: string | null;
+  providerMessageId: string | null;
+  sentAt: string | Date | null;
+  createdAt: string | Date;
+};
+
+const deliveryStatus = {
+  PENDING: { label: "发送中", color: "processing" },
+  SENT: { label: "已发送", color: "success" },
+  SKIPPED: { label: "未发送", color: "default" },
+  FAILED: { label: "发送失败", color: "error" }
+} as const;
+
+function formatDate(value: string | Date | null) {
+  return value ? new Date(value).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false }) : "-";
+}
 
 export function AdminLeadManager() {
   const columns: ProColumns<ContactLead>[] = [
@@ -19,6 +44,28 @@ export function AdminLeadManager() {
     { title: "企业", dataIndex: "company", renderText: (company) => company || "-", width: 160 },
     { title: "手机号/微信号", dataIndex: "contact", width: 180 },
     { title: "邮箱", dataIndex: "email", width: 220 },
+    {
+      title: "邮件投递",
+      dataIndex: "mailDeliveries",
+      width: 150,
+      render: (_, lead) => {
+        const latest = lead.mailDeliveries[0];
+        if (!latest) return "-";
+        const state = deliveryStatus[latest.status];
+        const details = [
+          `状态：${state.label}`,
+          `收件人：${latest.recipients || "-"}`,
+          `发件人：${latest.sender || "-"}`,
+          `主题：${latest.subject}`,
+          `发起时间：${formatDate(latest.createdAt)}`,
+          `成功时间：${formatDate(latest.sentAt)}`,
+          latest.providerMessageId ? `邮件编号：${latest.providerMessageId}` : null,
+          latest.error ? `失败原因：${latest.error}` : null,
+          lead.mailDeliveries.length > 1 ? `历史记录：${lead.mailDeliveries.length} 次` : null
+        ].filter(Boolean).join("\n");
+        return <Tooltip title={<span style={{ whiteSpace: "pre-line" }}>{details}</span>}><Tag color={state.color}>{state.label}</Tag></Tooltip>;
+      }
+    },
     { title: "咨询内容", dataIndex: "message", ellipsis: true }
   ];
 

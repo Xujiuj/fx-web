@@ -9,13 +9,30 @@ datasource db {
 }
 
 model ContactLead {
-  id        String   @id @default(cuid())
-  name      String
-  company   String?
-  contact   String
-  email     String
-  message   String
-  createdAt DateTime @default(now())
+  id             String                     @id @default(cuid())
+  name           String
+  company        String?
+  contact        String
+  email          String
+  message        String
+  createdAt      DateTime                   @default(now())
+  mailDeliveries ContactLeadEmailDelivery[]
+}
+
+model ContactLeadEmailDelivery {
+  id                String      @id @default(cuid())
+  leadId            String
+  recipients        String
+  sender            String?
+  subject           String
+  status            String
+  error             String?
+  providerMessageId String?
+  sentAt            DateTime?
+  createdAt         DateTime    @default(now())
+  lead              ContactLead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
 }
 
 model SiteContent {
