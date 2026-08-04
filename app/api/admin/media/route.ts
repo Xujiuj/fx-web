@@ -6,6 +6,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024;
+const MAX_VIDEO_SIZE = 200 * 1024 * 1024;
 const allowedTypes = new Map([
   ["image/jpeg", ".jpg"],
   ["image/png", ".png"],
@@ -19,6 +20,10 @@ const allowedDocumentTypes = new Map([
   ["application/vnd.ms-excel", ".xls"],
   ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx"],
 ]);
+const allowedVideoTypes = new Map([
+  ["video/mp4", ".mp4"],
+  ["video/webm", ".webm"],
+]);
 
 function hasAllowedImageSignature(bytes: Uint8Array, type: string) {
   if (type === "image/jpeg") return bytes.length >= 3 && bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff;
@@ -28,14 +33,20 @@ function hasAllowedImageSignature(bytes: Uint8Array, type: string) {
   return false;
 }
 
+function hasAllowedVideoSignature(bytes: Uint8Array, type: string) {
+  if (type === "video/mp4") return bytes.length >= 12 && new TextDecoder().decode(bytes.slice(4, 8)) === "ftyp";
+  if (type === "video/webm") return bytes.length >= 4 && bytes.slice(0, 4).every((byte, index) => byte === [0x1a, 0x45, 0xdf, 0xa3][index]);
+  return false;
+}
+
 export async function POST(request: Request) {
   if (!(await isAdminAuthenticated())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   if (!request.headers.get("content-type")?.toLowerCase().startsWith("multipart/form-data")) {
     return NextResponse.json({ error: "请求格式必须为 multipart/form-data" }, { status: 400 });
   }
   const declaredLength = Number(request.headers.get("content-length"));
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_DOCUMENT_SIZE + 64 * 1024) {
-    return NextResponse.json({ error: "文件大小必须在 20MB 以内" }, { status: 400 });
+  if (Number.isFinite(declaredLength) && declaredLength > MAX_VIDEO_SIZE + 64 * 1024) {
+    return NextResponse.json({ error: "视频文件大小必须在 200MB 以内" }, { status: 400 });
   }
 
   let form: FormData;
@@ -46,21 +57,27 @@ export async function POST(request: Request) {
   }
   const file = form.get("file");
   if (!(file instanceof File)) return NextResponse.json({ error: "Missing file" }, { status: 400 });
-  if (file.size <= 0 || file.size > MAX_DOCUMENT_SIZE) return NextResponse.json({ error: "文件大小必须在 20MB 以内" }, { status: 400 });
+  if (file.size <= 0 || file.size > MAX_VIDEO_SIZE) return NextResponse.json({ error: "视频文件大小必须在 200MB 以内" }, { status: 400 });
 
   const extension = allowedTypes.get(file.type);
   const documentExtension = allowedDocumentTypes.get(file.type);
-  if (!extension && !documentExtension) return NextResponse.json({ error: "仅支持 JPG、PNG、WebP、GIF、PDF、Word 和 Excel 文件" }, { status: 400 });
+  const videoExtension = allowedVideoTypes.get(file.type);
+  if (!extension && !documentExtension && !videoExtension) return NextResponse.json({ error: "仅支持 JPG、PNG、WebP、GIF、PDF、Word、Excel、MP4 和 WebM 文件" }, { status: 400 });
+  if (documentExtension && file.size > MAX_DOCUMENT_SIZE) return NextResponse.json({ error: "文档文件大小必须在 20MB 以内" }, { status: 400 });
 
   const bytes = new Uint8Array(await file.arrayBuffer());
   if (extension && (file.size > MAX_IMAGE_SIZE || !hasAllowedImageSignature(bytes, file.type))) {
     return NextResponse.json({ error: "图片文件格式无效" }, { status: 400 });
   }
+  if (videoExtension && !hasAllowedVideoSignature(bytes, file.type)) {
+    return NextResponse.json({ error: "视频文件格式无效" }, { status: 400 });
+  }
 
-  const directory = path.join(process.cwd(), "public", "media", documentExtension ? "documents" : "uploads");
+  const directoryName = documentExtension ? "documents" : videoExtension ? "videos" : "uploads";
+  const directory = path.join(process.cwd(), "public", "media", directoryName);
   await mkdir(directory, { recursive: true });
-  const filename = randomUUID() + (extension ?? documentExtension);
+  const filename = randomUUID() + (extension ?? documentExtension ?? videoExtension);
   await writeFile(path.join(directory, filename), bytes);
 
-  return NextResponse.json({ path: `/media/${documentExtension ? "documents" : "uploads"}/${filename}` });
+  return NextResponse.json({ path: `/media/${directoryName}/${filename}` });
 }

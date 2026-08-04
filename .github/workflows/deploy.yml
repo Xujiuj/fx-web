@@ -154,9 +154,22 @@ jobs:
             if [ ! -f "$database" ] && [ -f "$legacy_database" ]; then
               mv "$legacy_database" "$database"
             fi
+            for media_type in uploads documents videos; do
+              persisted_media="$data_dir/media/$media_type"
+              current_media="$target/public/media/$media_type"
+              install -d -o fx-web -g fx-web "$persisted_media"
+              if [ -d "$current_media" ] && [ ! -L "$current_media" ]; then
+                cp -a "$current_media/." "$persisted_media/"
+              fi
+            done
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
             tar -xzf "$archive" -C "$target"
+            for media_type in uploads documents videos; do
+              current_media="$target/public/media/$media_type"
+              rm -rf "$current_media"
+              ln -s "$data_dir/media/$media_type" "$current_media"
+            done
             /opt/fx/runtime/node/bin/node --no-warnings "$target/scripts/ensure-sqlite-schema.mjs" "$database" "$target/prisma/sqlite-bootstrap.sql"
             chown -R fx-web:fx-web "$target" "$data_dir"
             rm -f "$archive"

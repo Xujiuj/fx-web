@@ -88,6 +88,35 @@ function DocumentUploadField({ onChange }: { onChange?: (path: string) => void }
   return <Upload accept=".pdf,.doc,.docx,.xls,.xlsx" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>上传资料</Button></Upload>;
 }
 
+function VideoUploadField({ name, label = "上传并绑定视频" }: { name: string | string[]; label?: string }) {
+  const form = Form.useFormInstance();
+  const videoPath = Form.useWatch(name, form) as string | undefined;
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const upload: UploadProps["customRequest"] = (options) => {
+    void (async () => {
+      setUploading(true);
+      setUploadError("");
+      try {
+        const data = new FormData();
+        data.append("file", options.file as File);
+        const response = await fetch("/api/admin/media", { method: "POST", body: data });
+        const result = await response.json();
+        if (!response.ok || typeof result.path !== "string") throw new Error(result.error || "视频上传失败");
+        form.setFieldValue(name, result.path);
+        options.onSuccess?.(result);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : "视频上传失败";
+        setUploadError(message);
+        options.onError?.(new Error(message));
+      } finally {
+        setUploading(false);
+      }
+    })();
+  };
+  return <Form.Item label={label} extra="支持 MP4、WebM，单个文件不超过 200MB。上传后点击保存即可绑定到当前内容。" validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space direction="vertical" size={8}><Upload accept="video/mp4,video/webm,.mp4,.webm" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{videoPath ? "替换视频" : "上传视频"}</Button></Upload>{videoPath ? <Space size={12}><a href={videoPath} target="_blank" rel="noreferrer">查看已绑定视频</a><Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除视频</Button></Space> : null}</Space></Form.Item>;
+}
+
 function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCreate, onUpdate, onDelete, children, busy, allowCreate = true, canDelete = () => true }: {
   title: string;
   rows: T[];
@@ -285,7 +314,7 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
     <ProFormText name="sourceName" label="政策原文名称（文章选填）" />
     <ProFormText name="sourceHref" label="政策原文链接（文章选填）" rules={[{ type: "url", message: "请输入完整的 https:// 链接" }]} />
     <ProFormDependency name={["type"]}>
-      {({ type }) => type === "course" ? <ProFormText name="videoHref" label="视频跳转链接" extra="支持站内视频路径或完整 https:// 视频链接；保存后前台课程入口将直接打开视频。" rules={[{ pattern: /^(?:\/(?!\/)|https:\/\/[^\s]+)$/i, message: "请输入站内路径或完整的 https:// 链接" }]} /> : null}
+      {({ type }) => type === "course" ? <><ProFormText name="videoHref" label="视频跳转链接" extra="可直接填写站内路径或完整 https:// 视频链接，也可使用下方上传按钮自动绑定。" rules={[{ pattern: /^(?:\/(?!\/)|https:\/\/[^\s]+)$/i, message: "请输入站内路径或完整的 https:// 链接" }]} /><VideoUploadField name="videoHref" label="课程视频" /></> : null}
     </ProFormDependency>
     <ProFormList name="sections" label="详情正文" creatorButtonProps={{ creatorButtonText: "新增正文段落" }}>
       <ProFormText name="heading" label="小节标题" rules={[{ required: true }]} />
@@ -362,6 +391,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
           <ProFormText name={["product", "trialUrl"]} label="试用申请链接" rules={[{ required: true }]} />
           <ProFormText name={["product", "publicReportUrl"]} label="Power BI 公开报告链接" extra="填写 app.powerbi.com/view?r= 形式的公开链接，前台会以新窗口打开。" rules={[{ pattern: /^(?:\/(?!\/)|https:\/\/[^\s]+)$/i, message: "请输入站内路径或完整的 https:// 链接" }]} />
           <ProFormText name={["product", "videoUrl"]} label="平台介绍视频地址" />
+          <VideoUploadField name={["product", "videoUrl"]} label="平台介绍视频" />
           <ImageUploadField name={["product", "videoPoster"]} label="视频封面" hint="建议上传 16:9 的清晰界面截图。" />
         </> : null}
       </> : null}
