@@ -509,6 +509,15 @@ function normalizeKnowledgeEntries(entries: unknown): KnowledgeEntry[] {
     typeof (entry as KnowledgeEntry).category === "string" && typeof (entry as KnowledgeEntry).title === "string" &&
     typeof (entry as KnowledgeEntry).summary === "string" && typeof (entry as KnowledgeEntry).meta === "string" &&
     Array.isArray((entry as KnowledgeEntry).sections)));
+  const legacyPolicySlugs = new Set([
+    "energy-saving-carbon-reduction-2024-2025",
+    "carbon-market-regulation-enterprise-compliance",
+    "carbon-emission-dual-control-system"
+  ]);
+  const articles = valid.filter((entry) => entry.type === "article");
+  if (articles.length === legacyPolicySlugs.size && articles.every((entry) => legacyPolicySlugs.has(entry.slug))) {
+    return defaultKnowledgeEntries;
+  }
   return valid.length ? valid : defaultKnowledgeEntries;
 }
 
