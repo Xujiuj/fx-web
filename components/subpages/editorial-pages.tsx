@@ -230,7 +230,7 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
             {videoCourses.map((course, index) => {
               const contents = <><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{course.title}</strong><small>{course.summary}</small></div><i aria-hidden="true" /></>;
               return <li key={course.slug} data-motion-role="item">
-                {course.videoHref ? <a href={course.videoHref} target="_blank" rel="noreferrer" aria-label={`播放${course.title}`}>{contents}</a> : <Link href={`/knowledge-center/${course.slug}`}>{contents}</Link>}
+                {course.videoHref ? <a href={course.videoHref} target="_blank" rel="noreferrer" aria-label={`播放${course.title}`}>{contents}</a> : <div className={styles.videoPending} aria-label={`${course.title}视频待配置`}>{contents}</div>}
               </li>;
             })}
           </ol>
