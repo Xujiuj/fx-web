@@ -65,7 +65,7 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
     if (page.media !== undefined && !isMediaMap(page.media)) return "子页面媒体路径无效: " + page.slug;
     if (page.product !== undefined) {
       if (!isRecord(page.product)) return "产品配置无效: " + page.slug;
-      for (const key of ["enterpriseUrl", "trialUrl"] as const) {
+      for (const key of ["enterpriseUrl", "trialUrl", "publicReportUrl"] as const) {
         if (page.product[key] !== undefined && !isAllowedLink(page.product[key])) return "产品链接必须是站内路径或 https 地址: " + page.slug;
       }
       for (const key of ["videoUrl", "videoPoster"] as const) {
@@ -83,7 +83,7 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
     if (!isRecord(entry) || typeof entry.slug !== "string" || !/^[a-z0-9-]+$/.test(entry.slug)) return "知识内容 URL 标识无效";
     if (knowledgeSlugs.has(entry.slug)) return "知识内容 URL 标识不能重复: " + entry.slug;
     knowledgeSlugs.add(entry.slug);
-    if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !Array.isArray(entry.sections) || (entry.sourceHref !== undefined && !/^https:\/\/[^\s]+$/i.test(String(entry.sourceHref)))) return "知识内容结构无效: " + entry.slug;
+    if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !Array.isArray(entry.sections) || (entry.sourceHref !== undefined && !/^https:\/\/[^\s]+$/i.test(String(entry.sourceHref))) || (entry.videoHref !== undefined && !isAllowedLink(entry.videoHref))) return "知识内容结构无效: " + entry.slug;
     if (!entry.sections.every((section) => isRecord(section) && typeof section.heading === "string" && (section.paragraphs === undefined || (Array.isArray(section.paragraphs) && section.paragraphs.every((value) => typeof value === "string"))) && (section.bullets === undefined || (Array.isArray(section.bullets) && section.bullets.every((value) => typeof value === "string"))))) return "知识内容正文无效: " + entry.slug;
   }
   return null;

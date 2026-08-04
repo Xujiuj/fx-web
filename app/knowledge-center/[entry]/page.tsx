@@ -58,7 +58,12 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
               </section>
             ))}
 
-            {entry.sourceHref ? (
+            {entry.videoHref ? (
+              <aside className={styles.courseCta}>
+                <div><span>COURSE VIDEO</span><strong>播放课程视频</strong></div>
+                <a href={entry.videoHref} target="_blank" rel="noreferrer">打开视频 <ExternalLink size={17} aria-hidden="true" /></a>
+              </aside>
+            ) : entry.sourceHref ? (
               <aside className={styles.source}>
                 <span>政策原文</span>
                 <a href={entry.sourceHref} target="_blank" rel="noreferrer">{entry.sourceName}<ExternalLink size={16} aria-hidden="true" /></a>
@@ -73,13 +78,10 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
 
           <aside className={styles.related}>
             <span>{entry.type === "article" ? "相关文章" : "系列课程"}</span>
-            {related.map((item, index) => (
-              <Link href={`/knowledge-center/${item.slug}`} key={item.slug}>
-                <small>{String(index + 1).padStart(2, "0")}</small>
-                <strong>{item.title}</strong>
-                <ArrowRight size={16} aria-hidden="true" />
-              </Link>
-            ))}
+            {related.map((item, index) => {
+              const contents = <><small>{String(index + 1).padStart(2, "0")}</small><strong>{item.title}</strong><ArrowRight size={16} aria-hidden="true" /></>;
+              return item.videoHref ? <a href={item.videoHref} target="_blank" rel="noreferrer" key={item.slug}>{contents}</a> : <Link href={`/knowledge-center/${item.slug}`} key={item.slug}>{contents}</Link>;
+            })}
           </aside>
         </div>
       </main>

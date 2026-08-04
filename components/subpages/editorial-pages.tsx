@@ -227,15 +227,12 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
             <p>从入门方法到工具实战、集团体系与平台应用，逐步建立企业内部能力。</p>
           </div>
           <ol className={styles.learningPath}>
-            {videoCourses.map((course, index) => (
-              <li key={course.slug} data-motion-role="item">
-                <Link href={`/knowledge-center/${course.slug}`}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div><strong>{course.title}</strong><small>{course.summary}</small></div>
-                  <i aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
+            {videoCourses.map((course, index) => {
+              const contents = <><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{course.title}</strong><small>{course.summary}</small></div><i aria-hidden="true" /></>;
+              return <li key={course.slug} data-motion-role="item">
+                {course.videoHref ? <a href={course.videoHref} target="_blank" rel="noreferrer" aria-label={`播放${course.title}`}>{contents}</a> : <Link href={`/knowledge-center/${course.slug}`}>{contents}</Link>}
+              </li>;
+            })}
           </ol>
         </div>
       </section>

@@ -284,6 +284,9 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
     <ProFormText name="meta" label="阅读或课程信息" rules={[{ required: true }]} />
     <ProFormText name="sourceName" label="政策原文名称（文章选填）" />
     <ProFormText name="sourceHref" label="政策原文链接（文章选填）" rules={[{ type: "url", message: "请输入完整的 https:// 链接" }]} />
+    <ProFormDependency name={["type"]}>
+      {({ type }) => type === "course" ? <ProFormText name="videoHref" label="视频跳转链接" extra="支持站内视频路径或完整 https:// 视频链接；保存后前台课程入口将直接打开视频。" rules={[{ pattern: /^(?:\/(?!\/)|https:\/\/[^\s]+)$/i, message: "请输入站内路径或完整的 https:// 链接" }]} /> : null}
+    </ProFormDependency>
     <ProFormList name="sections" label="详情正文" creatorButtonProps={{ creatorButtonText: "新增正文段落" }}>
       <ProFormText name="heading" label="小节标题" rules={[{ required: true }]} />
       <ProFormList name="paragraphs" label="段落" creatorButtonProps={{ creatorButtonText: "新增段落" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
@@ -357,6 +360,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
         {layout === "product-platform" ? <>
           <ProFormText name={["product", "enterpriseUrl"]} label="企业端入口链接" rules={[{ required: true }]} extra="默认 /sample/；可填写站内相对地址或完整 https:// 地址。" />
           <ProFormText name={["product", "trialUrl"]} label="试用申请链接" rules={[{ required: true }]} />
+          <ProFormText name={["product", "publicReportUrl"]} label="Power BI 公开报告链接" extra="填写 app.powerbi.com/view?r= 形式的公开链接，前台会以新窗口打开。" rules={[{ pattern: /^(?:\/(?!\/)|https:\/\/[^\s]+)$/i, message: "请输入站内路径或完整的 https:// 链接" }]} />
           <ProFormText name={["product", "videoUrl"]} label="平台介绍视频地址" />
           <ImageUploadField name={["product", "videoPoster"]} label="视频封面" hint="建议上传 16:9 的清晰界面截图。" />
         </> : null}

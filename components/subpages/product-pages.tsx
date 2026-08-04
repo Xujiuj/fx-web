@@ -590,11 +590,12 @@ export function PlatformProductPage({ page }: ProductPageProps) {
 
       <section className={`${styles.publicDemo} ${styles.container}`} id="power-bi" aria-labelledby="public-demo-title">
         <div>
-          <span>PUBLIC DEMO</span>
-          <h2 id="public-demo-title">进入独立企业端平台</h2>
-          <p>企业端作为独立应用部署，与官网服务和数据完全隔离；需要试用账号时可提交申请。</p>
+          <span>PUBLIC REPORT &amp; DEMO</span>
+          <h2 id="public-demo-title">查看公开数据报告或进入独立企业端</h2>
+          <p>公开数据报告通过 Power BI 提供浏览；企业端作为独立应用部署，与官网服务和数据完全隔离。</p>
         </div>
         <div className={styles.publicDemoActions}>
+          {page.product?.publicReportUrl ? <a href={page.product.publicReportUrl} target="_blank" rel="noreferrer">查看公开数据报告 <ExternalLink size={17} aria-hidden="true" /></a> : null}
           <Link href={page.product?.enterpriseUrl || "/sample/"}>进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
           <Link href={page.product?.trialUrl || "/#contact"}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>

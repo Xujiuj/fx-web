@@ -14,6 +14,7 @@ export type KnowledgeEntry = {
   sections: KnowledgeSection[];
   sourceName?: string;
   sourceHref?: string;
+  videoHref?: string;
 };
 
 export const policyArticles: KnowledgeEntry[] = [
@@ -118,6 +119,7 @@ export const videoCourses: KnowledgeEntry[] = [
     title: "数字化平台培训",
     summary: "掌握平台数据维护、自动核算、分析视图和结果追溯的操作流程。",
     meta: "平台课程 · 4 个单元",
+    videoHref: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4",
     sections: [{ heading: "课程单元", bullets: ["组织与用户配置", "排放源和活动数据维护", "核算任务与结果分析", "数据追溯与日常运营"] }],
   },
   {
