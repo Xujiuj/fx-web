@@ -13,6 +13,7 @@ import { isAdminAuthenticated } from "@/lib/admin-auth";
 export const runtime = "nodejs";
 export const maxDuration = 1800;
 
+const ffmpegPath: string = require("@ffmpeg-installer/ffmpeg").path;
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
 const MAX_DOCUMENT_SIZE = 20 * 1024 * 1024;
 const MAX_VIDEO_SIZE = 2 * 1024 * 1024 * 1024;
@@ -125,7 +126,7 @@ async function receiveVideoUpload(request: Request) {
 
 async function transcodeVideo(inputPath: string, outputPath: string) {
   await new Promise<void>((resolve, reject) => {
-    const process = spawn("ffmpeg", [
+    const process = spawn(ffmpegPath, [
       "-hide_banner", "-loglevel", "error", "-y", "-i", inputPath,
       "-map", "0:v:0", "-map", "0:a?",
       "-vf", "scale=w='min(1920,iw)':h=-2:force_original_aspect_ratio=decrease",

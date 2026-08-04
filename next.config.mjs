@@ -3,6 +3,7 @@ const developmentScriptSource = process.env.NODE_ENV === "development" ? " 'unsa
 
 const nextConfig = {
   output: "standalone",
+  serverExternalPackages: ["@ffmpeg-installer/ffmpeg"],
   allowedDevOrigins: ["127.0.0.1"],
   async headers() {
     return [
