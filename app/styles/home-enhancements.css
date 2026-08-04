@@ -1521,6 +1521,7 @@ main .latest-update-shade,
 main .latest-update-copy { backface-visibility: hidden; }
 
 main .latest-update-drawer {
+  display: none;
   position: absolute;
   z-index: 3;
   inset: 0;
