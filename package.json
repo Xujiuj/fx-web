@@ -22,6 +22,7 @@
     "@radix-ui/react-tabs": "1.1.12",
     "animejs": "^4.5.0",
     "antd": "^5.29.3",
+    "busboy": "^1.6.0",
     "embla-carousel-autoplay": "8.6.0",
     "embla-carousel-react": "8.6.0",
     "framer-motion": "12.42.2",
@@ -37,6 +38,7 @@
     "path-to-regexp": "8.4.0"
   },
   "devDependencies": {
+    "@types/busboy": "^1.5.4",
     "@types/node": "22.10.2",
     "@types/nodemailer": "^8.0.1",
     "@types/react": "19.0.1",

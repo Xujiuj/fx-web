@@ -110,6 +110,10 @@ jobs:
 
             # Verify the existing enterprise backend before changing its frontend route.
             command -v nginx >/dev/null
+            if ! command -v ffmpeg >/dev/null; then
+              apt-get update
+              apt-get install -y ffmpeg
+            fi
             nginx_dump=$(mktemp)
             nginx -T > "$nginx_dump" 2>&1
             grep -E 'location[[:space:]]+(\^~[[:space:]]+)?/enterprise/prod-api/' "$nginx_dump"
@@ -219,6 +223,33 @@ jobs:
                   { print }
                 ' "$nginx_site" > "$nginx_candidate"
               fi
+              install -m 0644 "$nginx_candidate" "$nginx_site"
+              if ! nginx -t; then
+                install -m 0644 "$nginx_backup" "$nginx_site"
+                nginx -t
+                rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+                exit 1
+              fi
+              rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+            fi
+            if ! grep -F 'BEGIN FX_MEDIA_UPLOAD' "$nginx_site" >/dev/null; then
+              nginx_backup=$(mktemp)
+              nginx_candidate=$(mktemp)
+              nginx_block=$(mktemp)
+              cp "$nginx_site" "$nginx_backup"
+              {
+                printf '%s\n' '    # BEGIN FX_MEDIA_UPLOAD'
+                printf '%s\n' '    location ^~ /api/admin/media {' '        client_max_body_size 2g;' '        proxy_request_buffering off;' '        proxy_read_timeout 1800s;' '        proxy_send_timeout 1800s;' '        send_timeout 1800s;' '        proxy_http_version 1.1;' '        proxy_set_header Host $host;' '        proxy_set_header X-Real-IP $remote_addr;' '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' '        proxy_set_header X-Forwarded-Proto $scheme;' '        proxy_pass http://127.0.0.1:3010;' '    }'
+                printf '%s\n' '    # END FX_MEDIA_UPLOAD'
+              } > "$nginx_block"
+              awk -v block="$nginx_block" '
+                /^[[:space:]]*location \/ \{/ && !inserted {
+                  while ((getline line < block) > 0) print line
+                  close(block)
+                  inserted = 1
+                }
+                { print }
+              ' "$nginx_site" > "$nginx_candidate"
               install -m 0644 "$nginx_candidate" "$nginx_site"
               if ! nginx -t; then
                 install -m 0644 "$nginx_backup" "$nginx_site"

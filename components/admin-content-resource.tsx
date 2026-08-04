@@ -100,7 +100,7 @@ function VideoUploadField({ name, label = "上传并绑定视频" }: { name: str
       try {
         const data = new FormData();
         data.append("file", options.file as File);
-        const response = await fetch("/api/admin/media", { method: "POST", body: data });
+        const response = await fetch("/api/admin/media?kind=video", { method: "POST", body: data });
         const result = await response.json();
         if (!response.ok || typeof result.path !== "string") throw new Error(result.error || "视频上传失败");
         form.setFieldValue(name, result.path);
@@ -114,7 +114,7 @@ function VideoUploadField({ name, label = "上传并绑定视频" }: { name: str
       }
     })();
   };
-  return <Form.Item label={label} extra="支持 MP4、WebM，单个文件不超过 200MB。上传后点击保存即可绑定到当前内容。" validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space direction="vertical" size={8}><Upload accept="video/mp4,video/webm,.mp4,.webm" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{videoPath ? "替换视频" : "上传视频"}</Button></Upload>{videoPath ? <Space size={12}><a href={videoPath} target="_blank" rel="noreferrer">查看已绑定视频</a><Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除视频</Button></Space> : null}</Space></Form.Item>;
+  return <Form.Item label={label} extra="支持 MP4、WebM、MOV、AVI、MKV，最大 2GB。上传后将自动压缩为网页播放格式，完成后点击保存即可绑定到当前内容。" validateStatus={uploadError ? "error" : undefined} help={uploadError || undefined}><Space direction="vertical" size={8}><Upload accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,video/x-matroska,.mp4,.webm,.mov,.avi,.mkv" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{videoPath ? "替换视频" : "上传视频"}</Button></Upload>{videoPath ? <Space size={12}><a href={videoPath} target="_blank" rel="noreferrer">查看已绑定视频</a><Button type="link" danger icon={<DeleteOutlined />} onClick={() => form.setFieldValue(name, "")}>移除视频</Button></Space> : null}</Space></Form.Item>;
 }
 
 function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCreate, onUpdate, onDelete, children, busy, allowCreate = true, canDelete = () => true }: {
