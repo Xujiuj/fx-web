@@ -1,0 +1,85 @@
+diff --git a/ruoyi-modules/carbon-enterprise/src/main/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProvider.java b/ruoyi-modules/carbon-enterprise/src/main/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProvider.java
+--- a/ruoyi-modules/carbon-enterprise/src/main/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProvider.java
++++ b/ruoyi-modules/carbon-enterprise/src/main/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProvider.java
+@@ -16,5 +16,6 @@ import java.util.List;
+ import java.util.Locale;
+ import java.util.function.Supplier;
++import java.util.regex.Pattern;
+ 
+ /**
+  * Provides the enterprise-local install id used by protected license gate checks.
+@@ -24,19 +25,38 @@ import java.util.function.Supplier;
+ @Component
+ public class CeLicenseInstallIdProvider {
+ 
++    private static final String CONFIGURED_INSTALL_ID_ENV = "ENTERPRISE_INSTALL_ID";
+     private static final String AUTO_PREFIX = "INSTALL-AUTO-";
+     private static final int DIGEST_LENGTH = 24;
++    private static final Pattern CONFIGURED_INSTALL_ID_PATTERN =
++        Pattern.compile("[A-Z0-9][A-Z0-9._:-]{7,127}");
+ 
+     private final Supplier<List<String>> machineFingerprintPartsSupplier;
++    private final Supplier<String> configuredInstallIdSupplier;
+ 
+     public CeLicenseInstallIdProvider() {
+-        this(CeLicenseInstallIdProvider::collectMachineFingerprintParts);
++        this(CeLicenseInstallIdProvider::collectMachineFingerprintParts,
++            () -> System.getenv(CONFIGURED_INSTALL_ID_ENV));
+     }
+ 
+     CeLicenseInstallIdProvider(Supplier<List<String>> machineFingerprintPartsSupplier) {
++        this(machineFingerprintPartsSupplier, () -> null);
++    }
++
++    CeLicenseInstallIdProvider(Supplier<List<String>> machineFingerprintPartsSupplier,
++                               Supplier<String> configuredInstallIdSupplier) {
+         this.machineFingerprintPartsSupplier = machineFingerprintPartsSupplier;
++        this.configuredInstallIdSupplier = configuredInstallIdSupplier;
+     }
+ 
+     public String getExpectedInstallId() {
++        String configuredInstallId = configuredInstallIdSupplier.get();
++        if (StringUtils.isNotBlank(configuredInstallId)) {
++            String normalized = configuredInstallId.trim();
++            if (!CONFIGURED_INSTALL_ID_PATTERN.matcher(normalized).matches()) {
++                throw new IllegalStateException(CONFIGURED_INSTALL_ID_ENV + " has an invalid format");
++            }
++            return normalized;
++        }
+         return buildAutoInstallId();
+     }
+diff --git a/ruoyi-modules/carbon-enterprise/src/test/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProviderTest.java b/ruoyi-modules/carbon-enterprise/src/test/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProviderTest.java
+--- a/ruoyi-modules/carbon-enterprise/src/test/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProviderTest.java
++++ b/ruoyi-modules/carbon-enterprise/src/test/java/org/dromara/carbon/enterprise/license/service/CeLicenseInstallIdProviderTest.java
+@@ -11,6 +11,7 @@ import java.util.List;
+ import java.util.Locale;
+ 
+ import static org.junit.jupiter.api.Assertions.assertEquals;
++import static org.junit.jupiter.api.Assertions.assertThrows;
+ 
+ @Tag("dev")
+ class CeLicenseInstallIdProviderTest {
+@@ -28,4 +29,23 @@ class CeLicenseInstallIdProviderTest {
+         assertEquals("INSTALL-AUTO-" + expectedDigest, provider.getExpectedInstallId());
+         assertEquals("INSTALL-AUTO-" + expectedDigest, provider.getExpectedInstallId());
+     }
++
++    @Test
++    void prefersStableConfiguredInstallId() {
++        CeLicenseInstallIdProvider provider = new CeLicenseInstallIdProvider(
++            () -> List.of("host=ephemeral-container"),
++            () -> "  INSTALL-SAMPLE-0123456789ABCDEF01234567  ");
++
++        assertEquals("INSTALL-SAMPLE-0123456789ABCDEF01234567", provider.getExpectedInstallId());
++    }
++
++    @Test
++    void rejectsInvalidConfiguredInstallId() {
++        CeLicenseInstallIdProvider provider = new CeLicenseInstallIdProvider(
++            () -> List.of("host=machine-a"),
++            () -> "invalid install id");
++
++        IllegalStateException exception = assertThrows(IllegalStateException.class, provider::getExpectedInstallId);
++        assertEquals("ENTERPRISE_INSTALL_ID has an invalid format", exception.getMessage());
++    }
+ }

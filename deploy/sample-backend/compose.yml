@@ -1,0 +1,163 @@
+name: fx-sample-backend
+
+services:
+  sqlserver:
+    image: ${SAMPLE_SQLSERVER_IMAGE:?SAMPLE_SQLSERVER_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_SA_PASSWORD: ${SAMPLE_SQLSERVER_SA_PASSWORD:?SAMPLE_SQLSERVER_SA_PASSWORD is required}
+      TZ: Asia/Shanghai
+    ports:
+      - "127.0.0.1:${SAMPLE_SQLSERVER_HOST_PORT:-21434}:1433"
+    volumes:
+      - sample_sqlserver_data:/var/opt/mssql
+      - ./sql:/opt/fx-sample/sql:ro
+      - ./runtime-sql:/opt/fx-sample/runtime-sql:ro
+    networks:
+      - sample_private
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          if [ -x /opt/mssql-tools18/bin/sqlcmd ]; then
+            SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -C -b -Q "SELECT 1" >/dev/null;
+          else
+            SQLCMDPASSWORD="$$MSSQL_SA_PASSWORD" /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -b -Q "SELECT 1" >/dev/null;
+          fi
+      interval: 10s
+      timeout: 8s
+      retries: 30
+      start_period: 30s
+
+  redis:
+    image: ${SAMPLE_REDIS_IMAGE:?SAMPLE_REDIS_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      SAMPLE_REDIS_PASSWORD: ${SAMPLE_REDIS_PASSWORD:?SAMPLE_REDIS_PASSWORD is required}
+      TZ: Asia/Shanghai
+    command:
+      - sh
+      - -ec
+      - exec redis-server --appendonly yes --requirepass "$$SAMPLE_REDIS_PASSWORD"
+    ports:
+      - "127.0.0.1:${SAMPLE_REDIS_HOST_PORT:-26380}:6379"
+    volumes:
+      - sample_redis_data:/data
+    networks:
+      - sample_private
+    healthcheck:
+      test: ["CMD-SHELL", "REDISCLI_AUTH=\"$$SAMPLE_REDIS_PASSWORD\" redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+
+  minio:
+    image: ${SAMPLE_MINIO_IMAGE:?SAMPLE_MINIO_IMAGE is required}
+    restart: unless-stopped
+    environment:
+      MINIO_ROOT_USER: ${SAMPLE_MINIO_ROOT_USER:?SAMPLE_MINIO_ROOT_USER is required}
+      MINIO_ROOT_PASSWORD: ${SAMPLE_MINIO_ROOT_PASSWORD:?SAMPLE_MINIO_ROOT_PASSWORD is required}
+      TZ: Asia/Shanghai
+    command: server --address :9000 --console-address :9001 /data
+    ports:
+      - "127.0.0.1:${SAMPLE_MINIO_HOST_PORT:-19000}:9000"
+      - "127.0.0.1:${SAMPLE_MINIO_CONSOLE_HOST_PORT:-19001}:9001"
+    volumes:
+      - sample_minio_data:/data
+    networks:
+      - sample_private
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail --silent http://localhost:9000/minio/health/live >/dev/null"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+
+  minio-configure:
+    image: ${SAMPLE_MINIO_CLIENT_IMAGE:?SAMPLE_MINIO_CLIENT_IMAGE is required}
+    profiles: [tools]
+    depends_on:
+      minio:
+        condition: service_healthy
+    environment:
+      SAMPLE_MINIO_ROOT_USER: ${SAMPLE_MINIO_ROOT_USER:?SAMPLE_MINIO_ROOT_USER is required}
+      SAMPLE_MINIO_ROOT_PASSWORD: ${SAMPLE_MINIO_ROOT_PASSWORD:?SAMPLE_MINIO_ROOT_PASSWORD is required}
+      SAMPLE_MINIO_BUCKET: ${SAMPLE_MINIO_BUCKET:-sample}
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - >-
+        mc alias set sample http://minio:9000 "$$SAMPLE_MINIO_ROOT_USER" "$$SAMPLE_MINIO_ROOT_PASSWORD";
+        mc mb --ignore-existing "sample/$$SAMPLE_MINIO_BUCKET";
+        mc anonymous set download "sample/$$SAMPLE_MINIO_BUCKET";
+        mc anonymous get "sample/$$SAMPLE_MINIO_BUCKET" | grep -q download
+    networks:
+      - sample_private
+
+  backend:
+    image: ${SAMPLE_BACKEND_IMAGE:?SAMPLE_BACKEND_IMAGE is required}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SAMPLE_JRE_IMAGE: ${SAMPLE_JRE_IMAGE:?SAMPLE_JRE_IMAGE is required}
+    restart: unless-stopped
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+    environment:
+      TZ: Asia/Shanghai
+      SERVER_PORT: 8080
+      ENTERPRISE_DB_URL: jdbc:sqlserver://sqlserver:1433;databaseName=sample_fengxing;encrypt=true;trustServerCertificate=true
+      ENTERPRISE_DB_USERNAME: ${SAMPLE_DB_USERNAME:-sample_app}
+      ENTERPRISE_DB_PASSWORD: ${SAMPLE_DB_PASSWORD:?SAMPLE_DB_PASSWORD is required}
+      ENTERPRISE_REDIS_HOST: redis
+      ENTERPRISE_REDIS_PORT: 6379
+      ENTERPRISE_REDIS_PASSWORD: ${SAMPLE_REDIS_PASSWORD:?SAMPLE_REDIS_PASSWORD is required}
+      ENTERPRISE_VENDOR_OPEN_BASE_URL: ${ENTERPRISE_VENDOR_OPEN_BASE_URL:?ENTERPRISE_VENDOR_OPEN_BASE_URL is required}
+      ENTERPRISE_INSTALL_ID: ${ENTERPRISE_INSTALL_ID:?ENTERPRISE_INSTALL_ID is required}
+      SA_TOKEN_JWT_SECRET_KEY: ${SAMPLE_JWT_SECRET:?SAMPLE_JWT_SECRET is required}
+      API_DECRYPT_PUBLICKEY: ${SAMPLE_API_RESPONSE_PUBLIC_KEY:?SAMPLE_API_RESPONSE_PUBLIC_KEY is required}
+      API_DECRYPT_PRIVATEKEY: ${SAMPLE_API_REQUEST_PRIVATE_KEY:?SAMPLE_API_REQUEST_PRIVATE_KEY is required}
+      SPRING_BOOT_ADMIN_CLIENT_ENABLED: "false"
+      SPRING_BOOT_ADMIN_CLIENT_USERNAME: sample-monitor
+      SPRING_BOOT_ADMIN_CLIENT_PASSWORD: ${SAMPLE_ACTUATOR_PASSWORD:?SAMPLE_ACTUATOR_PASSWORD is required}
+      SPRING_BOOT_ADMIN_CLIENT_INSTANCE_METADATA_USERNAME: sample-monitor
+      SPRING_BOOT_ADMIN_CLIENT_INSTANCE_METADATA_USERPASSWORD: ${SAMPLE_ACTUATOR_PASSWORD:?SAMPLE_ACTUATOR_PASSWORD is required}
+      SNAIL_JOB_ENABLED: "false"
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 1GB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 1GB
+      JAVA_TOOL_OPTIONS: -XX:InitialRAMPercentage=20.0 -Dfile.encoding=UTF-8
+    ports:
+      - "127.0.0.1:${SAMPLE_BACKEND_HOST_PORT:-18012}:8080"
+    volumes:
+      - sample_backend_logs:/ruoyi/server/logs
+      - sample_backend_temp:/ruoyi/server/temp
+    tmpfs:
+      - /tmp:size=256m,mode=1777
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - sample_private
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "--silent", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+
+networks:
+  sample_private:
+    driver: bridge
+
+volumes:
+  sample_sqlserver_data:
+  sample_redis_data:
+  sample_minio_data:
+  sample_backend_logs:
+  sample_backend_temp:

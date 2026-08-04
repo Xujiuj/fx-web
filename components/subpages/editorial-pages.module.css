@@ -91,8 +91,35 @@
 }
 
 /* Case studies: a vertical archive with alternating project records. */
-.caseHero {
+.caseHero,
+.knowledgeHero,
+.companyHero {
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
+}
+
+.heroImage {
+  z-index: 0;
+  object-fit: cover;
+  object-position: center;
+}
+
+.heroShade {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(96deg, rgba(43, 31, 23, 0.86) 0%, rgba(43, 31, 23, 0.68) 52%, rgba(43, 31, 23, 0.42) 100%);
+}
+
+.caseHeroInner,
+.knowledgeHeroInner,
+.companyHeroInner {
+  position: relative;
+  z-index: 2;
+}
+
+.caseHero {
   background: #e95513;
   color: #fff;
 }
@@ -557,7 +584,7 @@
 .knowledgeHero {
   padding: 76px 0 58px;
   border-bottom: 1px solid #eadbca;
-  background: #eadbca;
+  background: #6d3a21;
 }
 
 .knowledgeHeroInner {
@@ -570,24 +597,34 @@
 .knowledgeHeroTitle h1 {
   max-width: 720px;
   margin: 0;
-  color: #4d4d4d;
+  color: #fff;
   font-size: 66px;
   line-height: 1.15;
 }
 
 .knowledgeHeroSummary {
   padding: 26px 0 3px 28px;
-  border-left: 2px solid #cf6c29;
-  color: #4d4d4d;
+  border-left: 2px solid #f7b52c;
+  color: #fff;
 }
 
 .knowledgeHeroSummary svg {
-  color: #b7551b;
+  color: #f7b52c;
 }
 
 .knowledgeHeroSummary p {
   margin: 18px 0 0;
   line-height: 1.9;
+}
+
+.knowledgeHero .breadcrumb,
+.companyHero .breadcrumb {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.knowledgeHero .sectionLabel,
+.companyHero .sectionLabel {
+  color: #f7c47d;
 }
 
 .knowledgeLead {
@@ -745,12 +782,22 @@
   border-bottom: 1px solid rgba(255, 255, 255, 0.22);
 }
 
-.learningPath li > a {
+.learningPath li > a,
+.videoPending {
   display: grid;
   grid-template-columns: 54px 1fr;
   gap: 18px;
   min-height: 92px;
   align-items: center;
+}
+
+.videoPending {
+  cursor: default;
+  opacity: 0.64;
+}
+
+.videoPending i {
+  border-color: rgba(255, 255, 255, 0.45);
 }
 
 .learningPath span {
@@ -862,7 +909,7 @@
 
 /* Company: brand statement, operating beliefs and an honest service chronology. */
 .companyHero {
-  background: #eadbca;
+  background: #6d3a21;
 }
 
 .companyHeroInner {
@@ -884,7 +931,7 @@
 .companyHeroStatement h1 {
   max-width: 670px;
   margin: 0;
-  color: #4d4d4d;
+  color: #fff;
   font-size: 63px;
   line-height: 1.18;
 }
@@ -892,7 +939,7 @@
 .companyHeroStatement p {
   max-width: 650px;
   margin: 25px 0 0;
-  color: #4d4d4d;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 17px;
   line-height: 1.9;
 }
@@ -1357,6 +1404,10 @@
     font-size: 36px;
   }
 
+  .heroShade {
+    background: linear-gradient(90deg, rgba(43, 31, 23, 0.9), rgba(43, 31, 23, 0.58));
+  }
+
   .caseHeroCopy > p:last-child,
   .companyHeroStatement p {
     font-size: 15px;
@@ -1482,7 +1533,9 @@
   }
 
   .featuredTopic h2 {
-    margin-top: 80px;
+    margin-top: 48px;
+    font-size: 28px;
+    line-height: 1.4;
   }
 
   .topicIndex header,

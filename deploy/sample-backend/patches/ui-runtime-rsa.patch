@@ -1,0 +1,58 @@
+diff --git a/index.html b/index.html
+--- a/index.html
++++ b/index.html
+@@ -229,6 +229,7 @@
+         <div class="load_title">正在加载系统资源，请耐心等待</div>
+       </div>
+     </div>
++    <script src="%VITE_APP_CONTEXT_PATH%runtime-config.js" vite-ignore></script>
+     <script type="module" src="/src/main.ts"></script>
+   </body>
+ </html>
+diff --git a/src/types/env.d.ts b/src/types/env.d.ts
+--- a/src/types/env.d.ts
++++ b/src/types/env.d.ts
+@@ -3,6 +3,13 @@ declare module '*.vue' {
+   export default Component;
+ }
+ 
++interface Window {
++  __FX_SAMPLE_RUNTIME__?: {
++    requestPublicKey?: string;
++    responsePrivateKey?: string;
++  };
++}
++
+ // 环境变量
+ interface ImportMetaEnv {
+   VITE_APP_TITLE: string;
+diff --git a/src/utils/jsencrypt.ts b/src/utils/jsencrypt.ts
+--- a/src/utils/jsencrypt.ts
++++ b/src/utils/jsencrypt.ts
+@@ -1,10 +1,24 @@
+ import JSEncrypt from 'jsencrypt';
+ // 密钥对生成 http://web.chacuo.net/netrsakeypair
+ 
+-const publicKey = import.meta.env.VITE_APP_RSA_PUBLIC_KEY;
++const runtimeKey = (name: 'requestPublicKey' | 'responsePrivateKey') => {
++  const value = window.__FX_SAMPLE_RUNTIME__?.[name]?.trim();
++  if (value) {
++    return value;
++  }
++  if (import.meta.env.MODE === 'test') {
++    const fallback = name === 'requestPublicKey' ? import.meta.env.VITE_APP_RSA_PUBLIC_KEY : import.meta.env.VITE_APP_RSA_PRIVATE_KEY;
++    return fallback || '';
++  }
++  throw new Error(`Missing sample runtime RSA key: ${name}`);
++};
++
++// Browser-side RSA material is injected per deployment and is intentionally public.
++// The backend request-decryption private key never appears in this runtime object.
++const publicKey = runtimeKey('requestPublicKey');
+ 
+ // 前端不建议存放私钥 不建议解密数据 因为都是透明的意义不大
+-const privateKey = import.meta.env.VITE_APP_RSA_PRIVATE_KEY;
++const privateKey = runtimeKey('responsePrivateKey');
+ 
+ // 加密
+ export const encrypt = (txt: string) => {

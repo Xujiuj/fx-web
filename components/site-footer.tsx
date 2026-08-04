@@ -2,14 +2,26 @@
 
 import { MessageCircle, X } from "lucide-react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { FooterContent } from "@/lib/cms-content";
-
-const consultantAvatar = "/materials/20260803/资料20260803/网站右下角二维码/人像.jpg";
-const wecomQr = "/materials/20260803/资料20260803/网站右下角二维码/企业微信二维码.png";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 
 export function SiteFooter({ footer }: { footer: FooterContent }) {
   const [open, setOpen] = useState(false);
+  const consultantAvatar = footer.wecomAvatar ?? "/materials/20260803/资料20260803/网站右下角二维码/人像.jpg";
+  const wecomQr = footer.wecomQr ?? "/materials/20260803/资料20260803/网站右下角二维码/企业微信二维码.png";
+  const email = footer.wecomEmail ?? "service@fengxingdata.com";
+
+  useEffect(() => {
+    const desktop = window.matchMedia("(min-width: 721px)");
+    const syncDefaultState = () => setOpen(Boolean(footer.wecomOpenByDefault && desktop.matches));
+    const frame = window.requestAnimationFrame(syncDefaultState);
+    desktop.addEventListener("change", syncDefaultState);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      desktop.removeEventListener("change", syncDefaultState);
+    };
+  }, [footer.wecomOpenByDefault]);
 
   return (
     <>
@@ -25,13 +37,13 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
             <button className="wecom-close" type="button" onClick={() => setOpen(false)} aria-label="收起企业微信咨询">
               <X size={17} aria-hidden="true" />
             </button>
-            <Image className="wecom-avatar" src={consultantAvatar} alt="企业顾问" width={72} height={72} />
-            <strong>您的企业碳管理顾问</strong>
-            <p>扫码添加企业微信</p>
+            <Image className="wecom-avatar" src={consultantAvatar} alt="企业顾问" width={72} height={72} unoptimized={isRuntimeManagedImage(consultantAvatar)} />
+            <strong>{footer.wecomTitle ?? "您的企业碳管理顾问"}</strong>
+            <p>{footer.wecomDescription ?? "扫码添加企业微信"}</p>
             <div className="wecom-qr-wrap">
-              <Image src={wecomQr} alt="峰行智成企业微信二维码" width={712} height={727} sizes="176px" />
+              <Image src={wecomQr} alt="峰行智成企业微信二维码" width={712} height={727} sizes="176px" unoptimized={isRuntimeManagedImage(wecomQr)} />
             </div>
-            <a href="mailto:service@fengxingdata.com">service@fengxingdata.com</a>
+            <a href={`mailto:${email}`}>{email}</a>
           </div>
         ) : (
           <button className="wecom-open" type="button" onClick={() => setOpen(true)} aria-label="打开企业微信咨询" title="企业微信咨询">

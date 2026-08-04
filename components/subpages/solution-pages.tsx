@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import {
   ArrowRight,
   Check,
@@ -7,9 +8,11 @@ import {
   UsersRound,
   Wrench,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { ReferenceDiagram } from "@/components/reference-diagram";
-import type { Subpage } from "@/lib/cms-content";
+import type { Subpage, SubpageSection } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
@@ -41,6 +44,30 @@ type SolutionPresentation = {
   description: string;
   items: Array<{ title: string; description: string }>;
 };
+
+type SectionItem = SubpageSection["items"][number];
+
+function getSection(page: Subpage, id: string) {
+  return page.sections.find((section) => section.id === id);
+}
+
+function titleItems(items: string[]): SectionItem[] {
+  return items.map((title) => ({ title }));
+}
+
+function detailPoints(item: SectionItem) {
+  return (item.details?.["要点"] ?? "")
+    .split(/\r?\n/)
+    .map((point) => point.trim())
+    .filter(Boolean);
+}
+
+function ItemDetails({ item }: { item: SectionItem }) {
+  const points = detailPoints(item);
+  if (!points.length) return null;
+
+  return <ul>{points.map((point, index) => <li key={`${point}-${index}`}>{point}</li>)}</ul>;
+}
 
 const solutionFrameworks: Record<string, SolutionFramework> = {
   "solution-standard": {
@@ -172,7 +199,10 @@ const solutionPresentations: Record<string, SolutionPresentation> = {
 };
 
 function getFramework(page: Subpage): SolutionFramework {
-  return solutionFrameworks[page.slug] ?? {
+  const fallback = solutionFrameworks[page.slug];
+  if (fallback) return { ...fallback, title: page.title, summary: page.summary };
+
+  return {
     sequence: page.eyebrow.replace(/\D/g, "") || "01",
     title: page.title,
     summary: page.summary,
@@ -205,23 +235,46 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
   const diagram = solutionDiagrams[page.slug];
   const presentation = solutionPresentations[page.slug];
   const presentationClass = styles[`presentation${framework.sequence}`] ?? "";
+  const fitSection = getSection(page, "solution-fit");
+  const problemsSection = getSection(page, "solution-problems");
+  const deliverableSection = getSection(page, "solution-deliverable");
+  const presentationSection = getSection(page, "solution-presentation");
+  const servicesSection = getSection(page, "solution-services");
+  const outcomesSection = getSection(page, "solution-outcomes");
+  const diagramSection = getSection(page, "solution-diagram");
+  const ctaSection = getSection(page, "solution-cta");
+  const ctaAction = ctaSection?.items[0];
+  const fitItems = fitSection?.items ?? titleItems(framework.suitableFor);
+  const problemItems = problemsSection?.items ?? titleItems(framework.problems);
+  const deliverableItems = deliverableSection?.items ?? [{ title: framework.deliverable, description: framework.deliverableDescription }];
+  const presentationContent = presentationSection
+    ? {
+        eyebrow: presentation?.eyebrow ?? page.eyebrow,
+        title: presentationSection.title,
+        description: presentationSection.description ?? "",
+        items: presentationSection.items,
+      }
+    : presentation;
+  const serviceItems = servicesSection?.items ?? titleItems(framework.services);
+  const outcomeItems = outcomesSection?.items ?? titleItems(framework.outcomes);
+  const diagramItems: SectionItem[] = diagramSection
+    ? diagramSection.items
+    : diagram
+      ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
+      : [];
 
   return (
     <>
       <section className={`${styles.solutionDetailHero} ${styles[`solutionHero${framework.sequence}`] ?? ""}`}>
         <div className={styles.solutionDetailHeroInner}>
           <div className={`${styles.solutionDetailHeroCopy} page-reveal`} data-motion="hero-copy">
-            <span>解决方案 {framework.sequence}</span>
-            <SolutionHeroTitle title={framework.title} />
-            <p>{framework.summary}</p>
+            <span>{page.eyebrow}</span>
+            <SolutionHeroTitle title={page.title} />
+            <p>{page.summary}</p>
           </div>
-          <div className={styles.solutionHeroSignal} aria-hidden="true" data-motion="hero-support">
+          <div className={styles.solutionHeroSignal} data-motion="hero-support">
             <strong>{framework.sequence}</strong>
-            {diagram ? <>
-              {/* The supplied SVG stays native to preserve its original vector detail. */}
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={page.media?.diagram ?? diagram.src} alt="" width={440} height={260} />
-            </> : null}
+            <Image src={page.image} alt={`${page.title}方案主图`} width={720} height={440} priority sizes="(max-width: 760px) calc(100vw - 36px), 440px" unoptimized={isRuntimeManagedImage(page.image)} />
           </div>
         </div>
       </section>
@@ -245,26 +298,33 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         <div className={styles.frameworkGrid}>
           <article data-motion-role="item">
             <UsersRound aria-hidden="true" size={28} />
-            <h3>适用企业</h3>
-            <ul>{framework.suitableFor.map((item) => <li key={item}>{item}</li>)}</ul>
+            <h3>{fitSection?.title ?? "适用企业"}</h3>
+            {fitSection?.description ? <p>{fitSection.description}</p> : null}
+            <ul>{fitItems.map((item, index) => <li key={`${item.title}-${index}`}><strong>{item.title}</strong>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ul>
           </article>
           <article data-motion-role="item">
             <Target aria-hidden="true" size={28} />
-            <h3>核心解决问题</h3>
-            <ul>{framework.problems.map((item) => <li key={item}>{item}</li>)}</ul>
+            <h3>{problemsSection?.title ?? "核心解决问题"}</h3>
+            {problemsSection?.description ? <p>{problemsSection.description}</p> : null}
+            <ul>{problemItems.map((item, index) => <li key={`${item.title}-${index}`}><strong>{item.title}</strong>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ul>
           </article>
           <article className={styles.deliverableCard} data-motion-role="item">
             <FileCheck2 aria-hidden="true" size={28} />
-            <h3>核心交付成果</h3>
-            <strong>{framework.deliverable}</strong>
-            <p>{framework.deliverableDescription}</p>
+            <h3>{deliverableSection?.title ?? "核心交付成果"}</h3>
+            {deliverableItems.map((item, index) => <Fragment key={`${item.title}-${index}`}>
+              <strong style={{ gridColumn: 3 }}>{item.title}</strong>
+              <div style={{ gridColumn: 4 }}>
+                {item.description ? <p>{item.description}</p> : null}
+                <ItemDetails item={item} />
+              </div>
+            </Fragment>)}
           </article>
         </div>
       </section>
 
-      {presentation ? <section className={`${styles.solutionPresentation} ${presentationClass}`} aria-labelledby="solution-presentation-title" data-motion-group={`solution-presentation-${framework.sequence}`}>
-        <header data-motion-role="heading"><span>{presentation.eyebrow}</span><h2 id="solution-presentation-title">{presentation.title}</h2><p>{presentation.description}</p></header>
-        <ol>{presentation.items.map((item, index) => <li key={item.title} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3><p>{item.description}</p></li>)}</ol>
+      {presentationContent ? <section className={`${styles.solutionPresentation} ${presentationClass}`} aria-labelledby="solution-presentation-title" data-motion-group={`solution-presentation-${framework.sequence}`}>
+        <header data-motion-role="heading"><span>{presentationContent.eyebrow}</span><h2 id="solution-presentation-title">{presentationContent.title}</h2>{presentationContent.description ? <p>{presentationContent.description}</p> : null}</header>
+        <ol>{presentationContent.items.map((item, index) => <li key={`${item.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ol>
       </section> : null}
 
       <section className={styles.serviceContents} aria-labelledby="service-contents-title">
@@ -272,15 +332,15 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           <header data-motion-role="heading">
             <Wrench aria-hidden="true" size={30} />
             <div>
-              <span>服务内容</span>
-              <h2 id="service-contents-title">围绕成果交付组织实施工作</h2>
+              <span>{servicesSection?.title ?? "服务内容"}</span>
+              <h2 id="service-contents-title">{servicesSection?.description ?? "围绕成果交付组织实施工作"}</h2>
             </div>
           </header>
           <ol>
-            {framework.services.map((service, index) => (
-              <li key={service} data-motion-role="item">
+            {serviceItems.map((service, index) => (
+              <li key={`${service.title}-${index}`} data-motion-role="item">
                 <span>{String(index + 1).padStart(2, "0")}</span>
-                <strong>{service}</strong>
+                <div><strong>{service.title}</strong>{service.description ? <p>{service.description}</p> : null}<ItemDetails item={service} /></div>
                 <Check aria-hidden="true" size={18} />
               </li>
             ))}
@@ -288,28 +348,30 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      {diagram ? (
-        <ReferenceDiagram
-          eyebrow={diagram.eyebrow}
-          title={diagram.title}
-          description={diagram.description}
-          src={page.media?.diagram ?? diagram.src}
-          alt={diagram.alt}
-        />
-      ) : null}
+      {diagramItems.map((item, index) => {
+        const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
+        if (!src) return null;
+        const eyebrow = diagramSection && diagramSection.title !== item.title
+          ? diagramSection.title
+          : diagram?.eyebrow ?? page.eyebrow;
+        return <Fragment key={`${item.title}-${src}-${index}`}>
+          <ReferenceDiagram eyebrow={eyebrow} title={item.title} description={item.description ?? diagramSection?.description ?? diagram?.description ?? ""} src={src} alt={diagram?.alt ?? item.title} />
+          {detailPoints(item).length ? <section aria-label={`${item.title}要点`}><ItemDetails item={item} /></section> : null}
+        </Fragment>;
+      })}
 
       <section className={`${styles.solutionOutcomes} ${styles[`outcomes${framework.sequence}`] ?? ""}`} aria-labelledby="solution-outcomes-title" data-motion-group={`solution-outcomes-${framework.sequence}`}>
-        <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{framework.outcomeLabel}</h2></div>
-        <ol>{framework.outcomes.map((outcome, index) => <li key={outcome} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><Check size={20} aria-hidden="true" /><strong>{outcome}</strong></li>)}</ol>
+        <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{outcomesSection?.title ?? framework.outcomeLabel}</h2>{outcomesSection?.description ? <p>{outcomesSection.description}</p> : null}</div>
+        <ol>{outcomeItems.map((outcome, index) => <li key={`${outcome.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><Check size={20} aria-hidden="true" /><div><strong>{outcome.title}</strong>{outcome.description ? <p>{outcome.description}</p> : null}<ItemDetails item={outcome} /></div></li>)}</ol>
       </section>
 
       <section className={`${styles.solutionCta} page-reveal`} aria-label="联系顾问" data-motion="cta">
         <div>
-          <span>下一步</span>
-          <h2>讨论适合企业当前阶段的建设路径</h2>
+          <span>{ctaSection?.description || "下一步"}</span>
+          <h2>{ctaSection?.title || `咨询${page.title}`}</h2>
         </div>
-        <Link href="/#contact">
-          联系顾问
+        <Link href={ctaAction?.value || "/#contact"}>
+          {ctaAction?.title || "联系顾问"}
           <ArrowRight aria-hidden="true" size={18} />
         </Link>
       </section>

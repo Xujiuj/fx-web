@@ -1786,7 +1786,9 @@
 }
 
 .overviewVisual img {
+  display: block;
   width: 100%;
+  height: auto;
   max-height: 540px;
   object-fit: contain;
 }
@@ -1967,7 +1969,7 @@
   }
 
   .overviewVisual > a {
-    min-height: 240px;
+    min-height: 0;
   }
 
   .publicDemo {

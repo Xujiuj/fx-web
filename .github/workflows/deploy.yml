@@ -14,14 +14,14 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
           cache: npm
@@ -39,18 +39,71 @@ jobs:
         run: npm run build
 
       - name: Check out enterprise UI
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Xujiuj/enterprise-ui
-          ref: main
+          ref: 35167efc0519e01279bd72f6dffbf92f23c9034b
           path: enterprise-ui
+
+      - name: Check out isolated enterprise backend
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: Xujiuj/enterprise-backend
+          ref: 98d6eac06cfcd50877972c7b4f0ef46bd51b7971
+          path: enterprise-backend
+
+      - name: Set up Java
+        uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
+        with:
+          distribution: temurin
+          java-version: 17
+          cache: maven
+          cache-dependency-path: enterprise-backend/pom.xml
+
+      - name: Verify pinned source provenance
+        run: |
+          set -a
+          . deploy/sample-backend/versions.env
+          set +a
+          test "$(git -C enterprise-backend rev-parse HEAD)" = "$SAMPLE_BACKEND_SOURCE_COMMIT"
+          test "$(git -C enterprise-ui rev-parse HEAD)" = "$SAMPLE_UI_SOURCE_COMMIT"
+
+      - name: Apply reviewed isolated-platform patches
+        run: |
+          git -C enterprise-backend apply --check "$GITHUB_WORKSPACE/deploy/sample-backend/patches/backend-stable-install-id.patch"
+          git -C enterprise-backend apply "$GITHUB_WORKSPACE/deploy/sample-backend/patches/backend-stable-install-id.patch"
+          git -C enterprise-ui apply --check "$GITHUB_WORKSPACE/deploy/sample-backend/patches/ui-runtime-rsa.patch"
+          git -C enterprise-ui apply "$GITHUB_WORKSPACE/deploy/sample-backend/patches/ui-runtime-rsa.patch"
+          sed -i -E '/^VITE_APP_RSA_(PUBLIC|PRIVATE)_KEY[[:space:]]*=/d' enterprise-ui/.env.production
+          if grep -E '^VITE_APP_RSA_(PUBLIC|PRIVATE)_KEY[[:space:]]*=' enterprise-ui/.env.production; then
+            echo 'failed to remove upstream build-time RSA values' >&2
+            exit 1
+          fi
+
+      - name: Test stable isolated install ID
+        working-directory: enterprise-backend
+        run: >-
+          mvn -B -Pdev -pl ruoyi-modules/carbon-enterprise -am
+          -DskipTests=false
+          -Dtest=CeLicenseInstallIdProviderTest
+          -Dsurefire.failIfNoSpecifiedTests=false
+          test
+
+      - name: Build isolated backend release
+        working-directory: enterprise-backend
+        run: mvn -B -Pprod -DskipTests package
 
       - name: Build enterprise UI release
         working-directory: enterprise-ui
         run: |
           npm ci
           npm run test:unit
-          VITE_APP_CONTEXT_PATH=/sample/ VITE_APP_BASE_API=/enterprise/prod-api npm run build:prod
+          VITE_APP_CONTEXT_PATH=/sample/ VITE_APP_BASE_API=/sample-api npm run build:prod
+          grep -R -F '/sample-api' dist >/dev/null
+          if grep -R -F '/enterprise/prod-api' dist >/dev/null; then
+            echo 'isolated UI still references /enterprise/prod-api' >&2
+            exit 1
+          fi
 
       - name: Package release
         run: |
@@ -63,21 +116,29 @@ jobs:
           cp prisma/sqlite-bootstrap.sql release/prisma/
           cp scripts/ensure-sqlite-schema.mjs release/scripts/
           tar -C release -czf fx-web-release.tgz .
-          cp -R enterprise-ui/dist/. enterprise-ui-release/
-          tar -C enterprise-ui-release -czf enterprise-ui-release.tgz .
+          mkdir -p sample-ui-release
+          cp -R enterprise-ui/dist/. sample-ui-release/
+          tar -C sample-ui-release -czf sample-ui-release.tgz .
+          mkdir -p sample-backend-release/runtime-sql sample-backend-release/sql
+          cp enterprise-backend/ruoyi-admin/target/ruoyi-admin.jar sample-backend-release/backend.jar
+          cp deploy/sample-backend/.dockerignore deploy/sample-backend/compose.yml deploy/sample-backend/Dockerfile deploy/sample-backend/versions.env sample-backend-release/
+          cp deploy/sample-backend/deploy.sh deploy/sample-backend/generate-env.sh deploy/sample-backend/smoke.mjs deploy/sample-backend/README.md sample-backend-release/
+          cp -R deploy/sample-backend/runtime-sql/. sample-backend-release/runtime-sql/
+          cp -R deploy/sample-backend/sql/. sample-backend-release/sql/
+          tar -C sample-backend-release -czf sample-backend-release.tgz .
 
       - name: Upload release archive
-        uses: appleboy/scp-action@v1
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
         with:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          source: fx-web-release.tgz,enterprise-ui-release.tgz,deploy/fx-web.service
+          source: fx-web-release.tgz,sample-ui-release.tgz,sample-backend-release.tgz,deploy/fx-web.service
           target: /tmp
           overwrite: true
 
       - name: Replace production service
-        uses: appleboy/ssh-action@v1
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
         env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
@@ -87,7 +148,7 @@ jobs:
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
           envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM
-          command_timeout: 10m
+          command_timeout: 25m
           script: |
             set -euo pipefail
             service=fx-web.service
@@ -97,16 +158,22 @@ jobs:
             database="$data_dir/site.db"
             legacy_database="$target/prisma/site.db"
             archive=/tmp/fx-web-release.tgz
-            enterprise_archive=/tmp/enterprise-ui-release.tgz
-            enterprise_target=/opt/fx-sample-ui/current
+            sample_ui_archive=/tmp/sample-ui-release.tgz
+            sample_backend_archive=/tmp/sample-backend-release.tgz
             unit=/tmp/deploy/fx-web.service
 
             systemctl status "$service" --no-pager || true
             journalctl -u "$service" -n 200 --no-pager || true
 
             test -f "$archive"
-            test -f "$enterprise_archive"
+            test -f "$sample_ui_archive"
+            test -f "$sample_backend_archive"
             test -f "$unit"
+
+            ffmpeg_path=/usr/bin/ffmpeg
+            test -x "$ffmpeg_path"
+            ffmpeg_major=$("$ffmpeg_path" -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
+            test "$ffmpeg_major" -ge 6
 
             # Verify the existing enterprise backend before changing its frontend route.
             command -v nginx >/dev/null
@@ -129,6 +196,18 @@ jobs:
             test -f "$nginx_site"
             grep -F 'location / {' "$nginx_site" >/dev/null
             curl --fail --silent --show-error --max-time 15 https://fengxingzhicheng.com/enterprise/prod-api/ > /dev/null
+
+            # Validate and activate the isolated platform before publishing a website that links to it.
+            sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
+            cleanup_sample_stage() {
+              find "$sample_stage" -mindepth 1 -delete
+              rmdir "$sample_stage"
+              rm -f "$sample_backend_archive" "$sample_ui_archive"
+            }
+            trap cleanup_sample_stage EXIT
+            tar -xzf "$sample_backend_archive" -C "$sample_stage"
+            chmod 0755 "$sample_stage/deploy.sh"
+            "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
 
             install -d -o fx-web -g fx-web "$target"
             if [ ! -f "$target/.env" ] && [ -f "$legacy_target/.env" ]; then
@@ -154,9 +233,24 @@ jobs:
             if [ ! -f "$database" ] && [ -f "$legacy_database" ]; then
               mv "$legacy_database" "$database"
             fi
+            for media_type in uploads documents videos; do
+              persisted_media="$data_dir/media/$media_type"
+              current_media="$target/public/media/$media_type"
+              install -d -o fx-web -g fx-web "$persisted_media"
+              if [ -d "$current_media" ] && [ ! -L "$current_media" ]; then
+                cp -a "$current_media/." "$persisted_media/"
+              fi
+            done
             systemctl stop "$service"
             find "$target" -mindepth 1 -maxdepth 1 ! -name .env -exec rm -rf -- {} +
             tar -xzf "$archive" -C "$target"
+            for media_type in uploads documents videos; do
+              current_media="$target/public/media/$media_type"
+              rm -rf "$current_media"
+              ln -s "$data_dir/media/$media_type" "$current_media"
+              chmod 0755 "$data_dir/media/$media_type"
+              find "$data_dir/media/$media_type" -maxdepth 1 -type f -exec chmod 0644 {} +
+            done
             /opt/fx/runtime/node/bin/node --no-warnings "$target/scripts/ensure-sqlite-schema.mjs" "$database" "$target/prisma/sqlite-bootstrap.sql"
             chown -R fx-web:fx-web "$target" "$data_dir"
             rm -f "$archive"
@@ -168,44 +262,54 @@ jobs:
             curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 http://127.0.0.1:3010/ > /dev/null
             journalctl -u "$service" -p warning -n 50 --no-pager
 
-            install -d -m 0755 "$enterprise_target"
-            find "$enterprise_target" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
-            tar -xzf "$enterprise_archive" -C "$enterprise_target"
-            rm -f "$enterprise_archive"
-
-            if ! grep -F 'BEGIN FX_SAMPLE_UI' "$nginx_site" >/dev/null; then
+            if ! grep -F 'BEGIN FX_MEDIA_UPLOAD' "$nginx_site" >/dev/null; then
               nginx_backup=$(mktemp)
               nginx_candidate=$(mktemp)
               nginx_block=$(mktemp)
               cp "$nginx_site" "$nginx_backup"
               {
-                printf '%s\n' '    # BEGIN FX_SAMPLE_UI'
-                printf '%s\n' '    location = /sample {' '        return 308 /sample/;' '    }' ''
-                printf '%s\n' '    location ^~ /sample/ {' '        alias /opt/fx-sample-ui/current/;' '        try_files $uri $uri/ /sample/index.html;' '    }'
-                printf '%s\n' '    # END FX_SAMPLE_UI'
+                printf '%s\n' '    # BEGIN FX_MEDIA_UPLOAD'
+                printf '%s\n' '    location ^~ /api/admin/media {' '        client_max_body_size 2049m;' '        proxy_request_buffering off;' '        proxy_read_timeout 1800s;' '        proxy_send_timeout 1800s;' '        send_timeout 1800s;' '        proxy_http_version 1.1;' '        proxy_set_header Host $host;' '        proxy_set_header X-Real-IP $remote_addr;' '        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;' '        proxy_set_header X-Forwarded-Proto $scheme;' '        proxy_pass http://127.0.0.1:3010;' '    }'
+                printf '%s\n' '    # END FX_MEDIA_UPLOAD'
               } > "$nginx_block"
-              if grep -E '^[[:space:]]*location[[:space:]]+(\^~[[:space:]]+)?/sample/[[:space:]]*\{' "$nginx_site" >/dev/null; then
-                awk -v block="$nginx_block" '
-                  /^[[:space:]]*location[[:space:]]+(\^~[[:space:]]+)?\/sample\/[[:space:]]*\{/ && !replaced {
-                    while ((getline line < block) > 0) print line
-                    close(block)
-                    replaced = 1
-                    skipping = 1
-                    next
-                  }
-                  skipping && /^[[:space:]]*}[[:space:]]*$/ { skipping = 0; next }
-                  !skipping { print }
-                ' "$nginx_site" > "$nginx_candidate"
-              else
-                awk -v block="$nginx_block" '
-                  /^[[:space:]]*location \/ \{/ && !inserted {
-                    while ((getline line < block) > 0) print line
-                    close(block)
-                    inserted = 1
-                  }
-                  { print }
-                ' "$nginx_site" > "$nginx_candidate"
+              awk -v block="$nginx_block" '
+                /^[[:space:]]*location \/ \{/ && !inserted {
+                  while ((getline line < block) > 0) print line
+                  close(block)
+                  inserted = 1
+                }
+                { print }
+              ' "$nginx_site" > "$nginx_candidate"
+              install -m 0644 "$nginx_candidate" "$nginx_site"
+              if ! nginx -t; then
+                install -m 0644 "$nginx_backup" "$nginx_site"
+                nginx -t
+                rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+                exit 1
               fi
+              rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+            fi
+            if ! grep -F 'BEGIN FX_MANAGED_MEDIA' "$nginx_site" >/dev/null; then
+              nginx_backup=$(mktemp)
+              nginx_candidate=$(mktemp)
+              nginx_block=$(mktemp)
+              cp "$nginx_site" "$nginx_backup"
+              {
+                printf '%s\n' '    # BEGIN FX_MANAGED_MEDIA'
+                printf '%s\n' '    # Runtime uploads are not part of the Next.js build manifest.'
+                printf '%s\n' '    location ^~ /media/uploads/ {' '        alias /opt/fx-web/data/media/uploads/;' '    }' ''
+                printf '%s\n' '    location ^~ /media/documents/ {' '        alias /opt/fx-web/data/media/documents/;' '    }' ''
+                printf '%s\n' '    location ^~ /media/videos/ {' '        alias /opt/fx-web/data/media/videos/;' '    }'
+                printf '%s\n' '    # END FX_MANAGED_MEDIA'
+              } > "$nginx_block"
+              awk -v block="$nginx_block" '
+                /^[[:space:]]*location \/ \{/ && !inserted {
+                  while ((getline line < block) > 0) print line
+                  close(block)
+                  inserted = 1
+                }
+                { print }
+              ' "$nginx_site" > "$nginx_candidate"
               install -m 0644 "$nginx_candidate" "$nginx_site"
               if ! nginx -t; then
                 install -m 0644 "$nginx_backup" "$nginx_site"
@@ -216,5 +320,23 @@ jobs:
               rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
             fi
             nginx -s reload
-            curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 https://fengxingzhicheng.com/sample/ > /dev/null
-            curl --fail --silent --show-error --max-time 15 https://fengxingzhicheng.com/enterprise/prod-api/ > /dev/null
+
+            final_probe_body=$(mktemp)
+            final_probe_headers=$(mktemp)
+            sample_status=$(curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/)
+            test "$sample_status" = 200
+            grep -F '/sample/runtime-config.js' "$final_probe_body" >/dev/null
+            sample_runtime_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/runtime-config.js)
+            test "$sample_runtime_status" = 200
+            grep -F 'window.__FX_SAMPLE_RUNTIME__' "$final_probe_body" >/dev/null
+            sample_api_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-api/auth/code)
+            test "$sample_api_status" = 200
+            grep -E '"code"[[:space:]]*:[[:space:]]*200' "$final_probe_body" >/dev/null
+            sample_oss_status=$(curl --fail --silent --show-error --max-time 15 --dump-header "$final_probe_headers" --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-oss/minio/health/live)
+            test "$sample_oss_status" = 200
+            grep -i -E "^Content-Security-Policy:[[:space:]]*sandbox; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'[[:space:]]*$" "$final_probe_headers" >/dev/null
+            grep -i -E '^X-Content-Type-Options:[[:space:]]*nosniff[[:space:]]*$' "$final_probe_headers" >/dev/null
+            grep -i -E '^Referrer-Policy:[[:space:]]*no-referrer[[:space:]]*$' "$final_probe_headers" >/dev/null
+            enterprise_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/enterprise/prod-api/)
+            test "$enterprise_status" = 200
+            rm -f "$final_probe_body" "$final_probe_headers"

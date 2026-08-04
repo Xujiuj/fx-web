@@ -39,6 +39,10 @@ recipient changes automatically when that content is updated.
    Keep port `3010` bound to loopback and blocked from the public network.
 5. Verify automatic certificate renewal with `certbot renew --dry-run` (or the
    equivalent command for the certificate manager in use).
+6. Install a distribution-maintained FFmpeg package at `/usr/bin/ffmpeg` with
+   major version 6 or newer. The deployment checks this before stopping the
+   current service; uploaded videos are never passed to a bundled, unpatched
+   decoder.
 
 Do not enable HSTS before both hostnames work over HTTPS. The template includes
 one year of HSTS with `includeSubDomains`; remove that directive during the
@@ -76,7 +80,12 @@ from source control.
 The Nginx cache policy is deliberately narrow:
 
 - `/_next/static/` and `/media/optimized/`: one year, `immutable`.
-- HTML, API routes, and `/media/uploads/`: the cache policy returned by Next.js.
+- HTML and API routes: the cache policy returned by Next.js.
+- `/media/uploads/`, `/media/documents/`, and `/media/videos/`: served directly
+  by Nginx from `/opt/fx-web/data/media/` so new runtime uploads are available
+  immediately and videos retain native byte-range support. The service writes
+  public media as `0644` inside `0755` directories; temporary upload files are
+  not exposed by Nginx.
 
 Only content-addressed or release-owned files may be placed in
 `/media/optimized/`. Replacing a file without changing its URL will leave stale

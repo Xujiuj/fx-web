@@ -1,0 +1,340 @@
+{
+  "generatedAt": "2026-08-04",
+  "policy": {
+    "svgRasterizationDensity": 300,
+    "svgWebpQuality": 92,
+    "galleryWidth": 1920,
+    "galleryWebpQuality": 92,
+    "thumbnailWidth": 640,
+    "thumbnailWebpQuality": 88,
+    "originalsPreserved": true,
+    "svgBackground": "#ffffff",
+    "platformAdvantageBackground": "#ffffff"
+  },
+  "assets": [
+    {
+      "source": "public/media/platform-advantages/business-data-flow.png",
+      "output": "public/media/derived/platform-advantages/business-data-flow-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 710,
+      "format": "webp",
+      "bytes": 84128
+    },
+    {
+      "source": "public/media/platform-advantages/business-data-flow.png",
+      "output": "public/media/derived/platform-advantages/business-data-flow-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 237,
+      "format": "webp",
+      "bytes": 15176
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-activity-data.png",
+      "output": "public/media/derived/platform-advantages/reuse-activity-data-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1177,
+      "format": "webp",
+      "bytes": 276050
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-activity-data.png",
+      "output": "public/media/derived/platform-advantages/reuse-activity-data-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 392,
+      "format": "webp",
+      "bytes": 39678
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-baseline-analysis.png",
+      "output": "public/media/derived/platform-advantages/reuse-baseline-analysis-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1178,
+      "format": "webp",
+      "bytes": 136812
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-baseline-analysis.png",
+      "output": "public/media/derived/platform-advantages/reuse-baseline-analysis-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 393,
+      "format": "webp",
+      "bytes": 25406
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-standard-output.png",
+      "output": "public/media/derived/platform-advantages/reuse-standard-output-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1172,
+      "format": "webp",
+      "bytes": 288878
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-standard-output.png",
+      "output": "public/media/derived/platform-advantages/reuse-standard-output-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 391,
+      "format": "webp",
+      "bytes": 46728
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-trend-analysis.png",
+      "output": "public/media/derived/platform-advantages/reuse-trend-analysis-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1182,
+      "format": "webp",
+      "bytes": 245408
+    },
+    {
+      "source": "public/media/platform-advantages/reuse-trend-analysis.png",
+      "output": "public/media/derived/platform-advantages/reuse-trend-analysis-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 394,
+      "format": "webp",
+      "bytes": 41254
+    },
+    {
+      "source": "public/media/platform-advantages/traceability-module-map.png",
+      "output": "public/media/derived/platform-advantages/traceability-module-map-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1323,
+      "format": "webp",
+      "bytes": 64880
+    },
+    {
+      "source": "public/media/platform-advantages/traceability-module-map.png",
+      "output": "public/media/derived/platform-advantages/traceability-module-map-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 441,
+      "format": "webp",
+      "bytes": 13112
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/1.png",
+      "output": "public/media/derived/platform-screenshots/platform-01-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 102500
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/1.png",
+      "output": "public/media/derived/platform-screenshots/platform-01-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 15370
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/2.png",
+      "output": "public/media/derived/platform-screenshots/platform-02-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 62018
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/2.png",
+      "output": "public/media/derived/platform-screenshots/platform-02-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 11790
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/3.png",
+      "output": "public/media/derived/platform-screenshots/platform-03-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 53244
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/3.png",
+      "output": "public/media/derived/platform-screenshots/platform-03-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 8644
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/4.png",
+      "output": "public/media/derived/platform-screenshots/platform-04-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 174982
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/4.png",
+      "output": "public/media/derived/platform-screenshots/platform-04-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 26046
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/5.png",
+      "output": "public/media/derived/platform-screenshots/platform-05-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 190136
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/5.png",
+      "output": "public/media/derived/platform-screenshots/platform-05-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 27642
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/6.png",
+      "output": "public/media/derived/platform-screenshots/platform-06-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 103928
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/6.png",
+      "output": "public/media/derived/platform-screenshots/platform-06-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 17582
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/7.png",
+      "output": "public/media/derived/platform-screenshots/platform-07-gallery-1920.webp",
+      "role": "gallery-main",
+      "width": 1920,
+      "height": 1020,
+      "format": "webp",
+      "bytes": 106888
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/平台截图/7.png",
+      "output": "public/media/derived/platform-screenshots/platform-07-thumb-640.webp",
+      "role": "gallery-thumbnail",
+      "width": 640,
+      "height": 340,
+      "format": "webp",
+      "bytes": 16966
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/集团版版产品截图-01.svg",
+      "output": "public/media/derived/product-excel/excel-group-1774.png",
+      "role": "high-resolution-png",
+      "width": 1774,
+      "height": 1406,
+      "format": "png",
+      "bytes": 563401
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/集团版版产品截图-01.svg",
+      "output": "public/media/derived/product-excel/excel-group-1774.webp",
+      "role": "high-quality-webp",
+      "width": 1774,
+      "height": 1406,
+      "format": "webp",
+      "bytes": 261422
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/单公司版产品截图-01.svg",
+      "output": "public/media/derived/product-excel/excel-single-company-1962.png",
+      "role": "high-resolution-png",
+      "width": 1962,
+      "height": 998,
+      "format": "png",
+      "bytes": 354192
+    },
+    {
+      "source": "public/materials/20260803/资料20260803/产品/单公司版产品截图-01.svg",
+      "output": "public/media/derived/product-excel/excel-single-company-1962.webp",
+      "role": "high-quality-webp",
+      "width": 1962,
+      "height": 998,
+      "format": "webp",
+      "bytes": 160642
+    },
+    {
+      "source": "public/media/reference-diagrams/platform-function-architecture.svg",
+      "output": "public/media/derived/service-diagrams/platform-function-architecture-1800.png",
+      "role": "high-resolution-png",
+      "width": 1800,
+      "height": 1375,
+      "format": "png",
+      "bytes": 234857
+    },
+    {
+      "source": "public/media/reference-diagrams/platform-function-architecture.svg",
+      "output": "public/media/derived/service-diagrams/platform-function-architecture-1800.webp",
+      "role": "high-quality-webp",
+      "width": 1800,
+      "height": 1375,
+      "format": "webp",
+      "bytes": 116974
+    },
+    {
+      "source": "public/media/reference-diagrams/service-process.svg",
+      "output": "public/media/derived/service-diagrams/service-process-1800.png",
+      "role": "high-resolution-png",
+      "width": 1800,
+      "height": 952,
+      "format": "png",
+      "bytes": 255341
+    },
+    {
+      "source": "public/media/reference-diagrams/service-process.svg",
+      "output": "public/media/derived/service-diagrams/service-process-1800.webp",
+      "role": "high-quality-webp",
+      "width": 1800,
+      "height": 952,
+      "format": "webp",
+      "bytes": 108470
+    },
+    {
+      "source": "public/media/reference-diagrams/three-layer-implementation.svg",
+      "output": "public/media/derived/service-diagrams/three-layer-implementation-1800.png",
+      "role": "high-resolution-png",
+      "width": 1800,
+      "height": 1548,
+      "format": "png",
+      "bytes": 298799
+    },
+    {
+      "source": "public/media/reference-diagrams/three-layer-implementation.svg",
+      "output": "public/media/derived/service-diagrams/three-layer-implementation-1800.webp",
+      "role": "high-quality-webp",
+      "width": 1800,
+      "height": 1548,
+      "format": "webp",
+      "bytes": 151816
+    }
+  ]
+}

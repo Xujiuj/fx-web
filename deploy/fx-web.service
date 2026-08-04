@@ -6,6 +6,7 @@ After=network.target
 Type=simple
 User=fx-web
 Group=fx-web
+UMask=0022
 WorkingDirectory=/opt/fx-web/apps/website/current
 Environment=NODE_ENV=production
 Environment=HOSTNAME=127.0.0.1
@@ -14,6 +15,15 @@ EnvironmentFile=-/opt/fx-web/apps/website/current/.env
 ExecStart=/opt/fx/runtime/node/bin/node server.js
 Restart=always
 RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictSUIDSGID=true
 
 [Install]
 WantedBy=multi-user.target

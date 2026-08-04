@@ -15,7 +15,7 @@
 .heroShade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(90deg, rgba(70, 27, 3, 0.26), transparent);
+  background: linear-gradient(90deg, rgba(43, 31, 23, 0.86) 0%, rgba(43, 31, 23, 0.62) 58%, rgba(43, 31, 23, 0.2) 100%);
 }
 
 .heroContent,
@@ -318,6 +318,10 @@
 
   .heroContent h1 {
     font-size: 36px;
+  }
+
+  .heroShade {
+    background: linear-gradient(90deg, rgba(43, 31, 23, 0.9), rgba(43, 31, 23, 0.58));
   }
 
   .content {

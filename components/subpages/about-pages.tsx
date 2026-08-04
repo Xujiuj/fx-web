@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import { ContactSection } from "@/components/home-page";
-import { defaultHomeContent, type Subpage, type SubpageSection } from "@/lib/cms-content";
+import { defaultHomeContent, type ContactContent, type Subpage, type SubpageSection } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./about-pages.module.css";
 
 type AboutPageProps = { page: Subpage };
@@ -9,6 +10,7 @@ type AboutPageProps = { page: Subpage };
 function AboutPageHero({ page }: AboutPageProps) {
   return (
     <section className={`${styles.hero} page-reveal`}>
+      <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="(max-width: 680px) calc(100vw - 36px), 1120px" unoptimized={isRuntimeManagedImage(page.image)} />
       <div className={styles.heroShade} />
       <div className={styles.heroContent} data-motion="hero-copy">
         <p>{page.eyebrow}</p>
@@ -40,7 +42,7 @@ export function HonorsPage({ page }: AboutPageProps) {
             {section.items.map((item) => (
               <article className={`${styles.honorCard} page-reveal`} key={`${item.title}-${item.image ?? ""}`} data-motion-role="item">
                 <h2>{item.title}</h2>
-                {item.image ? <Image src={item.image} alt={item.title} width={560} height={680} sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 33vw" /> : null}
+                {item.image ? <Image src={item.image} alt={item.title} width={560} height={680} sizes="(max-width: 720px) 100vw, (max-width: 1080px) 50vw, 33vw" unoptimized={isRuntimeManagedImage(item.image)} /> : null}
                 <p>{item.description ?? "相关信息将在确认后持续更新。"}</p>
               </article>
             ))}
@@ -62,7 +64,7 @@ export function PartnersPage({ page }: AboutPageProps) {
           <div className={styles.partnerGrid}>
             {section.items.map((item) => (
               <article className={`${styles.partnerCard} page-reveal`} key={`${item.title}-${item.image ?? ""}`} data-motion-role="item">
-                {item.image ? <Image src={item.image} alt={item.title} width={320} height={160} sizes="(max-width: 720px) 42vw, 220px" /> : <strong>{item.title}</strong>}
+                {item.image ? <Image src={item.image} alt={item.title} width={320} height={160} sizes="(max-width: 720px) 42vw, 220px" unoptimized={isRuntimeManagedImage(item.image)} /> : <strong>{item.title}</strong>}
               </article>
             ))}
           </div>
@@ -72,7 +74,7 @@ export function PartnersPage({ page }: AboutPageProps) {
   );
 }
 
-export function ContactPage({ page }: AboutPageProps) {
+export function ContactPage({ page, contactContent = defaultHomeContent.contact }: AboutPageProps & { contactContent?: ContactContent }) {
   const section = getSection(page, "contacts", "联系信息");
   const visibleItems = section.items.filter((item) => item.value || item.image);
 
@@ -104,14 +106,14 @@ export function ContactPage({ page }: AboutPageProps) {
                 <h3>{item.title}</h3>
                 {href ? <a href={href}>{item.value}</a> : item.value ? <strong>{item.value}</strong> : null}
                 {item.description ? <p>{item.description}</p> : null}
-                {item.image ? <Image src={item.image} alt={`${item.title}二维码`} width={520} height={520} sizes="260px" /> : null}
+                {item.image ? <Image src={item.image} alt={`${item.title}二维码`} width={520} height={520} sizes="260px" unoptimized={isRuntimeManagedImage(item.image)} /> : null}
               </article>
             );
           })}
           </div>
         </div>
       </section>
-      <ContactSection contact={defaultHomeContent.contact} id="online-consultation" />
+      <ContactSection contact={contactContent} id="online-consultation" />
     </>
   );
 }

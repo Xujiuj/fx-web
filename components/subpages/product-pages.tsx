@@ -25,7 +25,8 @@ import {
   type PlatformOverviewItem,
   type ProductMediaItem,
 } from "@/components/product-media-gallery";
-import type { Subpage } from "@/lib/cms-content";
+import type { ProductScreenshot, Subpage } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./product-pages.module.css";
 
 type ProductPageProps = { page: Subpage };
@@ -40,35 +41,63 @@ const platformPrinciples = [
 ];
 
 const materialRoot = "/materials/20260803/资料20260803";
-const platformTrialUrl = process.env.NEXT_PUBLIC_PLATFORM_TRIAL_URL?.trim() || "/#contact";
-
-const excelScreenshots: ProductMediaItem[] = [
+const excelScreenshots: ProductScreenshot[] = [
   {
-    src: `${materialRoot}/产品/单公司版产品截图-01.svg`,
+    src: "/media/derived/product-excel/excel-single-company-1962.webp",
+    fullSrc: `${materialRoot}/产品/单公司版产品截图-01.svg`,
     alt: "Excel温室气体核算工具单公司版完整界面",
     label: "单公司版",
-    width: 981,
-    height: 499,
+    width: 1962,
+    height: 998,
   },
   {
-    src: `${materialRoot}/产品/集团版版产品截图-01.svg`,
+    src: "/media/derived/product-excel/excel-group-1774.webp",
+    fullSrc: `${materialRoot}/产品/集团版版产品截图-01.svg`,
     alt: "Excel温室气体核算工具集团版完整界面",
     label: "集团版",
-    width: 887,
-    height: 703,
+    width: 1774,
+    height: 1406,
   },
 ];
 
-const platformScreenshots: ProductMediaItem[] = Array.from({ length: 7 }, (_, index) => ({
-  src: `${materialRoot}/产品/平台截图/${index + 1}.png`,
+const platformScreenshots: ProductScreenshot[] = Array.from({ length: 7 }, (_, index) => ({
+  src: `/media/derived/platform-screenshots/platform-${String(index + 1).padStart(2, "0")}-gallery-1920.webp`,
+  thumbnailSrc: `/media/derived/platform-screenshots/platform-${String(index + 1).padStart(2, "0")}-thumb-640.webp`,
+  fullSrc: `${materialRoot}/产品/平台截图/${index + 1}.png`,
   alt: `企业碳管理数字化平台界面截图${index + 1}`,
-  label: ["数据维护", "分析首页", "分析目录", "排放总览", "排放明细", "趋势分析", "强度分析"][index],
-  width: 3840,
-  height: 2040,
+  label: ["数据维护", "分析首页", "分析目录", "排放总览", "多标准排放总表", "基准年对比", "强度分析"][index],
+  width: 1920,
+  height: 1020,
 }));
 
+function optimizedScreenshot(item: ProductScreenshot): ProductMediaItem {
+  if (item.src === `${materialRoot}/产品/单公司版产品截图-01.svg`) {
+    return { ...item, src: "/media/derived/product-excel/excel-single-company-1962.webp", fullSrc: item.src, width: 1962, height: 998 };
+  }
+  if (item.src === `${materialRoot}/产品/集团版版产品截图-01.svg`) {
+    return { ...item, src: "/media/derived/product-excel/excel-group-1774.webp", fullSrc: item.src, width: 1774, height: 1406 };
+  }
+  const platformMatch = item.src.match(/^\/materials\/20260803\/资料20260803\/产品\/平台截图\/([1-7])\.png$/);
+  if (platformMatch) {
+    const number = platformMatch[1].padStart(2, "0");
+    return {
+      ...item,
+      src: `/media/derived/platform-screenshots/platform-${number}-gallery-1920.webp`,
+      thumbnailSrc: `/media/derived/platform-screenshots/platform-${number}-thumb-640.webp`,
+      fullSrc: item.src,
+      width: 1920,
+      height: 1020
+    };
+  }
+  return { ...item, width: item.width ?? 1920, height: item.height ?? 1080 };
+}
+
+function screenshotsFor(page: Subpage, fallback: ProductScreenshot[]): ProductMediaItem[] {
+  return (page.product?.screenshots?.length ? page.product.screenshots : fallback).map(optimizedScreenshot);
+}
+
 function ProductVisual({ page }: ProductPageProps) {
-  const screenshot = page.media?.screenshot;
+  const screenshot = page.media?.screenshot ?? page.image;
 
   if (!screenshot) return null;
 
@@ -81,6 +110,7 @@ function ProductVisual({ page }: ProductPageProps) {
         height={980}
         priority
         sizes="(max-width: 860px) calc(100vw - 36px), 52vw"
+        unoptimized={isRuntimeManagedImage(screenshot)}
       />
     </figure>
   );
@@ -102,7 +132,8 @@ const platformAdvantages: Array<PlatformOverviewItem & {
     icon: Database,
     summary: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。",
     points: ["数据归集", "因子匹配", "排放计算", "结果分析"],
-    src: "/media/platform-advantages/business-data-flow.png",
+    src: "/media/derived/platform-advantages/business-data-flow-gallery-1920.webp",
+    fullSrc: "/media/platform-advantages/business-data-flow.png",
     alt: "业务数据驱动的自动核算流程",
     width: 6209,
     height: 2297,
@@ -116,7 +147,8 @@ const platformAdvantages: Array<PlatformOverviewItem & {
     icon: Workflow,
     summary: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。",
     points: ["全国碳市场履约", "ESG信息披露", "供应链碳管理", "企业经营分析"],
-    src: "/media/platform-advantages/reuse-standard-output.png",
+    src: "/media/derived/platform-advantages/reuse-standard-output-gallery-1920.webp",
+    fullSrc: "/media/platform-advantages/reuse-standard-output.png",
     alt: "一套数据支持多标准核算结果输出",
     width: 5383,
     height: 3285,
@@ -130,7 +162,8 @@ const platformAdvantages: Array<PlatformOverviewItem & {
     icon: LineChart,
     summary: "平台建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，支持监管报送、第三方核查、ESG披露与内部审计。",
     points: ["排放源到活动数据", "活动数据到排放因子", "排放因子到核算结果", "结果回溯业务数据与计算逻辑"],
-    src: "/media/platform-advantages/traceability-module-map.png",
+    src: "/media/derived/platform-advantages/traceability-module-map-gallery-1920.webp",
+    fullSrc: "/media/platform-advantages/traceability-module-map.png",
     alt: "排放源、活动数据、排放因子和核算结果的追溯关系",
     width: 2169,
     height: 1495,
@@ -142,21 +175,50 @@ const platformOverviewItems: PlatformOverviewItem[] = platformAdvantages.map((it
   summary: item.summary,
   points: item.points,
   src: item.src,
+  fullSrc: item.fullSrc,
   alt: item.alt,
   width: item.width,
   height: item.height,
 }));
 
-function PageCta({ title }: { title: string }) {
+function itemPoints(details?: Record<string, string>) {
+  return details?.["要点"]?.split(/\r?\n/).map((item) => item.trim()).filter(Boolean) ?? [];
+}
+
+function platformOverviewFor(page: Subpage) {
+  const section = page.sections.find((item) => item.id === "platform-overview");
+  if (!section?.items.length) return { items: platformOverviewItems, title: undefined, description: undefined };
+  return {
+    title: section.title,
+    description: section.description,
+    items: section.items.map((item, index): PlatformOverviewItem => {
+      const fallback = platformOverviewItems[index % platformOverviewItems.length];
+      return {
+        label: item.title,
+        summary: item.description ?? fallback.summary,
+        points: itemPoints(item.details).length ? itemPoints(item.details) : fallback.points,
+        src: item.image ?? fallback.src,
+        fullSrc: !item.image || item.image === fallback.src ? fallback.fullSrc : undefined,
+        alt: item.title,
+        width: fallback.width,
+        height: fallback.height
+      };
+    })
+  };
+}
+
+function PageCta({ page }: ProductPageProps) {
+  const section = page.sections.find((item) => item.id === "product-cta");
+  const action = section?.items[0];
   return (
     <section className={`${styles.cta} page-reveal`} aria-labelledby="product-contact-title" data-motion="cta">
       <div>
         <span>PRODUCT CONSULTATION</span>
-        <h2 id="product-contact-title">了解{title}如何适配企业真实的核算与管理流程</h2>
-        <p>从组织边界、数据口径到核算应用，获得与当前能力阶段匹配的产品建议。</p>
+        <h2 id="product-contact-title">{section?.title || `了解${page.title}如何适配企业真实的核算与管理流程`}</h2>
+        <p>{section?.description || "从组织边界、数据口径到核算应用，获得与当前能力阶段匹配的产品建议。"}</p>
       </div>
-      <Link href="/#contact">
-        预约产品演示
+      <Link href={action?.value || "/#contact"}>
+        {action?.title || "预约产品演示"}
         <ArrowRight size={18} aria-hidden="true" />
       </Link>
     </section>
@@ -164,7 +226,8 @@ function PageCta({ title }: { title: string }) {
 }
 
 function ProductResources({ page }: ProductPageProps) {
-  const resources = page.sections.find((section) => section.id === "product-resources")?.items ?? [
+  const resourceSection = page.sections.find((section) => section.id === "product-resources");
+  const resources = resourceSection?.items ?? [
     { title: "产品手册", description: "产品介绍与使用说明" },
     { title: "功能与版本清单", description: "功能范围与版本说明" },
     { title: "部署及试用说明", description: "部署要求与试用指引" },
@@ -173,17 +236,21 @@ function ProductResources({ page }: ProductPageProps) {
     <section className={`${styles.productResources} ${styles.container}`} aria-labelledby={`${page.slug}-resources-title`}>
       <header className={styles.sectionHeading}>
         <span>RESOURCE CENTER</span>
-        <h2 id={`${page.slug}-resources-title`}>产品资料下载</h2>
-        <p>产品手册、功能清单与部署说明由后台独立维护；上传新版本后，用户可直接下载。</p>
+        <h2 id={`${page.slug}-resources-title`}>{resourceSection?.title ?? "产品资料下载"}</h2>
+        <p>{resourceSection?.description ?? "产品手册、功能清单与部署说明由后台独立维护；上传新版本后，用户可直接下载。"}</p>
       </header>
       <div className={styles.resourceRows}>
         {resources.map((resource) => (
-          <Link href={resource.value || "/knowledge-center#downloads"} key={resource.title}>
+          <a
+            href={resource.value || "/#contact"}
+            key={resource.title}
+            download={resource.value?.startsWith("/media/documents/") ? "" : undefined}
+          >
             <Download size={19} aria-hidden="true" />
             <strong>{resource.title}</strong>
-            <span>{resource.value ? "立即下载" : resource.description || "资料准备中"}</span>
+            <span>{resource.value ? "立即下载" : "资料待上传 · 联系获取"}</span>
             <ArrowRight size={17} aria-hidden="true" />
-          </Link>
+          </a>
         ))}
       </div>
     </section>
@@ -191,6 +258,17 @@ function ProductResources({ page }: ProductPageProps) {
 }
 
 export function ExcelProductPage({ page }: ProductPageProps) {
+  const editionSection = page.sections.find((section) => section.id === "product-editions");
+  const screenshotSection = page.sections.find((section) => section.id === "product-screenshots");
+  const featureSection = page.sections.find((section) => section.id === "product-features");
+  const defaultEditions = [
+    { title: "单公司版", description: "面向单一法人或独立核算主体，完成边界配置、活动数据维护与核算结果输出。", details: { "要点": "独立建立核算台账\n持续积累多年数据" } },
+    { title: "集团版", description: "面向多法人、多层级组织，支持分子公司独立维护、集团自动汇总与统一复核。", details: { "要点": "组织数据分级维护\n集团结果自动汇总" } }
+  ];
+  const editions = [editionSection?.items[0] ?? defaultEditions[0], editionSection?.items[1] ?? defaultEditions[1]];
+  const diagramSection = page.sections.find((section) => section.id === "product-diagram");
+  const diagramItem = diagramSection?.items[0];
+
   return (
     <>
       <section className={styles.excelHero}>
@@ -220,18 +298,17 @@ export function ExcelProductPage({ page }: ProductPageProps) {
       <section className={`${styles.versionSection} ${styles.container} page-reveal`} aria-labelledby="excel-version-title" data-motion-group="product-compare">
         <header className={styles.sectionHeading} data-motion-role="heading">
           <span>ORGANIZATION EDITIONS</span>
-          <h2 id="excel-version-title">匹配不同组织规模的核算方式</h2>
-          <p>从单一法人独立核算，到多层级组织统一汇总，保持核算逻辑和数据口径一致。</p>
+          <h2 id="excel-version-title">{editionSection?.title ?? "匹配不同组织规模的核算方式"}</h2>
+          <p>{editionSection?.description ?? "从单一法人独立核算，到多层级组织统一汇总，保持核算逻辑和数据口径一致。"}</p>
         </header>
         <div className={styles.versionCompare}>
           <article data-motion-role="item">
             <div className={styles.versionNumber}>01</div>
             <Building2 size={28} aria-hidden="true" />
-            <h3>单公司版</h3>
-            <p>面向单一法人或独立核算主体，完成边界配置、活动数据维护与核算结果输出。</p>
+            <h3>{editions[0]?.title}</h3>
+            <p>{editions[0]?.description}</p>
             <ul>
-              <li><CheckCircle2 size={16} aria-hidden="true" />独立建立核算台账</li>
-              <li><CheckCircle2 size={16} aria-hidden="true" />持续积累多年数据</li>
+              {itemPoints(editions[0]?.details).map((point) => <li key={point}><CheckCircle2 size={16} aria-hidden="true" />{point}</li>)}
             </ul>
           </article>
           <div className={styles.compareAxis} aria-hidden="true" data-motion-role="item">
@@ -242,11 +319,10 @@ export function ExcelProductPage({ page }: ProductPageProps) {
           <article data-motion-role="item">
             <div className={styles.versionNumber}>02</div>
             <Network size={28} aria-hidden="true" />
-            <h3>集团版</h3>
-            <p>面向多法人、多层级组织，支持分子公司独立维护、集团自动汇总与统一复核。</p>
+            <h3>{editions[1]?.title}</h3>
+            <p>{editions[1]?.description}</p>
             <ul>
-              <li><CheckCircle2 size={16} aria-hidden="true" />组织数据分级维护</li>
-              <li><CheckCircle2 size={16} aria-hidden="true" />集团结果自动汇总</li>
+              {itemPoints(editions[1]?.details).map((point) => <li key={point}><CheckCircle2 size={16} aria-hidden="true" />{point}</li>)}
             </ul>
           </article>
         </div>
@@ -254,17 +330,17 @@ export function ExcelProductPage({ page }: ProductPageProps) {
 
       <ProductMediaGallery
         eyebrow="PRODUCT SCREENSHOTS"
-        title="查看两个版本的完整产品界面"
-        description="切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"
-        items={excelScreenshots}
+        title={screenshotSection?.title || "查看两个版本的完整产品界面"}
+        description={screenshotSection?.description || "切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"}
+        items={screenshotsFor(page, excelScreenshots)}
       />
 
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
         <div className={styles.container}>
           <header className={styles.sectionHeading} data-motion-role="heading">
             <span>PRODUCT FEATURES</span>
-            <h2 id="excel-function-title">产品特点</h2>
-            <p>把核算方法落实到可持续使用的工具中，兼顾单体核算、集团汇总与多年数据积累。</p>
+            <h2 id="excel-function-title">{featureSection?.title || "产品特点"}</h2>
+            <p>{featureSection?.description || "把核算方法落实到可持续使用的工具中，兼顾单体核算、集团汇总与多年数据积累。"}</p>
           </header>
           <div className={styles.functionGrid}>
             {page.features.map((feature, index) => {
@@ -284,14 +360,14 @@ export function ExcelProductPage({ page }: ProductPageProps) {
 
       <ReferenceDiagram
         eyebrow="核算方法"
-        title="Excel 工具的数据维护与核算关系"
-        description="说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
+        title={diagramSection?.title ?? "Excel 工具的数据维护与核算关系"}
+        description={diagramSection?.description ?? "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"}
+        src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
         alt="Excel 温室气体核算工具的数据维护与核算关系图"
       />
 
       <ProductResources page={page} />
-      <PageCta title={page.title} />
+      <PageCta page={page} />
     </>
   );
 }
@@ -509,12 +585,22 @@ export function LegacyPlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <PageCta title={page.title} />
+      <PageCta page={page} />
     </>
   );
 }
 
 export function PlatformProductPage({ page }: ProductPageProps) {
+  const foundationSection = page.sections.find((section) => section.id === "platform-foundation");
+  const screenshotSection = page.sections.find((section) => section.id === "product-screenshots");
+  const videoSection = page.sections.find((section) => section.id === "product-video");
+  const publicDemoSection = page.sections.find((section) => section.id === "product-public-demo");
+  const publicDemoActions = publicDemoSection?.items ?? [];
+  const foundations = foundationSection?.items.length
+    ? foundationSection.items
+    : platformPrinciples.map((item) => ({ title: item.title }));
+  const overview = platformOverviewFor(page);
+
   return (
     <>
       <section className={styles.platformHero}>
@@ -524,12 +610,12 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.platformHeroActions}>
-              <Link className={styles.platformHeroLink} href="/sample/">
+              <a className={styles.platformHeroLink} href={page.product?.enterpriseUrl || "/sample/"}>
                 进入企业端平台 <ExternalLink size={18} aria-hidden="true" />
-              </Link>
-              <Link className={styles.platformSecondaryLink} href={platformTrialUrl}>申请试用账号</Link>
+              </a>
+              <Link className={styles.platformSecondaryLink} href={page.product?.trialUrl || "/#contact"}>申请试用账号</Link>
             </div>
-            <p className={styles.demoSafety}>企业端为独立部署应用，官网不承载企业端数据、接口或用户账号。</p>
+            <p className={styles.demoSafety}>企业端演示从官网跳转至专用入口；试用账号与数据权限将在申请审核后开通。</p>
           </div>
           <ProductVisual page={page} />
         </div>
@@ -539,12 +625,12 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         <div className={styles.principleInner}>
           <header>
             <span>PLATFORM FOUNDATION</span>
-            <h2 id="platform-principles-title">统一的碳管理底座</h2>
-            <p>数据、核算、分析和管理应用共用同一套口径，减少重复维护。</p>
+            <h2 id="platform-principles-title">{foundationSection?.title ?? "统一的碳管理底座"}</h2>
+            <p>{foundationSection?.description ?? "数据、核算、分析和管理应用共用同一套口径，减少重复维护。"}</p>
           </header>
           <ol className={styles.principleGrid}>
-            {platformPrinciples.map((principle, index) => {
-              const PrincipleIcon = principle.icon;
+            {foundations.map((principle, index) => {
+              const PrincipleIcon = platformPrinciples[index % platformPrinciples.length].icon;
               return (
                 <li key={principle.title}>
                   <span>{String(index + 1).padStart(2, "0")}</span>
@@ -557,26 +643,26 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <PlatformOverview items={platformOverviewItems} />
+      <PlatformOverview items={overview.items} title={overview.title} description={overview.description} />
 
       <ProductMediaGallery
         eyebrow="PLATFORM SCREENSHOTS"
-        title="从数据维护到多维分析的真实界面"
-        description="7 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。"
-        items={platformScreenshots}
+        title={screenshotSection?.title || "从数据维护到多维分析的真实界面"}
+        description={screenshotSection?.description || "7 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。"}
+        items={screenshotsFor(page, platformScreenshots)}
       />
 
       <section className={`${styles.platformVideo} ${styles.container}`} aria-labelledby="platform-video-title">
         <header className={styles.sectionHeading}>
           <span>VIDEO INTRODUCTION</span>
-          <h2 id="platform-video-title">3 分钟了解平台工作方式</h2>
-          <p>通过真实操作画面了解数据维护、核算分析与管理应用。</p>
+          <h2 id="platform-video-title">{videoSection?.title || "约 4 分钟了解平台工作方式"}</h2>
+          <p>{videoSection?.description || "通过真实操作画面了解数据维护、核算分析与管理应用。"}</p>
         </header>
         <video
           controls
-          preload="metadata"
-          poster={`${materialRoot}/产品/平台截图/2.png`}
-          src={`${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
+          preload="none"
+          poster={page.product?.videoPoster || `${materialRoot}/产品/平台截图/2.png`}
+          src={page.product?.videoUrl || `${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
         >
           您的浏览器暂不支持视频播放。
         </video>
@@ -584,18 +670,19 @@ export function PlatformProductPage({ page }: ProductPageProps) {
 
       <section className={`${styles.publicDemo} ${styles.container}`} id="power-bi" aria-labelledby="public-demo-title">
         <div>
-          <span>PUBLIC DEMO</span>
-          <h2 id="public-demo-title">进入独立企业端平台</h2>
-          <p>企业端作为独立应用部署，与官网服务和数据完全隔离；需要试用账号时可提交申请。</p>
+          <span>PUBLIC REPORT &amp; DEMO</span>
+          <h2 id="public-demo-title">{publicDemoSection?.title || "查看公开数据报告或进入独立企业端"}</h2>
+          <p>{publicDemoSection?.description || "公开数据报告通过 Power BI 提供浏览；企业端演示入口用于查看平台界面，试用账号需提交申请后审核开通。"}</p>
         </div>
         <div className={styles.publicDemoActions}>
-          <Link href="/sample/">进入企业端平台 <ExternalLink size={17} aria-hidden="true" /></Link>
-          <Link href={platformTrialUrl}>申请试用账号 <ArrowRight size={17} aria-hidden="true" /></Link>
+          {page.product?.publicReportUrl ? <a href={page.product.publicReportUrl} target="_blank" rel="noreferrer">{publicDemoActions[0]?.title || "查看公开数据报告"} <ExternalLink size={17} aria-hidden="true" /></a> : null}
+          <a href={page.product?.enterpriseUrl || "/sample/"}>{publicDemoActions[1]?.title || "进入企业端平台"} <ExternalLink size={17} aria-hidden="true" /></a>
+          <Link href={page.product?.trialUrl || "/#contact"}>{publicDemoActions[2]?.title || "申请试用账号"} <ArrowRight size={17} aria-hidden="true" /></Link>
         </div>
       </section>
 
       <ProductResources page={page} />
-      <PageCta title={page.title} />
+      <PageCta page={page} />
     </>
   );
 }

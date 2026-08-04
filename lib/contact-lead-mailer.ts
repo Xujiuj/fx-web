@@ -90,14 +90,14 @@ export async function sendContactLeadNotification(lead: ContactLeadNotification)
     result = await transporter.sendMail({
       from: smtp.from,
       to: recipients,
-      replyTo: lead.email,
+      replyTo: lead.email || undefined,
       subject,
       text: [
         "收到一条新的线上咨询。",
         `联系人：${lead.name}`,
         `企业名称：${lead.company ?? "未填写"}`,
         `联系电话/微信：${lead.contact}`,
-        `联系邮箱：${lead.email}`,
+        `联系邮箱：${lead.email || "未填写"}`,
         `提交时间：${lead.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}`,
         "",
         "企业需求：",

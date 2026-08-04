@@ -4,89 +4,99 @@ export type KnowledgeSection = {
   bullets?: string[];
 };
 
-export type KnowledgeEntry = {
+type KnowledgeEntryBase = {
   slug: string;
-  type: "article" | "course";
   category: string;
   title: string;
   summary: string;
   meta: string;
   sections: KnowledgeSection[];
-  sourceName?: string;
-  sourceHref?: string;
 };
+
+export type KnowledgeEntry =
+  | (KnowledgeEntryBase & {
+      type: "article";
+      sourceName?: string;
+      sourceHref?: string;
+      videoHref?: never;
+    })
+  | (KnowledgeEntryBase & {
+      type: "course";
+      sourceName?: never;
+      sourceHref?: never;
+      videoHref?: string;
+    });
+
+export function normalizeKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
+  if (entry.type === "article") {
+    const article = { ...entry };
+    delete article.videoHref;
+    return article;
+  }
+  const course = { ...entry };
+  delete course.sourceName;
+  delete course.sourceHref;
+  return course;
+}
 
 export const policyArticles: KnowledgeEntry[] = [
   {
-    slug: "energy-saving-carbon-reduction-2024-2025",
+    slug: "public-institutions-energy-saving-carbon-reduction-15th-five-year-plan",
     type: "article",
-    category: "双碳政策",
-    title: "《2024—2025年节能降碳行动方案》：企业需要提前准备什么？",
-    summary: "从能源消费、重点行业改造和用能设备更新三个角度，梳理企业可立即落地的数据与管理准备。",
-    meta: "政策解读 · 6 分钟",
-    sourceName: "中国政府网｜国务院《2024—2025年节能降碳行动方案》",
-    sourceHref: "https://www.gov.cn/zhengce/content/202405/content_6954322.htm",
+    category: "碳政策",
+    title: "《\"十五五\"公共机构节能降碳工作方案》印发：公共机构碳管理进入全面深化阶段",
+    summary: "聚焦公共机构节能降碳工作方案，梳理碳管理从专项行动走向常态化治理的关注重点。",
+    meta: "公众号文章 · 碳政策",
+    sourceName: "峰行智成数据科技微信公众号",
+    sourceHref: "https://mp.weixin.qq.com/s/y8qyduijGTLvAfOV6SW2aQ",
     sections: [
       {
-        heading: "政策关注点",
-        paragraphs: ["行动方案把节能降碳任务进一步落实到重点行业、重点领域和重点设备。对企业而言，政策影响不只体现在年度能耗指标，也会体现在设备更新、项目投资、数据报送和供应链评价中。"],
-        bullets: ["重点用能单位需要持续提高能源精细化管理水平", "钢铁、石化化工、有色金属、建材等行业面临更明确的改造要求", "锅炉、电机、变压器等重点设备的更新与能效管理将加快"],
+        heading: "文章摘要",
+        paragraphs: ["文章围绕《\"十五五\"公共机构节能降碳工作方案》展开，关注公共机构碳管理工作的持续深化。具体政策表述与适用要求请以公众号原文为准。"],
       },
       {
-        heading: "企业的三项准备",
-        bullets: ["建立能源与碳排放数据的对应关系，避免能耗台账与碳核算结果相互割裂", "识别高耗能设备和重点工序，形成设备更新与节能改造清单", "按月沉淀活动数据、产量和强度指标，为项目评估和信息披露保留依据"],
-      },
-      {
-        heading: "从核算走向管理",
-        paragraphs: ["仅在年末汇总数据很难支撑节能项目决策。更可行的做法是统一数据口径，让能源数据、业务数据和排放因子在同一套台账或平台中持续维护，再用总量、强度和趋势分析识别改善空间。"],
+        heading: "管理关注点",
+        bullets: ["持续维护能源与碳排放基础数据", "明确数据责任、统计口径与复核节点", "结合实际业务场景开展节能降碳管理"],
       },
     ],
   },
   {
-    slug: "carbon-market-regulation-enterprise-compliance",
+    slug: "industrial-green-low-carbon-development-15th-five-year-plan",
     type: "article",
-    category: "碳市场政策",
-    title: "《碳排放权交易管理暂行条例》施行后，企业履约管理有哪些变化？",
-    summary: "围绕数据质量、年度报告、核查与配额清缴，整理重点排放单位需要关注的工作链条。",
-    meta: "政策解读 · 7 分钟",
-    sourceName: "中国政府网｜《碳排放权交易管理暂行条例》",
-    sourceHref: "https://www.gov.cn/zhengce/content/202402/content_6930137.htm",
+    category: "碳政策",
+    title: "《工业绿色低碳发展\"十五五\"规划》发布，明确未来五年工业绿色发展重点方向",
+    summary: "围绕工业绿色低碳发展规划，关注企业在数据基础、绿色制造和持续管理方面的长期准备。",
+    meta: "公众号文章 · 碳政策",
+    sourceName: "峰行智成数据科技微信公众号",
+    sourceHref: "https://mp.weixin.qq.com/s/fkidiJGrh0YmrKrY6ok_dQ",
     sections: [
       {
-        heading: "从部门规章上升为行政法规",
-        paragraphs: ["条例自2024年5月1日起施行，对全国碳排放权交易及相关活动作出制度安排。企业应把碳排放数据质量和配额履约纳入常态化合规管理，而不是只在清缴前集中处理。"],
+        heading: "文章摘要",
+        paragraphs: ["文章介绍《工业绿色低碳发展\"十五五\"规划》发布后的重点方向。具体规划内容、行业范围与实施安排请以公众号原文为准。"],
       },
       {
-        heading: "履约工作链条",
-        bullets: ["按照要求制定并执行年度排放数据质量控制方案", "编制年度温室气体排放报告，并对数据真实性、完整性和准确性负责", "配合技术审核和现场核查，保留活动数据、排放因子和计算过程依据", "在规定时限内完成配额清缴，并管理账户、交易和履约记录"],
-      },
-      {
-        heading: "内部管理建议",
-        paragraphs: ["建议明确牵头部门、数据责任人和复核节点，对每项排放源建立来源、口径、频次和凭证清单。数据发生调整时同步保留变更记录，使年度报告能够回溯到原始业务数据和计算逻辑。"],
+        heading: "企业关注点",
+        bullets: ["梳理能源、生产与碳排放数据的对应关系", "沉淀适用于年度分析的可追溯数据", "将绿色低碳工作纳入长期运营机制"],
       },
     ],
   },
   {
-    slug: "carbon-emission-dual-control-system",
+    slug: "national-climate-change-15th-five-year-plan-non-co2-greenhouse-gases",
     type: "article",
-    category: "双控机制",
-    title: "从能耗双控到碳排放双控：企业数据体系应如何调整？",
-    summary: "解读碳排放总量和强度双控制度的推进路径，以及企业从能源台账升级为碳数据体系的关键步骤。",
-    meta: "政策解读 · 6 分钟",
-    sourceName: "中国政府网｜《加快构建碳排放双控制度体系工作方案》",
-    sourceHref: "https://www.gov.cn/zhengce/content/202408/content_6966079.htm",
+    category: "碳政策",
+    title: "《国家应对气候变化\"十五五\"规划》发布，非二氧化碳温室气体纳入管理",
+    summary: "围绕国家应对气候变化规划，关注企业温室气体数据管理边界与多气体核算准备。",
+    meta: "公众号文章 · 碳政策",
+    sourceName: "峰行智成数据科技微信公众号",
+    sourceHref: "https://mp.weixin.qq.com/s/Y95t6WdJ1x-Md7-f9l12lQ",
     sections: [
       {
-        heading: "管理对象正在变化",
-        paragraphs: ["工作方案提出建立碳排放总量和强度双控制度。对企业而言，管理对象将从能源消费量进一步扩展到能源结构、排放因子、工艺过程排放和业务产出等多类数据。"],
+        heading: "文章摘要",
+        paragraphs: ["文章解读《国家应对气候变化\"十五五\"规划》发布后，非二氧化碳温室气体纳入管理带来的关注方向。具体政策要求请以公众号原文为准。"],
       },
       {
-        heading: "数据体系升级重点",
-        bullets: ["在能源台账基础上补充组织边界、排放源和温室气体类型", "把活动数据与凭证、责任部门、统计频次建立对应关系", "统一不同核算标准下的基础数据，减少多场景重复填报", "同时维护排放总量和业务强度指标，支持年度与组织对比"],
-      },
-      {
-        heading: "建议的实施顺序",
-        paragraphs: ["先完成核算边界和排放源清单，再梳理数据责任与取数方式，随后配置排放因子和计算规则，最后建立总量、强度和趋势分析。按照这一顺序推进，可以避免先做展示、后补数据基础造成的反复调整。"],
+        heading: "数据准备方向",
+        bullets: ["明确组织边界、排放源和温室气体类型", "保留活动数据、因子与核算过程的来源依据", "建立可持续维护与复核的数据机制"],
       },
     ],
   },
@@ -131,6 +141,7 @@ export const videoCourses: KnowledgeEntry[] = [
     title: "数字化平台培训",
     summary: "掌握平台数据维护、自动核算、分析视图和结果追溯的操作流程。",
     meta: "平台课程 · 4 个单元",
+    videoHref: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4",
     sections: [{ heading: "课程单元", bullets: ["组织与用户配置", "排放源和活动数据维护", "核算任务与结果分析", "数据追溯与日常运营"] }],
   },
   {

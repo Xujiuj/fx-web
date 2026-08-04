@@ -1,4 +1,5 @@
-import type { Subpage, SubpageLayout } from "@/lib/cms-content";
+import type { ContactContent, Subpage, SubpageLayout } from "@/lib/cms-content";
+import type { KnowledgeEntry } from "@/lib/knowledge-content";
 import {
   CasesPage,
   CompanyPage,
@@ -21,7 +22,9 @@ import {
 } from "./subpages/solution-pages";
 import { ServicePage } from "./subpages/service-page";
 
-const pageComponents: Record<SubpageLayout, React.ComponentType<{ page: Subpage }>> = {
+type SubpageComponentProps = { page: Subpage; knowledgeEntries?: KnowledgeEntry[]; contactContent?: ContactContent };
+
+const pageComponents: Record<SubpageLayout, React.ComponentType<SubpageComponentProps>> = {
   training: TrainingPage,
   practical: PracticalPage,
   consulting: ConsultingPage,
@@ -37,7 +40,7 @@ const pageComponents: Record<SubpageLayout, React.ComponentType<{ page: Subpage 
   service: ServicePage,
 };
 
-export function SubpageShell({ page }: { page: Subpage }) {
+export function SubpageShell({ page, knowledgeEntries, contactContent }: SubpageComponentProps) {
   const PageComponent = pageComponents[page.layout] ?? TrainingPage;
 
   return (
@@ -46,7 +49,7 @@ export function SubpageShell({ page }: { page: Subpage }) {
       data-motion-family={page.layout}
       data-motion-ready="true"
     >
-      <PageComponent page={page} />
+      <PageComponent page={page} knowledgeEntries={knowledgeEntries} contactContent={contactContent} />
     </main>
   );
 }

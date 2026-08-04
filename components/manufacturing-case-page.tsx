@@ -7,6 +7,7 @@ import { BarChart3, Boxes, ChartNoAxesCombined, UsersRound } from "lucide-react"
 import Image from "next/image";
 import { useRef } from "react";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./manufacturing-case-page.module.css";
 
 gsap.registerPlugin(ScrollTrigger, useGSAP);
@@ -62,6 +63,7 @@ function HeroArtwork({ image }: { image?: string }) {
         fill
         priority
         sizes="(max-width: 760px) calc(100vw - 32px), 1120px"
+        unoptimized={isRuntimeManagedImage(image)}
       />
     </div>
   );
@@ -70,7 +72,7 @@ function HeroArtwork({ image }: { image?: string }) {
 function CaseArtwork({ image, title }: Pick<(typeof defaultCaseModules)[number], "image" | "title">) {
   return (
     <div className={styles.caseArtwork}>
-      <Image src={image} alt={title} fill sizes="(max-width: 760px) calc(100vw - 32px), 650px" />
+      <Image src={image} alt={title} fill sizes="(max-width: 760px) calc(100vw - 32px), 650px" unoptimized={isRuntimeManagedImage(image)} />
     </div>
   );
 }

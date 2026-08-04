@@ -3,28 +3,28 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
-import { getHomeContent } from "@/lib/cms-content";
-import { getKnowledgeEntry, knowledgeEntries } from "@/lib/knowledge-content";
+import { getHomeContent, getKnowledgeEntries, getKnowledgeEntry } from "@/lib/cms-content";
+import { knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
 import styles from "./knowledge-entry.module.css";
 
 export const dynamic = "force-dynamic";
 
 export function generateStaticParams() {
-  return knowledgeEntries.map((entry) => ({ entry: entry.slug }));
+  return defaultKnowledgeEntries.map((entry) => ({ entry: entry.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ entry: string }> }) {
   const { entry: slug } = await params;
-  const entry = getKnowledgeEntry(slug);
+  const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
   return { title: `${entry.title} - 峰行智成知识课堂`, description: entry.summary };
 }
 
 export default async function KnowledgeEntryPage({ params }: { params: Promise<{ entry: string }> }) {
   const { entry: slug } = await params;
-  const entry = getKnowledgeEntry(slug);
+  const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
-  const home = await getHomeContent();
+  const [home, knowledgeEntries] = await Promise.all([getHomeContent(), getKnowledgeEntries()]);
   const related = knowledgeEntries.filter((item) => item.type === entry.type && item.slug !== entry.slug).slice(0, 3);
   const EntryIcon = entry.type === "article" ? BookOpen : GraduationCap;
 
@@ -46,6 +46,16 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
 
         <div className={styles.contentLayout}>
           <article className={styles.article}>
+            {entry.type === "course" && entry.videoHref ? (
+              <section className={styles.videoSection} aria-labelledby="course-video-title">
+                <span>COURSE VIDEO</span>
+                <h2 id="course-video-title">课程视频</h2>
+                <video controls playsInline preload="metadata" src={entry.videoHref}>
+                  您的浏览器暂不支持视频播放。
+                </video>
+              </section>
+            ) : null}
+
             {entry.sections.map((section) => (
               <section key={section.heading}>
                 <h2>{section.heading}</h2>
@@ -58,17 +68,17 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
               </section>
             ))}
 
-            {entry.sourceHref ? (
+            {entry.type === "article" && entry.sourceHref ? (
               <aside className={styles.source}>
                 <span>政策原文</span>
                 <a href={entry.sourceHref} target="_blank" rel="noreferrer">{entry.sourceName}<ExternalLink size={16} aria-hidden="true" /></a>
               </aside>
-            ) : (
+            ) : entry.type === "course" && !entry.videoHref ? (
               <aside className={styles.courseCta}>
                 <div><span>COURSE ACCESS</span><strong>获取完整课程与企业内训安排</strong></div>
                 <Link href="/#contact">联系课程顾问 <ArrowRight size={17} aria-hidden="true" /></Link>
               </aside>
-            )}
+            ) : null}
           </article>
 
           <aside className={styles.related}>

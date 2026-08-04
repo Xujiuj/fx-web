@@ -39,16 +39,21 @@ export async function POST(request: Request) {
 
   if (state.count >= MAX_ATTEMPTS) return NextResponse.json({ error: "登录尝试过多，请稍后再试。" }, { status: 429 });
 
-  const user = payload.password ? await authenticateAdmin(username, payload.password) : null;
-  if (!user) {
-    attempts.set(key, { ...state, count: state.count + 1 });
-    return NextResponse.json({ error: "用户名或密码错误" }, { status: 401 });
-  }
+  try {
+    const user = payload.password ? await authenticateAdmin(username, payload.password) : null;
+    if (!user) {
+      attempts.set(key, { ...state, count: state.count + 1 });
+      return NextResponse.json({ error: "用户名或密码错误" }, { status: 401 });
+    }
 
-  attempts.delete(key);
-  const response = NextResponse.json({ ok: true, user: { id: user.id, username: user.username } });
-  response.cookies.set(ADMIN_COOKIE_NAME, createAdminSessionValue(user), adminCookieOptions);
-  return response;
+    attempts.delete(key);
+    const response = NextResponse.json({ ok: true, user: { id: user.id, username: user.username } });
+    response.cookies.set(ADMIN_COOKIE_NAME, createAdminSessionValue(user), adminCookieOptions);
+    return response;
+  } catch (error) {
+    console.error("Admin authentication service failed", error);
+    return NextResponse.json({ error: "登录服务暂不可用，请稍后再试。" }, { status: 503 });
+  }
 }
 
 export async function DELETE() {

@@ -20,7 +20,8 @@ import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { homeEditorialContent, type HomeContent, type HomeEditorialContent, type IconKey } from "@/lib/cms-content";
+import type { HomeContent, HomeEditorialContent, IconKey } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import { AnimatedTimeline } from "./animated-timeline";
 import { SiteFooter } from "./site-footer";
 
@@ -39,23 +40,25 @@ const iconMap = {
 } satisfies Record<IconKey, typeof BarChart3>;
 
 export function HomePage({ content }: { content: HomeContent }) {
+  const editorial = content.editorial;
+
   return (
     <main data-motion-ready="true">
       <HeroCarousel slides={content.heroSlides} />
       <AnimatedTimeline
-        eyebrow={homeEditorialContent.path.eyebrow}
-        title={homeEditorialContent.path.title}
-        description={homeEditorialContent.path.description}
-        summary={homeEditorialContent.path.summary}
+        eyebrow={editorial.path.eyebrow}
+        title={editorial.path.title}
+        description={editorial.path.description}
+        summary={editorial.path.summary}
         timeline={content.timeline}
       />
-      <DriversSection items={homeEditorialContent.drivers} />
-      <ChallengesSection items={homeEditorialContent.challenges} />
-      <ManagementPathSection items={homeEditorialContent.managementPath} />
-      <ServicesSection items={homeEditorialContent.services} />
-      <CasesSection items={homeEditorialContent.cases} />
+      <DriversSection heading={editorial.headings.drivers} items={editorial.drivers} />
+      <ChallengesSection heading={editorial.headings.challenges} items={editorial.challenges} />
+      <ManagementPathSection heading={editorial.headings.managementPath} items={editorial.managementPath} />
+      <ServicesSection heading={editorial.headings.services} items={editorial.services} />
+      <CasesSection heading={editorial.headings.cases} items={editorial.cases} />
       <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
-      <BrandPositioningSection />
+      <BrandPositioningSection eyebrow={content.sectionTitles.thinkingEyebrow} title={content.sectionTitles.thinkingTitle} text={content.thinkingText} />
       <ContactSection contact={content.contact} />
       <SiteFooter footer={content.footer} />
     </main>
@@ -119,6 +122,15 @@ function HeroCarousel({ slides }: { slides: HomeContent["heroSlides"] }) {
       <div className="hero-gradient" aria-hidden="true" />
       <div className="hero-fade-stage">
         <article className="hero-slide is-active" key={slide.title}>
+          <Image
+            className="hero-bg"
+            src={slide.image}
+            alt=""
+            fill
+            priority={selected === 0}
+            sizes="100vw"
+            unoptimized={isRuntimeManagedImage(slide.image)}
+          />
           <div className="hero-copy" aria-live="polite">
             <p className="hero-copy-eyebrow">{slide.eyebrow}</p>
             <div className="hero-copy-title"><HeroTitle title={slide.title} /></div>
@@ -167,12 +179,13 @@ function HeroTitle({ title }: { title: string }) {
   );
 }
 
-function DriversSection({ items }: { items: HomeEditorialContent["drivers"] }) {
+function DriversSection({ heading, items }: { heading: HomeEditorialContent["headings"]["drivers"]; items: HomeEditorialContent["drivers"] }) {
   return (
     <section className="home-drivers" id="drivers">
       <div className="home-editorial-heading">
-        <span>WHY CARBON MANAGEMENT</span>
-        <h2>企业为什么需要碳管理？</h2>
+        <span>{heading.eyebrow}</span>
+        <h2>{heading.title}</h2>
+        {heading.description ? <p>{heading.description}</p> : null}
       </div>
       <div className="home-driver-grid">
         {items.map((item, index) => <EditorialItem key={item.title} item={item} index={index} />)}
@@ -181,13 +194,13 @@ function DriversSection({ items }: { items: HomeEditorialContent["drivers"] }) {
   );
 }
 
-function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"] }) {
+function ChallengesSection({ heading, items }: { heading: HomeEditorialContent["headings"]["challenges"]; items: HomeEditorialContent["challenges"] }) {
   return (
     <section className="home-challenges" id="challenges">
       <div className="home-challenge-intro">
-        <span>CORE CHALLENGES</span>
-        <h2>企业面临的核心挑战</h2>
-        <p>当核算仍依赖分散表格与临时协作，数据很难成为持续管理的基础。</p>
+        <span>{heading.eyebrow}</span>
+        <h2>{heading.title}</h2>
+        {heading.description ? <p>{heading.description}</p> : null}
       </div>
       <ol className="home-challenge-list">
         {items.map((item, index) => {
@@ -201,13 +214,13 @@ function ChallengesSection({ items }: { items: HomeEditorialContent["challenges"
   );
 }
 
-function ManagementPathSection({ items }: { items: HomeEditorialContent["managementPath"] }) {
+function ManagementPathSection({ heading, items }: { heading: HomeEditorialContent["headings"]["managementPath"]; items: HomeEditorialContent["managementPath"] }) {
   return (
     <section className="home-management-path" id="management-path">
       <div className="home-management-heading">
-        <span>MANAGEMENT LOGIC</span>
-        <h2>从核算走向碳管理</h2>
-        <p>峰行智成总体思路</p>
+        <span>{heading.eyebrow}</span>
+        <h2>{heading.title}</h2>
+        {heading.description ? <p>{heading.description}</p> : null}
       </div>
       <ol className="home-management-flow">
         {items.map((item, index) => {
@@ -217,15 +230,15 @@ function ManagementPathSection({ items }: { items: HomeEditorialContent["managem
           </li>;
         })}
       </ol>
-      <p className="home-management-summary">通过统一数据模型与数字化平台，推动企业从“一次性核算”走向“持续运营管理”。</p>
+      {heading.summary ? <p className="home-management-summary">{heading.summary}</p> : null}
     </section>
   );
 }
 
-function ServicesSection({ items }: { items: HomeEditorialContent["services"] }) {
+function ServicesSection({ heading, items }: { heading: HomeEditorialContent["headings"]["services"]; items: HomeEditorialContent["services"] }) {
   return (
     <section className="home-services" id="solutions">
-      <div className="home-editorial-heading"><span>WHAT WE PROVIDE</span><h2>我们提供什么</h2></div>
+      <div className="home-editorial-heading"><span>{heading.eyebrow}</span><h2>{heading.title}</h2>{heading.description ? <p>{heading.description}</p> : null}</div>
       <div className="home-service-list">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] ?? BarChart3;
@@ -236,10 +249,10 @@ function ServicesSection({ items }: { items: HomeEditorialContent["services"] })
   );
 }
 
-function CasesSection({ items }: { items: HomeEditorialContent["cases"] }) {
+function CasesSection({ heading, items }: { heading: HomeEditorialContent["headings"]["cases"]; items: HomeEditorialContent["cases"] }) {
   return (
     <section className="home-cases" id="cases">
-      <div className="home-cases-heading"><span>CLIENT CASES</span><h2>客户案例</h2><Link href="/customer-cases">查看全部案例 <ArrowRight size={16} /></Link></div>
+      <div className="home-cases-heading"><span>{heading.eyebrow}</span><h2>{heading.title}</h2>{heading.description ? <p>{heading.description}</p> : null}<Link href="/customer-cases">查看全部案例 <ArrowRight size={16} /></Link></div>
       <div className="home-case-grid">
         {items.map((item, index) => {
           const Icon = iconMap[item.icon] ?? BarChart3;
@@ -269,6 +282,7 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
                 alt=""
                 fill
                 sizes="(max-width: 720px) calc(100vw - 36px), (max-width: 1100px) 50vw, 720px"
+                unoptimized={isRuntimeManagedImage(item.image)}
               />
               <span className="latest-update-shade" aria-hidden="true" />
               <div className="latest-update-copy">
@@ -284,17 +298,15 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
   );
 }
 
-function BrandPositioningSection() {
+function BrandPositioningSection({ eyebrow, title, text }: { eyebrow: string; title: string; text: string }) {
   return (
     <section className="home-positioning" aria-labelledby="home-positioning-title">
       <div className="home-positioning-inner">
         <header>
-          <span>OUR POSITIONING</span>
-          <h2 id="home-positioning-title">企业碳管理能力建设专家</h2>
+          <span>{eyebrow}</span>
+          <h2 id="home-positioning-title">{title}</h2>
         </header>
-        <p>
-          从培训赋能到咨询实施，从Excel工具到数字化平台，从温室气体核算到碳数据价值释放，帮助企业构建可持续运行的碳管理体系。
-        </p>
+        <p>{text}</p>
       </div>
     </section>
   );

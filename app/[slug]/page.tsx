@@ -1,7 +1,7 @@
 ﻿import { SiteHeader } from "@/components/site-header";
 import { SubpageShell } from "@/components/subpage-shell";
 import { SiteFooter } from "@/components/site-footer";
-import { defaultSubpages, getHomeContent, getSubpageContent } from "@/lib/cms-content";
+import { defaultSubpages, getHomeContent, getKnowledgeEntries, getSubpageContent } from "@/lib/cms-content";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
@@ -22,13 +22,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function Subpage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [home, page] = await Promise.all([getHomeContent(), getSubpageContent(slug)]);
+  const [home, page, knowledgeEntries] = await Promise.all([getHomeContent(), getSubpageContent(slug), getKnowledgeEntries()]);
   if (!page) notFound();
 
   return (
     <>
       <SiteHeader content={home} />
-      <SubpageShell page={page} />
+      <SubpageShell page={page} knowledgeEntries={knowledgeEntries} contactContent={home.contact} />
       <SiteFooter footer={home.footer} />
     </>
   );

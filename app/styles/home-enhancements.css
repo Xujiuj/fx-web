@@ -769,8 +769,10 @@ main .latest-update-drawer {
 }
 
 main .outline-button {
-  border-color: #e95513;
-  background: #e95513;
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #fff;
+  font-weight: 700;
 }
 
 /* Capability orbit: a non-linear system map with orange/yellow as the only brand accents. */
@@ -1521,6 +1523,7 @@ main .latest-update-shade,
 main .latest-update-copy { backface-visibility: hidden; }
 
 main .latest-update-drawer {
+  display: none;
   position: absolute;
   z-index: 3;
   inset: 0;
@@ -1626,7 +1629,7 @@ main .latest-update-meta::before { display: none; }
   }
 
   main .timeline-summary { margin-right: 0; padding-left: 40px; }
-  main .home-driver-grid { gap: 12px; }
+  main .home-driver-grid { grid-template-columns: 1fr; gap: 12px; }
   main .home-driver-grid article { min-height: 250px; }
   main .home-driver-grid h3 { margin-top: 52px; }
   main .home-challenge-list { grid-template-columns: 1fr; }
@@ -1697,8 +1700,10 @@ main .latest-update-drawer {
 }
 
 main .outline-button {
-  border-color: #e95513;
-  background: #e95513;
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #fff;
+  font-weight: 700;
 }
 
 /* Cases read as one full-width editorial band; the content keeps its measure. */
@@ -3009,7 +3014,8 @@ main .outline-button {
 }
 
 .hero-slide::after {
-  display: none;
+  display: block;
+  background: linear-gradient(90deg, rgba(64, 28, 9, 0.86) 0%, rgba(64, 28, 9, 0.62) 46%, rgba(64, 28, 9, 0.12) 100%);
 }
 
 .hero-copy {
@@ -3032,6 +3038,12 @@ main .outline-button {
   background: #fff;
   color: var(--primary-strong);
   text-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .hero-slide::after {
+    background: linear-gradient(90deg, rgba(64, 28, 9, 0.9), rgba(64, 28, 9, 0.58));
+  }
 }
 
 .timeline-landscape {

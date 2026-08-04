@@ -1,0 +1,5 @@
+efa2a9929e2bb3e7f90ba6ad47a747c8db0a1cfc670416b7899281afd174d48f  vendor/01-ruoyi-vue-plus-v5.6.1-sqlserver.sql
+8a72276528145ee58a329cfa158d533d2321022408ca31c15c8a2fe9a916f0b0  vendor/02-carbon-enterprise-schema-v1.sql
+21c10c4a13b3e1e24632aab18bf5fc066294d5ae01bad7b4588f74d01bd01add  vendor/03-carbon-enterprise-dynamic-module.sql
+d2dbb766c2bc3095c121a23984365a5c860f922941c4faca4e618c188a81dca4  vendor/04-carbon-enterprise-init.sql
+49aeb3734ebdcd702890894699033d8fb471e42d118f305f106b73e8bf831443  vendor/05-carbon-enterprise-runtime-repair.sql

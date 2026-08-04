@@ -12,8 +12,33 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { ReferenceDiagram } from "@/components/reference-diagram";
-import type { Subpage } from "@/lib/cms-content";
+import type { Subpage, SubpageSection } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./service-page.module.css";
+
+type SectionItem = SubpageSection["items"][number];
+
+function getSection(page: Subpage, id: string) {
+  return page.sections.find((section) => section.id === id);
+}
+
+function titleItems(items: string[]): SectionItem[] {
+  return items.map((title) => ({ title }));
+}
+
+function detailPoints(item: SectionItem) {
+  return (item.details?.["要点"] ?? "")
+    .split(/\r?\n/)
+    .map((point) => point.trim())
+    .filter(Boolean);
+}
+
+function ItemDetails({ item }: { item: SectionItem }) {
+  const points = detailPoints(item);
+  if (!points.length) return null;
+
+  return <ul>{points.map((point, index) => <li key={`${point}-${index}`}>{point}</li>)}</ul>;
+}
 
 type ServiceProfile = {
   marker: string;
@@ -86,14 +111,24 @@ const taskIcons = [Layers3, ShieldCheck, Network, BarChart3];
 export function ServicePage({ page }: { page: Subpage }) {
   const visuals = page.sections.flatMap((section) => section.items.filter((item) => item.image).map((item) => ({ ...item, eyebrow: section.title || page.eyebrow })));
   const profile = serviceProfiles[page.slug] ?? serviceProfiles["service-capability-path"];
+  const overviewSection = getSection(page, "service-overview");
+  const tasksSection = getSection(page, "service-tasks");
+  const stepsSection = getSection(page, "service-steps");
+  const deliverablesSection = getSection(page, "service-deliverables");
+  const ctaSection = getSection(page, "service-cta");
+  const ctaAction = ctaSection?.items[0];
+  const overviewItems = overviewSection?.items ?? titleItems(profile.suitableFor);
+  const taskItems = tasksSection?.items ?? profile.tasks;
+  const stepItems = stepsSection?.items ?? profile.steps;
+  const deliverableItems = deliverablesSection?.items ?? titleItems(profile.deliverables);
 
   return (
     <>
       <section className={`${styles.hero} ${styles[`hero-${page.slug}`] ?? ""} page-reveal`}>
-        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="(max-width: 680px) 100vw, 1200px" data-motion="hero-visual" />
+        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="100vw" unoptimized={isRuntimeManagedImage(page.image)} data-motion="hero-visual" />
         <div className={styles.heroShade} />
         <div className={styles.heroTitle} data-motion="hero-copy">
-          <p>{profile.marker}</p>
+          <p>{page.eyebrow}</p>
           <h1>{page.title}</h1>
           <p className={styles.heroSummary}>{page.summary}</p>
         </div>
@@ -102,11 +137,12 @@ export function ServicePage({ page }: { page: Subpage }) {
       <section className={`${styles.serviceOverview} page-reveal`} aria-labelledby="service-overview-title" data-motion-group="service-overview">
         <header data-motion-role="heading">
           <span>服务定位</span>
-          <h2 id="service-overview-title">{profile.lead}</h2>
+          <h2 id="service-overview-title">{overviewSection?.title ?? profile.lead}</h2>
+          {overviewSection?.description ? <p>{overviewSection.description}</p> : null}
         </header>
         <div className={styles.suitablePanel} data-motion-role="item">
           <div><UsersRound size={25} aria-hidden="true" /><strong>适用企业</strong></div>
-          <ul>{profile.suitableFor.map((item) => <li key={item}><Check size={15} aria-hidden="true" />{item}</li>)}</ul>
+          <ul>{overviewItems.map((item, index) => <li key={`${item.title}-${index}`}><Check size={15} aria-hidden="true" /><div><strong>{item.title}</strong>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></div></li>)}</ul>
         </div>
       </section>
 
@@ -114,12 +150,13 @@ export function ServicePage({ page }: { page: Subpage }) {
         <div className={styles.taskBandInner}>
           <header data-motion-role="heading">
             <span>核心服务</span>
-            <h2 id="service-tasks-title">围绕企业实际工作组织实施</h2>
+            <h2 id="service-tasks-title">{tasksSection?.title ?? "围绕企业实际工作组织实施"}</h2>
+            {tasksSection?.description ? <p>{tasksSection.description}</p> : null}
           </header>
           <div className={styles.taskGrid}>
-            {profile.tasks.map((task, index) => {
+            {taskItems.map((task, index) => {
               const Icon = taskIcons[index % taskIcons.length];
-              return <article key={task.title} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><Icon size={25} aria-hidden="true" /><h3>{task.title}</h3><p>{task.description}</p></article>;
+              return <article key={`${task.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><Icon size={25} aria-hidden="true" /><h3>{task.title}</h3>{task.description ? <p>{task.description}</p> : null}<ItemDetails item={task} /></article>;
             })}
           </div>
         </div>
@@ -128,21 +165,22 @@ export function ServicePage({ page }: { page: Subpage }) {
       <section className={`${styles.deliveryFlow} page-reveal`} aria-labelledby="delivery-flow-title" data-motion-group="service-path">
         <header data-motion-role="heading">
           <span>实施路径</span>
-          <h2 id="delivery-flow-title">从需求确认到持续运行</h2>
+          <h2 id="delivery-flow-title">{stepsSection?.title ?? "从需求确认到持续运行"}</h2>
+          {stepsSection?.description ? <p>{stepsSection.description}</p> : null}
         </header>
-        <ol>{profile.steps.map((step, index) => <li key={step.title} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{step.title}</h3><p>{step.description}</p></div>{index < profile.steps.length - 1 ? <ArrowRight size={18} aria-hidden="true" /> : null}</li>)}</ol>
+        <ol>{stepItems.map((step, index) => <li key={`${step.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{step.title}</h3>{step.description ? <p>{step.description}</p> : null}<ItemDetails item={step} /></div>{index < stepItems.length - 1 ? <ArrowRight size={18} aria-hidden="true" /> : null}</li>)}</ol>
       </section>
 
       {visuals.map((visual) => <ReferenceDiagram key={visual.title} eyebrow={visual.eyebrow} title={visual.title} description={visual.description ?? ""} src={visual.image!} alt={visual.title} />)}
 
       <section className={`${styles.deliverables} page-reveal`} aria-labelledby="service-deliverables-title" data-motion-group="service-deliverables">
-        <div className={styles.deliverableHeading} data-motion-role="heading"><FileCheck2 size={30} aria-hidden="true" /><span>核心交付成果</span><h2 id="service-deliverables-title">让实施成果能够继续使用和更新</h2></div>
-        <ol>{profile.deliverables.map((item, index) => <li key={item} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><strong>{item}</strong><Check size={18} aria-hidden="true" /></li>)}</ol>
+        <div className={styles.deliverableHeading} data-motion-role="heading"><FileCheck2 size={30} aria-hidden="true" /><span>核心交付成果</span><h2 id="service-deliverables-title">{deliverablesSection?.title ?? "让实施成果能够继续使用和更新"}</h2>{deliverablesSection?.description ? <p>{deliverablesSection.description}</p> : null}</div>
+        <ol>{deliverableItems.map((item, index) => <li key={`${item.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><div><strong>{item.title}</strong>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></div><Check size={18} aria-hidden="true" /></li>)}</ol>
       </section>
 
       <section className={`${styles.cta} page-reveal`} aria-label="联系顾问" data-motion="cta">
-        <div><Database size={24} aria-hidden="true" /><span>下一步</span><h2>讨论适合企业当前阶段的实施方式</h2></div>
-        <Link href="/#contact">联系顾问<ArrowRight size={18} aria-hidden="true" /></Link>
+        <div><Database size={24} aria-hidden="true" /><span>{ctaSection?.description || "下一步"}</span><h2>{ctaSection?.title || `咨询${page.title}`}</h2></div>
+        <Link href={ctaAction?.value || "/#contact"}>{ctaAction?.title || "联系顾问"}<ArrowRight size={18} aria-hidden="true" /></Link>
       </section>
     </>
   );

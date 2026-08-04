@@ -73,6 +73,7 @@ export function AdminLeadManager() {
     rowKey="id"
     headerTitle="首页咨询提交"
     search={false}
+    scroll={{ x: "max-content" }}
     columns={columns}
     pagination={{ pageSize: 20, showSizeChanger: true }}
     options={{ density: true, fullScreen: true, reload: true, setting: true }}

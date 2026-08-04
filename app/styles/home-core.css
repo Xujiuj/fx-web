@@ -1158,12 +1158,21 @@
   font-weight: 700;
 }
 
-@media (max-width: 720px) {
+@media (max-width: 1100px) {
   .wecom-consultant {
     right: 12px;
     bottom: 12px;
+    width: max-content;
+    max-width: calc(100vw - 24px);
+    margin: 0;
   }
 
+  .wecom-panel {
+    width: min(238px, calc(100vw - 24px));
+  }
+}
+
+@media (max-width: 720px) {
   .wecom-panel {
     width: min(224px, calc(100vw - 24px));
   }

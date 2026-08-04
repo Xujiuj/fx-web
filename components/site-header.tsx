@@ -6,6 +6,7 @@ import { ChevronDown, Menu } from "lucide-react";
 import Image from "next/image";
 import { useState } from "react";
 import type { HomeContent } from "@/lib/cms-content";
+import { isRuntimeManagedImage } from "@/lib/media-url";
 
 export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "navItems"> }) {
   const [activeNav, setActiveNav] = useState("");
@@ -15,7 +16,7 @@ export function SiteHeader({ content }: { content: Pick<HomeContent, "brand" | "
     <header className="site-header">
       <div className="site-header-inner">
         <a className="brand" href={content.brand.href} aria-label={content.brand.name + "首页"}>
-        <Image src={content.brand.logo} alt={content.brand.name} width={275} height={140} priority />
+        <Image src={content.brand.logo} alt={content.brand.name} width={275} height={140} priority unoptimized={isRuntimeManagedImage(content.brand.logo)} />
         </a>
 
         <NavigationMenu.Root
