@@ -201,20 +201,21 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
           <div><span>双碳专栏</span><small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small></div>
           <h2 id="knowledge-featured-title">{featuredArticle?.title ?? "双碳政策与实践"}</h2>
           <p>{featuredArticle?.summary ?? "知识内容正在整理中。"}</p>
-          {featuredArticle ? <Link href={`/knowledge-center/${featuredArticle.slug}`}>阅读全文 <ArrowRight size={17} aria-hidden="true" /></Link> : null}
+          {featuredArticle ? featuredArticle.sourceHref ? (
+            <a href={featuredArticle.sourceHref} target="_blank" rel="noreferrer">阅读公众号原文 <ArrowRight size={17} aria-hidden="true" /></a>
+          ) : <Link href={`/knowledge-center/${featuredArticle.slug}`}>阅读全文 <ArrowRight size={17} aria-hidden="true" /></Link> : null}
         </article>
         <div className={styles.topicIndex} data-motion-role="visual">
           <header data-motion-role="copy">
             <span>政策文章</span>
             <small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small>
           </header>
-          {policyArticles.map((article, index) => (
-            <Link href={`/knowledge-center/${article.slug}`} key={article.slug} data-motion-role="item">
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <div><h3>{article.title}</h3><small>{article.meta}</small></div>
-              <ArrowRight size={18} aria-hidden="true" />
-            </Link>
-          ))}
+          {policyArticles.map((article, index) => {
+            const contents = <><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{article.title}</h3><small>{article.meta}</small></div><ArrowRight size={18} aria-hidden="true" /></>;
+            return article.sourceHref ? (
+              <a href={article.sourceHref} target="_blank" rel="noreferrer" key={article.slug} data-motion-role="item">{contents}</a>
+            ) : <Link href={`/knowledge-center/${article.slug}`} key={article.slug} data-motion-role="item">{contents}</Link>;
+          })}
         </div>
       </section>
 
