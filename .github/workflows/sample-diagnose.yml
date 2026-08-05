@@ -137,15 +137,28 @@ jobs:
 
               if [[ "$remote_database_host" =~ ^[A-Za-z0-9.-]+$ && "$remote_database_port" =~ ^[0-9]{1,5}$ && "$remote_database_name" =~ ^[A-Za-z0-9_]{1,128}$ ]]; then
                 sql_client_image=mcr.microsoft.com/mssql-tools@sha256:62556500522072535cb3df2bb5965333dded9be47000473e9e0f84118e248642
+                if timeout 10 bash -c ">/dev/tcp/$remote_database_host/$remote_database_port"; then
+                  pass 'remote SQL Server TCP endpoint is reachable'
+                else
+                  fail 'remote SQL Server TCP endpoint is not reachable from the deployment host'
+                fi
                 if docker pull "$sql_client_image" >/dev/null 2>&1; then
                   sql_client_path=$(docker run --rm --entrypoint sh "$sql_client_image" -ec 'command -v sqlcmd')
-                  remote_database_permissions=$(docker run --rm --entrypoint "$sql_client_path" -e SQLCMDPASSWORD "$sql_client_image" \
+                  remote_database_connection=$(docker run --rm --entrypoint "$sql_client_path" -e SQLCMDPASSWORD "$sql_client_image" \
                     -S "tcp:$remote_database_host,$remote_database_port" -U "$SAMPLE_REMOTE_DB_USERNAME" -d "$remote_database_name" -No -b -h -1 -W \
-                    -Q "SET NOCOUNT ON; SELECT CONCAT(COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CREATE ANY DATABASE')), '0'), '|', COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN')), '0'));" 2>/dev/null || true)
-                  case "$remote_database_permissions" in
-                    1\|1) pass 'remote SQL Server is reachable and can create the isolated database and login' ;;
-                    *) fail 'remote SQL Server is unreachable or lacks permission to create the isolated database and login' ;;
-                  esac
+                    -Q "SET NOCOUNT ON; SELECT 'remote_sql_authenticated';" 2>/dev/null || true)
+                  if test "$remote_database_connection" = remote_sql_authenticated; then
+                    pass 'remote SQL Server credentials are authenticated'
+                    remote_database_permissions=$(docker run --rm --entrypoint "$sql_client_path" -e SQLCMDPASSWORD "$sql_client_image" \
+                      -S "tcp:$remote_database_host,$remote_database_port" -U "$SAMPLE_REMOTE_DB_USERNAME" -d "$remote_database_name" -No -b -h -1 -W \
+                      -Q "SET NOCOUNT ON; SELECT CONCAT(COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CREATE ANY DATABASE')), '0'), '|', COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN')), '0'));" 2>/dev/null || true)
+                    case "$remote_database_permissions" in
+                      1\|1) pass 'remote SQL Server can create the isolated database and login' ;;
+                      *) fail 'remote SQL Server credentials lack permission to create the isolated database and login' ;;
+                    esac
+                  else
+                    fail 'remote SQL Server credentials could not authenticate against the configured database'
+                  fi
                 else
                   fail 'pinned SQL Server client image could not be pulled for remote database verification'
                 fi
