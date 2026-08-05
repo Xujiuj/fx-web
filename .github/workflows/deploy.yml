@@ -46,6 +46,7 @@ jobs:
         run: npm run build
 
       - name: Check out enterprise UI
+        if: ${{ inputs.website_only != true }}
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Xujiuj/enterprise-ui
@@ -53,6 +54,7 @@ jobs:
           path: enterprise-ui
 
       - name: Check out isolated enterprise backend
+        if: ${{ inputs.website_only != true }}
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
           repository: Xujiuj/enterprise-backend
@@ -60,6 +62,7 @@ jobs:
           path: enterprise-backend
 
       - name: Set up Java
+        if: ${{ inputs.website_only != true }}
         uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4.9.1
         with:
           distribution: temurin
@@ -68,6 +71,7 @@ jobs:
           cache-dependency-path: enterprise-backend/pom.xml
 
       - name: Verify pinned source provenance
+        if: ${{ inputs.website_only != true }}
         run: |
           set -a
           . deploy/sample-backend/versions.env
@@ -76,6 +80,7 @@ jobs:
           test "$(git -C enterprise-ui rev-parse HEAD)" = "$SAMPLE_UI_SOURCE_COMMIT"
 
       - name: Apply reviewed isolated-platform patches
+        if: ${{ inputs.website_only != true }}
         run: |
           git -C enterprise-backend apply --check "$GITHUB_WORKSPACE/deploy/sample-backend/patches/backend-stable-install-id.patch"
           git -C enterprise-backend apply "$GITHUB_WORKSPACE/deploy/sample-backend/patches/backend-stable-install-id.patch"
@@ -88,6 +93,7 @@ jobs:
           fi
 
       - name: Test stable isolated install ID
+        if: ${{ inputs.website_only != true }}
         working-directory: enterprise-backend
         run: >-
           mvn -B -Pdev -pl ruoyi-modules/carbon-enterprise -am
@@ -97,10 +103,12 @@ jobs:
           test
 
       - name: Build isolated backend release
+        if: ${{ inputs.website_only != true }}
         working-directory: enterprise-backend
         run: mvn -B -Pprod -DskipTests package
 
       - name: Build enterprise UI release
+        if: ${{ inputs.website_only != true }}
         working-directory: enterprise-ui
         run: |
           npm ci
@@ -113,6 +121,8 @@ jobs:
           fi
 
       - name: Package release
+        env:
+          WEBSITE_ONLY: ${{ inputs.website_only || 'false' }}
         run: |
           mkdir -p release/.next
           cp -R .next/standalone/. release/
@@ -123,15 +133,17 @@ jobs:
           cp prisma/sqlite-bootstrap.sql release/prisma/
           cp scripts/ensure-sqlite-schema.mjs release/scripts/
           tar -C release -czf fx-web-release.tgz .
-          mkdir -p sample-ui-release
-          cp -R enterprise-ui/dist/. sample-ui-release/
+          mkdir -p sample-ui-release sample-backend-release
+          if [ "$WEBSITE_ONLY" != "true" ]; then
+            cp -R enterprise-ui/dist/. sample-ui-release/
+            mkdir -p sample-backend-release/runtime-sql sample-backend-release/sql
+            cp enterprise-backend/ruoyi-admin/target/ruoyi-admin.jar sample-backend-release/backend.jar
+            cp deploy/sample-backend/.dockerignore deploy/sample-backend/compose.yml deploy/sample-backend/Dockerfile deploy/sample-backend/versions.env sample-backend-release/
+            cp deploy/sample-backend/deploy.sh deploy/sample-backend/generate-env.sh deploy/sample-backend/smoke.mjs deploy/sample-backend/README.md sample-backend-release/
+            cp -R deploy/sample-backend/runtime-sql/. sample-backend-release/runtime-sql/
+            cp -R deploy/sample-backend/sql/. sample-backend-release/sql/
+          fi
           tar -C sample-ui-release -czf sample-ui-release.tgz .
-          mkdir -p sample-backend-release/runtime-sql sample-backend-release/sql
-          cp enterprise-backend/ruoyi-admin/target/ruoyi-admin.jar sample-backend-release/backend.jar
-          cp deploy/sample-backend/.dockerignore deploy/sample-backend/compose.yml deploy/sample-backend/Dockerfile deploy/sample-backend/versions.env sample-backend-release/
-          cp deploy/sample-backend/deploy.sh deploy/sample-backend/generate-env.sh deploy/sample-backend/smoke.mjs deploy/sample-backend/README.md sample-backend-release/
-          cp -R deploy/sample-backend/runtime-sql/. sample-backend-release/runtime-sql/
-          cp -R deploy/sample-backend/sql/. sample-backend-release/sql/
           tar -C sample-backend-release -czf sample-backend-release.tgz .
 
       - name: Upload release archive
@@ -176,9 +188,11 @@ jobs:
             journalctl -u "$service" -n 200 --no-pager || true
 
             test -f "$archive"
-            test -f "$sample_ui_archive"
-            test -f "$sample_backend_archive"
             test -f "$unit"
+            if [ "${DEPLOY_WEBSITE_ONLY:-false}" != "true" ]; then
+              test -f "$sample_ui_archive"
+              test -f "$sample_backend_archive"
+            fi
 
             ffmpeg_path=/usr/bin/ffmpeg
             test -x "$ffmpeg_path"
