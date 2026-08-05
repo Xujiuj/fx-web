@@ -3,6 +3,55 @@
   color: #2d332f;
 }
 
+.loadingLine,
+.loadingTitle,
+.loadingCopy,
+.loadingVideo,
+.loadingParagraph {
+  background: #edf1ee;
+  animation: loadingPulse 1.25s ease-in-out infinite alternate;
+}
+
+.loadingLine {
+  width: 136px;
+  height: 15px;
+}
+
+.loadingTitle {
+  width: min(580px, 100%);
+  height: 46px;
+  margin-top: 24px;
+}
+
+.loadingCopy {
+  width: min(700px, 92%);
+  height: 22px;
+  margin-top: 22px;
+}
+
+.loadingVideo {
+  aspect-ratio: 16 / 9;
+  width: 100%;
+}
+
+.loadingParagraph {
+  width: 100%;
+  height: 18px;
+  margin-top: 28px;
+}
+
+@keyframes loadingPulse {
+  to { opacity: 0.52; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingLine,
+  .loadingTitle,
+  .loadingCopy,
+  .loadingVideo,
+  .loadingParagraph { animation: none; }
+}
+
 .hero {
   padding: 68px 0 74px;
   border-bottom: 1px solid #e1e7e3;

@@ -26,7 +26,7 @@ import {
   type ProductMediaItem,
 } from "@/components/product-media-gallery";
 import type { ProductScreenshot, Subpage } from "@/lib/cms-content";
-import { isRuntimeManagedImage } from "@/lib/media-url";
+import { getManagedVideoStreamUrl, isAllowedContentHref, isManagedDocumentPath, isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./product-pages.module.css";
 
 type ProductPageProps = { page: Subpage };
@@ -240,18 +240,17 @@ function ProductResources({ page }: ProductPageProps) {
         <p>{resourceSection?.description ?? "产品手册、功能清单与部署说明由后台独立维护；上传新版本后，用户可直接下载。"}</p>
       </header>
       <div className={styles.resourceRows}>
-        {resources.map((resource) => (
-          <a
-            href={resource.value || "/#contact"}
-            key={resource.title}
-            download={resource.value?.startsWith("/media/documents/") ? "" : undefined}
-          >
+        {resources.map((resource) => {
+          const href = isAllowedContentHref(resource.value) ? resource.value : undefined;
+          const contents = <>
             <Download size={19} aria-hidden="true" />
             <strong>{resource.title}</strong>
-            <span>{resource.value ? "立即下载" : "资料待上传 · 联系获取"}</span>
+            <span>{href ? "立即下载" : "资料待发布"}</span>
             <ArrowRight size={17} aria-hidden="true" />
-          </a>
-        ))}
+          </>;
+          return href ? <a href={href} key={resource.title} download={isManagedDocumentPath(href) ? "" : undefined}>{contents}</a>
+            : <div key={resource.title} className={styles.resourceUnavailable} aria-disabled="true">{contents}</div>;
+        })}
       </div>
     </section>
   );
@@ -596,6 +595,8 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   const videoSection = page.sections.find((section) => section.id === "product-video");
   const publicDemoSection = page.sections.find((section) => section.id === "product-public-demo");
   const publicDemoActions = publicDemoSection?.items ?? [];
+  const configuredVideoUrl = page.product?.videoUrl;
+  const platformVideoUrl = getManagedVideoStreamUrl(configuredVideoUrl) ?? configuredVideoUrl ?? `${materialRoot}/产品/企业碳管理数字化平台简介.mp4`;
   const foundations = foundationSection?.items.length
     ? foundationSection.items
     : platformPrinciples.map((item) => ({ title: item.title }));
@@ -662,7 +663,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           controls
           preload="none"
           poster={page.product?.videoPoster || `${materialRoot}/产品/平台截图/2.png`}
-          src={page.product?.videoUrl || `${materialRoot}/产品/企业碳管理数字化平台简介.mp4`}
+          src={platformVideoUrl}
         >
           您的浏览器暂不支持视频播放。
         </video>

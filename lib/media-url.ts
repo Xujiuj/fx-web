@@ -39,6 +39,16 @@ export function getManagedMediaPath(src?: string | null) {
   }
 }
 
+export function isManagedDocumentPath(src?: string | null) {
+  return getManagedMediaPath(src)?.startsWith("/media/documents/") ?? false;
+}
+
+export function getManagedVideoStreamUrl(src?: string | null) {
+  const mediaPath = getManagedMediaPath(src);
+  if (!mediaPath?.startsWith("/media/videos/")) return null;
+  return `/api/media/video/${mediaPath.slice("/media/videos/".length)}`;
+}
+
 export function isRuntimeManagedImage(src?: string | null) {
   return Boolean(getManagedMediaPath(src)?.startsWith(runtimeImagePrefix));
 }

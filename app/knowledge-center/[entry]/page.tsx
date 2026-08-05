@@ -5,6 +5,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getHomeContent, getKnowledgeEntries, getKnowledgeEntry } from "@/lib/cms-content";
 import { knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
+import { getManagedVideoStreamUrl } from "@/lib/media-url";
 import styles from "./knowledge-entry.module.css";
 
 export const dynamic = "force-dynamic";
@@ -27,6 +28,7 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
   const [home, knowledgeEntries] = await Promise.all([getHomeContent(), getKnowledgeEntries()]);
   const related = knowledgeEntries.filter((item) => item.type === entry.type && item.slug !== entry.slug).slice(0, 3);
   const EntryIcon = entry.type === "article" ? BookOpen : GraduationCap;
+  const videoSrc = entry.type === "course" ? getManagedVideoStreamUrl(entry.videoHref) ?? entry.videoHref : undefined;
 
   return (
     <>
@@ -46,11 +48,11 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
 
         <div className={styles.contentLayout}>
           <article className={styles.article}>
-            {entry.type === "course" && entry.videoHref ? (
+            {entry.type === "course" && videoSrc ? (
               <section className={styles.videoSection} aria-labelledby="course-video-title">
                 <span>COURSE VIDEO</span>
                 <h2 id="course-video-title">课程视频</h2>
-                <video controls playsInline preload="metadata" src={entry.videoHref}>
+                <video controls playsInline preload="metadata" src={videoSrc}>
                   您的浏览器暂不支持视频播放。
                 </video>
               </section>

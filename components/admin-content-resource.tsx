@@ -503,7 +503,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
           <Row gutter={12}>
             <Col xs={24} md={8}><ProFormText name="title" label="条目标题" rules={[{ required: true }]} /></Col>
             <Col xs={24} md={8}><ProFormText name="description" label="条目说明" /></Col>
-            <Col xs={24} md={8}><ProFormText name="value" label={supportsDocumentUpload ? "下载地址" : "链接或指标值"} /></Col>
+            <Col xs={24} md={8}><ProFormText name="value" label={supportsDocumentUpload ? "下载地址" : "链接或指标值"} rules={supportsDocumentUpload ? [optionalHrefRule("请输入站内文件路径或完整的 https:// 下载链接")] : undefined} /></Col>
           </Row>
           <ProFormTextArea name={["details", "项目背景"]} label="案例：项目背景" />
           <ProFormTextArea name={["details", "面临问题"]} label="案例：面临问题" />

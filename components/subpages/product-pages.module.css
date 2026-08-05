@@ -1911,7 +1911,8 @@
   border-top: 2px solid #103c32;
 }
 
-.resourceRows > a {
+.resourceRows > a,
+.resourceRows > div {
   display: grid;
   grid-template-columns: 30px 1fr auto 20px;
   gap: 12px;
@@ -1922,13 +1923,19 @@
   color: #425149;
 }
 
-.resourceRows > a > svg:first-child {
+.resourceRows > a > svg:first-child,
+.resourceRows > div > svg:first-child {
   color: #1f8a70;
 }
 
 .resourceRows span {
   color: #6b7771;
   font-size: 12px;
+}
+
+.resourceRows > .resourceUnavailable {
+  color: #83908a;
+  cursor: not-allowed;
 }
 
 @media (max-width: 900px) {
@@ -1987,7 +1994,8 @@
     justify-content: center;
   }
 
-  .resourceRows > a {
+  .resourceRows > a,
+  .resourceRows > div {
     grid-template-columns: 28px 1fr 18px;
   }
 

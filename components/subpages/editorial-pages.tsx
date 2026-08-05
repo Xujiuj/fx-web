@@ -15,7 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
 import { knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
-import { isRuntimeManagedImage } from "@/lib/media-url";
+import { isAllowedContentHref, isManagedDocumentPath, isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./editorial-pages.module.css";
 
 type EditorialPageProps = { page: Subpage };
@@ -223,29 +223,22 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
           <SectionLabel>资料下载</SectionLabel>
           <h2 id="resource-title">{downloadSection?.title || "课程、工具与方案资料"}</h2>
           <p>{downloadSection?.description || "获取产品手册、解决方案与Excel核算工具的当前有效版本。"}</p>
-          <Link href="/#contact">
-            <Download size={17} aria-hidden="true" />
-            联系获取资料
-          </Link>
         </div>
         <div className={styles.resourceLinks}>
           {downloads.map((resource, index) => {
             const Icon = knowledgeResourceIcons[index % knowledgeResourceIcons.length];
-            const href = resource.value || "/#contact";
+            const href = isAllowedContentHref(resource.value) ? resource.value : undefined;
+            const contents = <>
+              <Icon size={22} aria-hidden="true" />
+              <div>
+                <span>{resource.title}</span>
+                <strong>{href ? "立即下载" : "资料待发布"}</strong>
+              </div>
+              <ArrowRight size={17} aria-hidden="true" />
+            </>;
             return (
-              <a
-                href={href}
-                key={`${resource.title}-${index}`}
-                data-motion-role="item"
-                download={resource.value?.startsWith("/media/documents/") ? "" : undefined}
-              >
-                <Icon size={22} aria-hidden="true" />
-                <div>
-                  <span>{resource.title}</span>
-                  <strong>{resource.value ? "立即下载" : "联系获取"}</strong>
-                </div>
-                <ArrowRight size={17} aria-hidden="true" />
-              </a>
+              href ? <a href={href} key={`${resource.title}-${index}`} data-motion-role="item" download={isManagedDocumentPath(href) ? "" : undefined}>{contents}</a>
+                : <div key={`${resource.title}-${index}`} className={styles.resourceUnavailable} data-motion-role="item" aria-disabled="true">{contents}</div>
             );
           })}
         </div>

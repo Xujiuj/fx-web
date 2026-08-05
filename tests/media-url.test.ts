@@ -3,9 +3,11 @@ import test from "node:test";
 import { randomUUID } from "node:crypto";
 import {
   getManagedMediaPath,
+  getManagedVideoStreamUrl,
   isAllowedContentHref,
   isHttpsContentUrl,
   isLocalContentPath,
+  isManagedDocumentPath,
   isOptionalAllowedContentHref,
   isRuntimeManagedImage,
 } from "../lib/media-url.ts";
@@ -33,4 +35,19 @@ test("recognizes only uploader-managed image paths", () => {
   assert.equal(isRuntimeManagedImage(`/media/documents/${id}.pdf`), false);
   assert.equal(isRuntimeManagedImage("/media/uploads/../secret.png"), false);
   assert.equal(isRuntimeManagedImage(`https://example.com/media/uploads/${id}.png`), false);
+});
+
+test("recognizes only uploader-managed document paths as direct downloads", () => {
+  const id = randomUUID();
+  assert.equal(isManagedDocumentPath(`/media/documents/${id}.pdf`), true);
+  assert.equal(isManagedDocumentPath(`/media/uploads/${id}.pdf`), false);
+  assert.equal(isManagedDocumentPath("/materials/handbook.pdf"), false);
+  assert.equal(isManagedDocumentPath(`https://example.com/media/documents/${id}.pdf`), false);
+});
+
+test("uses the streaming endpoint only for uploader-managed videos", () => {
+  const id = randomUUID();
+  assert.equal(getManagedVideoStreamUrl(`/media/videos/${id}.mp4`), `/api/media/video/${id}.mp4`);
+  assert.equal(getManagedVideoStreamUrl("/materials/course.mp4"), null);
+  assert.equal(getManagedVideoStreamUrl(`https://example.com/media/videos/${id}.mp4`), null);
 });
