@@ -268,6 +268,7 @@ jobs:
             curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 http://127.0.0.1:3010/ > /dev/null
             journalctl -u "$service" -p warning -n 50 --no-pager
 
+            nginx_changed=0
             if ! grep -F 'BEGIN FX_MEDIA_UPLOAD' "$nginx_site" >/dev/null; then
               nginx_backup=$(mktemp)
               nginx_candidate=$(mktemp)
@@ -294,6 +295,7 @@ jobs:
                 exit 1
               fi
               rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+              nginx_changed=1
             fi
             if ! grep -F 'BEGIN FX_MANAGED_MEDIA' "$nginx_site" >/dev/null; then
               nginx_backup=$(mktemp)
@@ -324,8 +326,11 @@ jobs:
                 exit 1
               fi
               rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
+              nginx_changed=1
             fi
-            nginx -s reload || systemctl reload nginx
+            if [ "$nginx_changed" -eq 1 ]; then
+              nginx -s reload || systemctl reload nginx
+            fi
 
             final_probe_body=$(mktemp)
             final_probe_headers=$(mktemp)
