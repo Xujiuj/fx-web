@@ -198,17 +198,22 @@ jobs:
             grep -F 'location / {' "$nginx_site" >/dev/null
             curl --fail --silent --show-error --max-time 15 https://fengxingzhicheng.com/enterprise/prod-api/ > /dev/null
 
-            # Validate and activate the isolated platform before publishing a website that links to it.
-            sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
-            cleanup_sample_stage() {
-              find "$sample_stage" -mindepth 1 -delete
-              rmdir "$sample_stage"
-              rm -f "$sample_backend_archive" "$sample_ui_archive"
-            }
-            trap cleanup_sample_stage EXIT
-            tar -xzf "$sample_backend_archive" -C "$sample_stage"
-            chmod 0755 "$sample_stage/deploy.sh"
-            "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
+            # Keep the existing isolated platform online until the vendor-signed license is available.
+            sample_license=/opt/fx-sample-backend/license/sample.lic
+            if [ -f "$sample_license" ]; then
+              sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
+              cleanup_sample_stage() {
+                find "$sample_stage" -mindepth 1 -delete
+                rmdir "$sample_stage"
+              }
+              trap cleanup_sample_stage EXIT
+              tar -xzf "$sample_backend_archive" -C "$sample_stage"
+              chmod 0755 "$sample_stage/deploy.sh"
+              "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
+            else
+              echo "[sample-deploy] signed license absent; keeping the current isolated platform unchanged"
+            fi
+            rm -f "$sample_backend_archive" "$sample_ui_archive"
 
             install -d -o fx-web -g fx-web "$target"
             if [ ! -f "$target/.env" ] && [ -f "$legacy_target/.env" ]; then
