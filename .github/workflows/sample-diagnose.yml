@@ -112,4 +112,27 @@ jobs:
               fail 'signed sample license is missing, empty, or a symlink'
             fi
 
+            remote_db_sources=0
+            while IFS='|' read -r container_id container_name; do
+              test -n "$container_id" || continue
+              container_environment=$(docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$container_id" 2>/dev/null | sed 's/=.*//')
+              if printf '%s\n' "$container_environment" | grep -Eq '^(ENTERPRISE_DB_URL|SPRING_DATASOURCE_URL)$'; then
+                pass "remote SQL Server configuration is available from running container: $container_name"
+                remote_db_sources=$((remote_db_sources + 1))
+              fi
+            done < <(docker ps --format '{{.ID}}|{{.Names}}')
+
+            while IFS= read -r configuration_file; do
+              if grep -Eq '^(ENTERPRISE_DB_URL|SPRING_DATASOURCE_URL)=' "$configuration_file" 2>/dev/null; then
+                pass "remote SQL Server configuration file found: $configuration_file"
+                remote_db_sources=$((remote_db_sources + 1))
+              fi
+            done < <(find /opt -xdev -type f \( -name '.env' -o -name '*.env' -o -name 'application*.yml' -o -name 'application*.yaml' -o -name 'application*.properties' \) -size -1M -print 2>/dev/null)
+
+            if test "$remote_db_sources" -gt 0; then
+              pass 'existing remote SQL Server configuration can be used to provision an isolated sample database'
+            else
+              fail 'no existing remote SQL Server configuration source was found'
+            fi
+
             exit "$failures"
