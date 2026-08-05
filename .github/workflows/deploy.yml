@@ -4,6 +4,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      website_only:
+        description: "Deploy only the official website without changing the isolated enterprise platform"
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: production-deploy
@@ -145,11 +151,12 @@ jobs:
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
           SAMPLE_LICENSE: ${{ secrets.SAMPLE_LICENSE }}
+          DEPLOY_WEBSITE_ONLY: ${{ inputs.website_only || 'false' }}
         with:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM,SAMPLE_LICENSE
+          envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM,SAMPLE_LICENSE,DEPLOY_WEBSITE_ONLY
           command_timeout: 25m
           script: |
             set -euo pipefail
@@ -200,29 +207,33 @@ jobs:
             grep -F 'location / {' "$nginx_site" >/dev/null
             curl --fail --silent --show-error --max-time 15 https://fengxingzhicheng.com/enterprise/prod-api/ > /dev/null
 
-            # Keep the existing isolated platform online until the vendor-signed license is available.
-            sample_license=/opt/fx-sample-backend/license/sample.lic
-            : "${SAMPLE_LICENSE:?Missing SAMPLE_LICENSE secret}"
-            sample_license_directory=$(dirname "$sample_license")
-            install -d -m 0700 "$sample_license_directory"
-            sample_license_temporary=$(mktemp "$sample_license_directory/.sample.lic.XXXXXX")
-            printf '%s' "$SAMPLE_LICENSE" > "$sample_license_temporary"
-            chmod 0600 "$sample_license_temporary"
-            mv -f "$sample_license_temporary" "$sample_license"
             sample_platform_activated=0
-            if [ -f "$sample_license" ]; then
-              sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
-              cleanup_sample_stage() {
-                find "$sample_stage" -mindepth 1 -delete
-                rmdir "$sample_stage"
-              }
-              trap cleanup_sample_stage EXIT
-              tar -xzf "$sample_backend_archive" -C "$sample_stage"
-              chmod 0755 "$sample_stage/deploy.sh"
-              "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
-              sample_platform_activated=1
+            if [ "${DEPLOY_WEBSITE_ONLY:-false}" = "true" ]; then
+              echo '[sample-deploy] skipped for website-only release'
             else
-              echo "[sample-deploy] signed license absent; keeping the current isolated platform unchanged"
+              # Keep the existing isolated platform online until the vendor-signed license is available.
+              sample_license=/opt/fx-sample-backend/license/sample.lic
+              : "${SAMPLE_LICENSE:?Missing SAMPLE_LICENSE secret}"
+              sample_license_directory=$(dirname "$sample_license")
+              install -d -m 0700 "$sample_license_directory"
+              sample_license_temporary=$(mktemp "$sample_license_directory/.sample.lic.XXXXXX")
+              printf '%s' "$SAMPLE_LICENSE" > "$sample_license_temporary"
+              chmod 0600 "$sample_license_temporary"
+              mv -f "$sample_license_temporary" "$sample_license"
+              if [ -f "$sample_license" ]; then
+                sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
+                cleanup_sample_stage() {
+                  find "$sample_stage" -mindepth 1 -delete
+                  rmdir "$sample_stage"
+                }
+                trap cleanup_sample_stage EXIT
+                tar -xzf "$sample_backend_archive" -C "$sample_stage"
+                chmod 0755 "$sample_stage/deploy.sh"
+                "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
+                sample_platform_activated=1
+              else
+                echo "[sample-deploy] signed license absent; keeping the current isolated platform unchanged"
+              fi
             fi
             rm -f "$sample_backend_archive" "$sample_ui_archive"
 
@@ -361,7 +372,7 @@ jobs:
               grep -i -E '^X-Content-Type-Options:[[:space:]]*nosniff[[:space:]]*$' "$final_probe_headers" >/dev/null
               grep -i -E '^Referrer-Policy:[[:space:]]*no-referrer[[:space:]]*$' "$final_probe_headers" >/dev/null
             else
-              echo '[sample-deploy] public isolated-platform checks skipped because no signed license is installed'
+              echo '[sample-deploy] public isolated-platform checks skipped because it was not deployed'
             fi
             enterprise_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/enterprise/prod-api/)
             test "$enterprise_status" = 200
