@@ -88,7 +88,7 @@ jobs:
               vendor_base=$(sed -n 's/^ENTERPRISE_VENDOR_OPEN_BASE_URL=//p' "$env_file" | head -n 1)
               if test -n "$vendor_base"; then
                 pass "vendor base is configured: $vendor_base"
-                vendor_status=$(curl --silent --show-error --max-time 15 --output /dev/null --write-out '%{http_code}' "$vendor_base" || true)
+                vendor_status=$(curl --location --silent --show-error --max-time 15 --output /dev/null --write-out '%{http_code}' "$vendor_base" || true)
                 if test "$vendor_status" = 200; then
                   pass 'configured vendor base is reachable'
                 else
