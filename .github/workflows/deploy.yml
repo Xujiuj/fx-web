@@ -325,7 +325,7 @@ jobs:
               fi
               rm -f "$nginx_backup" "$nginx_candidate" "$nginx_block"
             fi
-            nginx -s reload
+            nginx -s reload || systemctl reload nginx
 
             final_probe_body=$(mktemp)
             final_probe_headers=$(mktemp)
