@@ -13,7 +13,7 @@ jobs:
 
     steps:
       - name: Check out deployment helper
-        uses: actions/checkout@11d5960a326750d5838078ce36cf38b85af677262 # v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Upload environment generator
         uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
