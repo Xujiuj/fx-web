@@ -14,10 +14,15 @@ jobs:
     steps:
       - name: Inspect server prerequisites without changing services
         uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        env:
+          SAMPLE_REMOTE_DB_URL: ${{ secrets.SAMPLE_REMOTE_DB_URL }}
+          SAMPLE_REMOTE_DB_USERNAME: ${{ secrets.SAMPLE_REMOTE_DB_USERNAME }}
+          SAMPLE_REMOTE_DB_PASSWORD: ${{ secrets.SAMPLE_REMOTE_DB_PASSWORD }}
         with:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
+          envs: SAMPLE_REMOTE_DB_URL,SAMPLE_REMOTE_DB_USERNAME,SAMPLE_REMOTE_DB_PASSWORD
           command_timeout: 5m
           script: |
             set -u
@@ -110,6 +115,43 @@ jobs:
               fi
             else
               fail 'signed sample license is missing, empty, or a symlink'
+            fi
+
+            : "${SAMPLE_REMOTE_DB_URL:?Missing SAMPLE_REMOTE_DB_URL secret}"
+            : "${SAMPLE_REMOTE_DB_USERNAME:?Missing SAMPLE_REMOTE_DB_USERNAME secret}"
+            : "${SAMPLE_REMOTE_DB_PASSWORD:?Missing SAMPLE_REMOTE_DB_PASSWORD secret}"
+            remote_database_url=${SAMPLE_REMOTE_DB_URL#jdbc:sqlserver://}
+            if test "$remote_database_url" = "$SAMPLE_REMOTE_DB_URL"; then
+              fail 'remote SQL Server URL is not a JDBC SQL Server URL'
+            else
+              remote_database_endpoint=${remote_database_url%%;*}
+              remote_database_host=${remote_database_endpoint%:*}
+              remote_database_port=${remote_database_endpoint##*:}
+              remote_database_name=
+              IFS=';' read -r -a remote_database_settings <<< "$remote_database_url"
+              for remote_database_setting in "${remote_database_settings[@]}"; do
+                case "${remote_database_setting,,}" in
+                  databasename=*) remote_database_name=${remote_database_setting#*=} ;;
+                esac
+              done
+
+              if [[ "$remote_database_host" =~ ^[A-Za-z0-9.-]+$ && "$remote_database_port" =~ ^[0-9]{1,5}$ && "$remote_database_name" =~ ^[A-Za-z0-9_]{1,128}$ ]]; then
+                sql_client_image=mcr.microsoft.com/mssql-tools@sha256:62556500522072535cb3df2bb5965333dded9be47000473e9e0f84118e248642
+                if docker pull "$sql_client_image" >/dev/null 2>&1; then
+                  sql_client_path=$(docker run --rm --entrypoint sh "$sql_client_image" -ec 'command -v sqlcmd')
+                  remote_database_permissions=$(docker run --rm --entrypoint "$sql_client_path" -e SQLCMDPASSWORD "$sql_client_image" \
+                    -S "tcp:$remote_database_host,$remote_database_port" -U "$SAMPLE_REMOTE_DB_USERNAME" -d "$remote_database_name" -No -b -h -1 -W \
+                    -Q "SET NOCOUNT ON; SELECT CONCAT(COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'CREATE ANY DATABASE')), '0'), '|', COALESCE(CONVERT(varchar(1), HAS_PERMS_BY_NAME(NULL, 'SERVER', 'ALTER ANY LOGIN')), '0'));" 2>/dev/null || true)
+                  case "$remote_database_permissions" in
+                    1\|1) pass 'remote SQL Server is reachable and can create the isolated database and login' ;;
+                    *) fail 'remote SQL Server is unreachable or lacks permission to create the isolated database and login' ;;
+                  esac
+                else
+                  fail 'pinned SQL Server client image could not be pulled for remote database verification'
+                fi
+              else
+                fail 'remote SQL Server JDBC URL contains an unsupported host, port, or database name'
+              fi
             fi
 
             exit "$failures"
