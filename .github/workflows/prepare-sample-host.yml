@@ -120,18 +120,21 @@ jobs:
             node --version
 
             ffmpeg_path=/usr/bin/ffmpeg
-            ffmpeg_major=0
+            ffmpeg_ready=0
             if test -x "$ffmpeg_path"; then
-              ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
+              if "$ffmpeg_path" -version | grep -F 'ffmpeg version ' >/dev/null \
+                && "$ffmpeg_path" -hide_banner -encoders | grep -E '[[:space:]]libx264([[:space:]]|$)' >/dev/null; then
+                ffmpeg_ready=1
+              fi
             fi
-            if test "$ffmpeg_major" -lt 4; then
+            if test "$ffmpeg_ready" -ne 1; then
               ffmpeg_binary=/tmp/fx-sample-host-prepare/host-prepare/ffmpeg/ffmpeg
               test -x "$ffmpeg_binary"
               install -m 0755 "$ffmpeg_binary" "$ffmpeg_path"
             fi
-            ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-            test "$ffmpeg_major" -ge 4
-            $ffmpeg_path -version | head -n 1
+            "$ffmpeg_path" -version | grep -F 'ffmpeg version ' >/dev/null
+            "$ffmpeg_path" -hide_banner -encoders | grep -E '[[:space:]]libx264([[:space:]]|$)' >/dev/null
+            "$ffmpeg_path" -version | awk 'NR == 1 { print }'
 
             install -d -m 0700 /opt/fx-sample-backend/license
             generator=/tmp/fx-sample-host-prepare/deploy/sample-backend/generate-env.sh

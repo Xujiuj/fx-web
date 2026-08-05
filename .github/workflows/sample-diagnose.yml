@@ -34,11 +34,12 @@ jobs:
             done
 
             if test -x /usr/bin/ffmpeg; then
-              ffmpeg_major=$(/usr/bin/ffmpeg -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-              if test "$ffmpeg_major" -ge 4; then
-                pass "ffmpeg major version: $ffmpeg_major"
+              ffmpeg_version=$(/usr/bin/ffmpeg -version | awk 'NR == 1 { print }')
+              if printf '%s\n' "$ffmpeg_version" | grep -F 'ffmpeg version ' >/dev/null \
+                && /usr/bin/ffmpeg -hide_banner -encoders | grep -E '[[:space:]]libx264([[:space:]]|$)' >/dev/null; then
+                pass "ffmpeg runtime supports H.264: $ffmpeg_version"
               else
-                fail "ffmpeg must be version 4 or newer (found: $ffmpeg_major)"
+                fail "ffmpeg runtime does not provide the required H.264 encoder: $ffmpeg_version"
               fi
             else
               fail 'ffmpeg is not executable at /usr/bin/ffmpeg'

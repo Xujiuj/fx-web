@@ -173,8 +173,8 @@ jobs:
 
             ffmpeg_path=/usr/bin/ffmpeg
             test -x "$ffmpeg_path"
-            ffmpeg_major=$("$ffmpeg_path" -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-            test "$ffmpeg_major" -ge 4
+            "$ffmpeg_path" -version | grep -F 'ffmpeg version ' >/dev/null
+            "$ffmpeg_path" -hide_banner -encoders | grep -E '[[:space:]]libx264([[:space:]]|$)' >/dev/null
 
             # Verify the existing enterprise backend before changing its frontend route.
             command -v nginx >/dev/null
