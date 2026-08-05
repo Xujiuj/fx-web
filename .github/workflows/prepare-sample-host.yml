@@ -115,7 +115,8 @@ jobs:
             if test "$ffmpeg_major" -lt 6; then
               ffmpeg_stage=$(mktemp -d /tmp/fx-ffmpeg.XXXXXX)
               trap 'rm -rf "$ffmpeg_stage"' EXIT
-              curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+              curl --fail --location --proto '=https' --tlsv1.2 --connect-timeout 15 --max-time 600 \
+                --retry 5 --retry-all-errors --retry-delay 3 --continue-at - \
                 --output "$ffmpeg_stage/ffmpeg.tar.xz" \
                 https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
               tar -xJf "$ffmpeg_stage/ffmpeg.tar.xz" -C "$ffmpeg_stage"
