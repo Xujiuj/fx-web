@@ -47,6 +47,42 @@ jobs:
           script: |
             set -Eeuo pipefail
 
+            ensure_swap_capacity() {
+              swap_file=/swapfile.fx-sample
+              required_swap_kb=2097152
+              current_swap_kb=$(swapon --noheadings --raw --bytes --show=SIZE | awk '{ total += $1 } END { printf "%d", total / 1024 }')
+              if (( current_swap_kb >= required_swap_kb )); then
+                printf 'Swap capacity already satisfies 2 GiB: %s KiB\n' "$current_swap_kb"
+                return 0
+              fi
+
+              if [[ -e "$swap_file" ]]; then
+                swap_file_kb=$(stat -c '%s' "$swap_file")
+                (( swap_file_kb >= required_swap_kb * 1024 )) \
+                  || { echo "$swap_file exists but is smaller than 2 GiB; refusing to replace it" >&2; exit 1; }
+              else
+                if command -v fallocate >/dev/null 2>&1 && fallocate -l 2G "$swap_file"; then
+                  :
+                else
+                  dd if=/dev/zero of="$swap_file" bs=1M count=2048 status=progress
+                fi
+                chmod 0600 "$swap_file"
+                mkswap "$swap_file"
+              fi
+
+              if ! swapon --noheadings --raw --show=NAME | grep -Fx -- "$swap_file" >/dev/null; then
+                swapon "$swap_file"
+              fi
+              if ! awk -v swap_file="$swap_file" '$1 == swap_file && $3 == "swap" { found = 1 } END { exit !found }' /etc/fstab; then
+                printf '%s none swap sw 0 0\n' "$swap_file" >> /etc/fstab
+              fi
+
+              current_swap_kb=$(swapon --noheadings --raw --bytes --show=SIZE | awk '{ total += $1 } END { printf "%d", total / 1024 }')
+              (( current_swap_kb >= required_swap_kb )) \
+                || { echo 'Unable to provision the required 2 GiB swap capacity' >&2; exit 1; }
+              swapon --show --bytes
+            }
+
             install_os_package() {
               if command -v apt-get >/dev/null 2>&1; then
                 apt-get update
@@ -98,6 +134,7 @@ jobs:
             systemctl enable --now docker
             docker --version
             docker compose version
+            ensure_swap_capacity
 
             if ! command -v openssl >/dev/null 2>&1; then
               install_os_package openssl
