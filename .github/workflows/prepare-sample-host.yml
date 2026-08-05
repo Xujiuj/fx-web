@@ -1,0 +1,140 @@
+name: Prepare Isolated Sample Host
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out deployment helper
+        uses: actions/checkout@11d5960a326750d5838078ce36cf38b85af677262 # v4
+
+      - name: Upload environment generator
+        uses: appleboy/scp-action@ff85246acaad7bdce478db94a363cd2bf7c90345 # v1.0.0
+        with:
+          host: 8.145.48.29
+          username: root
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          source: deploy/sample-backend/generate-env.sh
+          target: /tmp/fx-sample-host-prepare
+          overwrite: true
+
+      - name: Install prerequisites and generate the isolated identity
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: 8.145.48.29
+          username: root
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 15m
+          script: |
+            set -Eeuo pipefail
+
+            install_os_package() {
+              if command -v apt-get >/dev/null 2>&1; then
+                apt-get update
+                apt-get install -y "$@"
+              elif command -v dnf >/dev/null 2>&1; then
+                dnf install -y "$@"
+              elif command -v yum >/dev/null 2>&1; then
+                yum install -y "$@"
+              else
+                echo "No supported package manager is available" >&2
+                exit 1
+              fi
+            }
+
+            install_docker() {
+              if command -v docker >/dev/null 2>&1; then
+                return 0
+              fi
+
+              if command -v apt-get >/dev/null 2>&1; then
+                apt-get update
+                apt-get install -y ca-certificates curl gnupg
+                install -m 0755 -d /etc/apt/keyrings
+                curl --fail --location --proto '=https' --tlsv1.2 https://download.docker.com/linux/ubuntu/gpg \
+                  | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+                chmod a+r /etc/apt/keyrings/docker.gpg
+                . /etc/os-release
+                printf '%s\n' "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $VERSION_CODENAME stable" \
+                  > /etc/apt/sources.list.d/docker.list
+                apt-get update
+                apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+              elif command -v dnf >/dev/null 2>&1 || command -v yum >/dev/null 2>&1; then
+                if command -v dnf >/dev/null 2>&1; then
+                  dnf install -y dnf-plugins-core
+                  dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+                  dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                else
+                  yum install -y yum-utils
+                  yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+                  yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+                fi
+              else
+                echo "No supported package manager is available for Docker" >&2
+                exit 1
+              fi
+            }
+
+            install_docker
+            systemctl enable --now docker
+            docker --version
+            docker compose version
+
+            if ! command -v openssl >/dev/null 2>&1; then
+              install_os_package openssl
+            fi
+            if ! command -v htpasswd >/dev/null 2>&1; then
+              if command -v apt-get >/dev/null 2>&1; then
+                install_os_package apache2-utils
+              else
+                install_os_package httpd-tools
+              fi
+            fi
+
+            runtime_node=/opt/fx/runtime/node/bin/node
+            test -x "$runtime_node"
+            runtime_node_version=$($runtime_node --version)
+            runtime_node_major=${runtime_node_version#v}
+            runtime_node_major=${runtime_node_major%%.*}
+            test "$runtime_node_major" -ge 20
+            ln -sfn "$runtime_node" /usr/local/bin/node
+            node --version
+
+            ffmpeg_path=/usr/bin/ffmpeg
+            ffmpeg_major=0
+            if test -x "$ffmpeg_path"; then
+              ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
+            fi
+            if test "$ffmpeg_major" -lt 6; then
+              ffmpeg_stage=$(mktemp -d /tmp/fx-ffmpeg.XXXXXX)
+              trap 'rm -rf "$ffmpeg_stage"' EXIT
+              curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
+                --output "$ffmpeg_stage/ffmpeg.tar.xz" \
+                https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+              tar -xJf "$ffmpeg_stage/ffmpeg.tar.xz" -C "$ffmpeg_stage"
+              ffmpeg_binary=$(find "$ffmpeg_stage" -type f -name ffmpeg -perm -u+x -print -quit)
+              test -n "$ffmpeg_binary"
+              install -m 0755 "$ffmpeg_binary" "$ffmpeg_path"
+            fi
+            ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
+            test "$ffmpeg_major" -ge 6
+            $ffmpeg_path -version | head -n 1
+
+            install -d -m 0700 /opt/fx-sample-backend/license
+            generator=/tmp/fx-sample-host-prepare/deploy/sample-backend/generate-env.sh
+            chmod 0755 "$generator"
+            if test ! -e /opt/fx-sample-backend/.env; then
+              ENTERPRISE_VENDOR_OPEN_BASE_URL=https://fengxingzhicheng.com/vendor/prod-api "$generator"
+            fi
+            test -f /opt/fx-sample-backend/.env
+            test "$(stat -c '%a' /opt/fx-sample-backend/.env)" = 600
+            install_id=$(sed -n 's/^ENTERPRISE_INSTALL_ID=//p' /opt/fx-sample-backend/.env | head -n 1)
+            test -n "$install_id"
+            printf 'Sample install ID for vendor signing: %s\n' "$install_id"
