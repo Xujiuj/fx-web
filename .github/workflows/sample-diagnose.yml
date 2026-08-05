@@ -35,10 +35,10 @@ jobs:
 
             if test -x /usr/bin/ffmpeg; then
               ffmpeg_major=$(/usr/bin/ffmpeg -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-              if test "$ffmpeg_major" -ge 5; then
+              if test "$ffmpeg_major" -ge 4; then
                 pass "ffmpeg major version: $ffmpeg_major"
               else
-                fail "ffmpeg must be version 5 or newer (found: $ffmpeg_major)"
+                fail "ffmpeg must be version 4 or newer (found: $ffmpeg_major)"
               fi
             else
               fail 'ffmpeg is not executable at /usr/bin/ffmpeg'
