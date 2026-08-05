@@ -201,6 +201,7 @@ jobs:
 
             # Keep the existing isolated platform online until the vendor-signed license is available.
             sample_license=/opt/fx-sample-backend/license/sample.lic
+            sample_platform_activated=0
             if [ -f "$sample_license" ]; then
               sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
               cleanup_sample_stage() {
@@ -211,6 +212,7 @@ jobs:
               tar -xzf "$sample_backend_archive" -C "$sample_stage"
               chmod 0755 "$sample_stage/deploy.sh"
               "$sample_stage/deploy.sh" --release-dir "$sample_stage" --ui-archive "$sample_ui_archive"
+              sample_platform_activated=1
             else
               echo "[sample-deploy] signed license absent; keeping the current isolated platform unchanged"
             fi
@@ -335,20 +337,24 @@ jobs:
 
             final_probe_body=$(mktemp)
             final_probe_headers=$(mktemp)
-            sample_status=$(curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/)
-            test "$sample_status" = 200
-            grep -F '/sample/runtime-config.js' "$final_probe_body" >/dev/null
-            sample_runtime_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/runtime-config.js)
-            test "$sample_runtime_status" = 200
-            grep -F 'window.__FX_SAMPLE_RUNTIME__' "$final_probe_body" >/dev/null
-            sample_api_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-api/auth/code)
-            test "$sample_api_status" = 200
-            grep -E '"code"[[:space:]]*:[[:space:]]*200' "$final_probe_body" >/dev/null
-            sample_oss_status=$(curl --fail --silent --show-error --max-time 15 --dump-header "$final_probe_headers" --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-oss/minio/health/live)
-            test "$sample_oss_status" = 200
-            grep -i -E "^Content-Security-Policy:[[:space:]]*sandbox; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'[[:space:]]*$" "$final_probe_headers" >/dev/null
-            grep -i -E '^X-Content-Type-Options:[[:space:]]*nosniff[[:space:]]*$' "$final_probe_headers" >/dev/null
-            grep -i -E '^Referrer-Policy:[[:space:]]*no-referrer[[:space:]]*$' "$final_probe_headers" >/dev/null
+            if [ "$sample_platform_activated" = 1 ]; then
+              sample_status=$(curl --fail --silent --show-error --retry 10 --retry-delay 1 --retry-connrefused --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/)
+              test "$sample_status" = 200
+              grep -F '/sample/runtime-config.js' "$final_probe_body" >/dev/null
+              sample_runtime_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample/runtime-config.js)
+              test "$sample_runtime_status" = 200
+              grep -F 'window.__FX_SAMPLE_RUNTIME__' "$final_probe_body" >/dev/null
+              sample_api_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-api/auth/code)
+              test "$sample_api_status" = 200
+              grep -E '"code"[[:space:]]*:[[:space:]]*200' "$final_probe_body" >/dev/null
+              sample_oss_status=$(curl --fail --silent --show-error --max-time 15 --dump-header "$final_probe_headers" --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/sample-oss/minio/health/live)
+              test "$sample_oss_status" = 200
+              grep -i -E "^Content-Security-Policy:[[:space:]]*sandbox; default-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'[[:space:]]*$" "$final_probe_headers" >/dev/null
+              grep -i -E '^X-Content-Type-Options:[[:space:]]*nosniff[[:space:]]*$' "$final_probe_headers" >/dev/null
+              grep -i -E '^Referrer-Policy:[[:space:]]*no-referrer[[:space:]]*$' "$final_probe_headers" >/dev/null
+            else
+              echo '[sample-deploy] public isolated-platform checks skipped because no signed license is installed'
+            fi
             enterprise_status=$(curl --fail --silent --show-error --max-time 15 --output "$final_probe_body" --write-out '%{http_code}' https://fengxingzhicheng.com/enterprise/prod-api/)
             test "$enterprise_status" = 200
             rm -f "$final_probe_body" "$final_probe_headers"
