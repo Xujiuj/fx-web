@@ -174,7 +174,7 @@ jobs:
             ffmpeg_path=/usr/bin/ffmpeg
             test -x "$ffmpeg_path"
             ffmpeg_major=$("$ffmpeg_path" -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-            test "$ffmpeg_major" -ge 6
+            test "$ffmpeg_major" -ge 5
 
             # Verify the existing enterprise backend before changing its frontend route.
             command -v nginx >/dev/null

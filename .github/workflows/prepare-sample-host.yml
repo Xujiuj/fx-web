@@ -19,11 +19,9 @@ jobs:
         run: |
           stage=$(mktemp -d)
           trap 'rm -rf "$stage"' EXIT
-          curl --fail --location --proto '=https' --tlsv1.2 --retry 3 \
-            --output "$stage/ffmpeg.tar.xz" \
-            https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
-          tar -xJf "$stage/ffmpeg.tar.xz" -C "$stage"
-          binary=$(find "$stage" -type f -name ffmpeg -perm -u+x -print -quit)
+          npm pack --silent --pack-destination "$stage" ffmpeg-static@5.2.0
+          tar -xzf "$stage/ffmpeg-static-5.2.0.tgz" -C "$stage"
+          binary=$(find "$stage/package" -type f -name ffmpeg -perm -u+x -print -quit)
           test -n "$binary"
           mkdir -p host-prepare/ffmpeg
           install -m 0755 "$binary" host-prepare/ffmpeg/ffmpeg
@@ -126,13 +124,13 @@ jobs:
             if test -x "$ffmpeg_path"; then
               ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
             fi
-            if test "$ffmpeg_major" -lt 6; then
+            if test "$ffmpeg_major" -lt 5; then
               ffmpeg_binary=/tmp/fx-sample-host-prepare/host-prepare/ffmpeg/ffmpeg
               test -x "$ffmpeg_binary"
               install -m 0755 "$ffmpeg_binary" "$ffmpeg_path"
             fi
             ffmpeg_major=$($ffmpeg_path -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
-            test "$ffmpeg_major" -ge 6
+            test "$ffmpeg_major" -ge 5
             $ffmpeg_path -version | head -n 1
 
             install -d -m 0700 /opt/fx-sample-backend/license
