@@ -1,0 +1,114 @@
+name: Diagnose Sample Deployment Prerequisites
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Inspect server prerequisites without changing services
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: 8.145.48.29
+          username: root
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          command_timeout: 5m
+          script: |
+            set -u
+            failures=0
+            pass() { printf '[sample-diagnose] PASS: %s\n' "$1"; }
+            fail() { printf '[sample-diagnose] FAIL: %s\n' "$1" >&2; failures=1; }
+
+            for required_command in curl docker ffmpeg nginx node systemctl; do
+              if command -v "$required_command" >/dev/null 2>&1; then
+                pass "command available: $required_command"
+              else
+                fail "command missing: $required_command"
+              fi
+            done
+
+            if test -x /usr/bin/ffmpeg; then
+              ffmpeg_major=$(/usr/bin/ffmpeg -version | awk 'NR == 1 { split($3, parts, "."); print parts[1] }')
+              if test "$ffmpeg_major" -ge 6; then
+                pass "ffmpeg major version: $ffmpeg_major"
+              else
+                fail "ffmpeg must be version 6 or newer (found: $ffmpeg_major)"
+              fi
+            else
+              fail 'ffmpeg is not executable at /usr/bin/ffmpeg'
+            fi
+
+            if systemctl is-active --quiet fx-web.service; then
+              pass 'fx-web.service is active'
+            else
+              fail 'fx-web.service is not active'
+            fi
+
+            nginx_dump=$(mktemp)
+            if nginx -T > "$nginx_dump" 2>&1; then
+              pass 'nginx configuration is valid'
+            else
+              fail 'nginx -T failed'
+            fi
+            if grep -E 'location[[:space:]]+(\^~[[:space:]]+)?/enterprise/prod-api/' "$nginx_dump" >/dev/null; then
+              pass 'existing /enterprise/prod-api route is configured'
+            else
+              fail 'existing /enterprise/prod-api route is missing'
+            fi
+            if grep -F 'location / {' "$nginx_dump" >/dev/null; then
+              pass 'canonical website location block is configured'
+            else
+              fail 'canonical website location block is missing'
+            fi
+            rm -f "$nginx_dump"
+
+            enterprise_status=$(curl --silent --show-error --max-time 15 --output /dev/null --write-out '%{http_code}' https://fengxingzhicheng.com/enterprise/prod-api/ || true)
+            if test "$enterprise_status" = 200; then
+              pass 'public /enterprise/prod-api is reachable'
+            else
+              fail "public /enterprise/prod-api returned: ${enterprise_status:-curl-error}"
+            fi
+
+            env_file=/opt/fx-sample-backend/.env
+            license_file=/opt/fx-sample-backend/license/sample.lic
+            if test -f "$env_file" && test ! -L "$env_file"; then
+              env_mode=$(stat -c '%a' "$env_file")
+              if test "$env_mode" = 600; then
+                pass 'sample runtime configuration exists with mode 0600'
+              else
+                fail "sample runtime configuration mode must be 0600 (found: $env_mode)"
+              fi
+              vendor_base=$(sed -n 's/^ENTERPRISE_VENDOR_OPEN_BASE_URL=//p' "$env_file" | head -n 1)
+              if test -n "$vendor_base"; then
+                pass "vendor base is configured: $vendor_base"
+                vendor_status=$(curl --silent --show-error --max-time 15 --output /dev/null --write-out '%{http_code}' "$vendor_base" || true)
+                if test "$vendor_status" = 200; then
+                  pass 'configured vendor base is reachable'
+                else
+                  fail "configured vendor base returned: ${vendor_status:-curl-error}"
+                fi
+              else
+                fail 'ENTERPRISE_VENDOR_OPEN_BASE_URL is not configured'
+              fi
+            else
+              fail 'sample runtime configuration is missing or is a symlink'
+            fi
+
+            if test -s "$license_file" && test ! -L "$license_file"; then
+              license_mode=$(stat -c '%a' "$license_file")
+              if test "$license_mode" = 600; then
+                pass 'signed sample license exists with mode 0600'
+              else
+                fail "signed sample license mode must be 0600 (found: $license_mode)"
+              fi
+            else
+              fail 'signed sample license is missing, empty, or a symlink'
+            fi
+
+            exit "$failures"
