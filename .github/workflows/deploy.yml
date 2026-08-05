@@ -144,11 +144,12 @@ jobs:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
           SMTP_FROM: ${{ secrets.SMTP_FROM }}
+          SAMPLE_LICENSE: ${{ secrets.SAMPLE_LICENSE }}
         with:
           host: 8.145.48.29
           username: root
           key: ${{ secrets.DEPLOY_SSH_KEY }}
-          envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM
+          envs: SMTP_USER,SMTP_PASSWORD,SMTP_FROM,SAMPLE_LICENSE
           command_timeout: 25m
           script: |
             set -euo pipefail
@@ -201,6 +202,13 @@ jobs:
 
             # Keep the existing isolated platform online until the vendor-signed license is available.
             sample_license=/opt/fx-sample-backend/license/sample.lic
+            : "${SAMPLE_LICENSE:?Missing SAMPLE_LICENSE secret}"
+            sample_license_directory=$(dirname "$sample_license")
+            install -d -m 0700 "$sample_license_directory"
+            sample_license_temporary=$(mktemp "$sample_license_directory/.sample.lic.XXXXXX")
+            printf '%s' "$SAMPLE_LICENSE" > "$sample_license_temporary"
+            chmod 0600 "$sample_license_temporary"
+            mv -f "$sample_license_temporary" "$sample_license"
             sample_platform_activated=0
             if [ -f "$sample_license" ]; then
               sample_stage=$(mktemp -d /tmp/fx-sample-release.XXXXXX)
