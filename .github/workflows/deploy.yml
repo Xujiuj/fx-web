@@ -152,6 +152,7 @@ jobs:
           command_timeout: 25m
           script: |
             set -euo pipefail
+            trap 'status=$?; echo "[deploy] failed command: $BASH_COMMAND" >&2; exit "$status"' ERR
             service=fx-web.service
             target=/opt/fx-web/apps/website/current
             legacy_target=/opt/fx/apps/website/current
