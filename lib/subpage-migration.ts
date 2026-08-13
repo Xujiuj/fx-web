@@ -35,9 +35,14 @@ export const v4SectionIdsBySlug: Readonly<Record<string, readonly string[]>> = {
   "knowledge-center": ["video-courses"],
 };
 
+export const v5SectionIdsBySlug: Readonly<Record<string, readonly string[]>> = {
+  "knowledge-center": ["online-classroom"],
+};
+
 const sectionIdsBySchemaVersion = [
   { version: 3, idsBySlug: v3SectionIdsBySlug },
   { version: 4, idsBySlug: v4SectionIdsBySlug },
+  { version: 5, idsBySlug: v5SectionIdsBySlug },
 ] as const;
 
 function cloneSection<TSection extends MigrationSection>(section: TSection): TSection {

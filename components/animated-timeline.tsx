@@ -1,6 +1,7 @@
 "use client";
 
 import type { TimelineEntry } from "@/lib/cms-content";
+import Link from "next/link";
 import { SectionHeading } from "./section-heading";
 
 type AnimatedTimelineProps = {
@@ -10,6 +11,8 @@ type AnimatedTimelineProps = {
   summary?: string;
   timeline: TimelineEntry[];
 };
+
+const solutionLinks = ["/solution-standard", "/solution-practical", "/solution-consulting", "/solution-platform"];
 
 export function AnimatedTimeline({ title, eyebrow, description, summary, timeline }: AnimatedTimelineProps) {
   if (timeline.length === 0) return null;
@@ -35,10 +38,14 @@ export function AnimatedTimeline({ title, eyebrow, description, summary, timelin
       </div>
       <ol className="capability-orbit-stages">
         {timeline.map((entry, index) => {
-          return <li className={`capability-orbit-stage capability-orbit-stage-${index + 1}`} key={`${entry.year}-${index}`}>
+          const href = solutionLinks[index];
+          const contents = <>
             <span className="capability-orbit-link" aria-hidden="true" />
             <span className="capability-orbit-node" aria-hidden="true"><b>{entry.year}</b></span>
             <div className="capability-orbit-copy"><small>STAGE {entry.year}</small><h3>{entry.items[0] ?? entry.year}</h3><ul>{entry.items.slice(1).map((item) => <li key={item}>{item}</li>)}</ul></div>
+          </>;
+          return <li className={`capability-orbit-stage capability-orbit-stage-${index + 1}`} key={`${entry.year}-${index}`}>
+            {href ? <Link href={href} aria-label={`查看${entry.items[0] ?? entry.year}解决方案`}>{contents}</Link> : contents}
           </li>;
         })}
       </ol>

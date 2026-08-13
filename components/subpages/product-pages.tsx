@@ -210,6 +210,7 @@ function platformOverviewFor(page: Subpage) {
 function PageCta({ page }: ProductPageProps) {
   const section = page.sections.find((item) => item.id === "product-cta");
   const action = section?.items[0];
+  const href = isAllowedContentHref(action?.value) ? action?.value : undefined;
   return (
     <section className={`${styles.cta} page-reveal`} aria-labelledby="product-contact-title" data-motion="cta">
       <div>
@@ -217,10 +218,7 @@ function PageCta({ page }: ProductPageProps) {
         <h2 id="product-contact-title">{section?.title || `了解${page.title}如何适配企业真实的核算与管理流程`}</h2>
         <p>{section?.description || "从组织边界、数据口径到核算应用，获得与当前能力阶段匹配的产品建议。"}</p>
       </div>
-      <Link href={action?.value || "/#contact"}>
-        {action?.title || "预约产品演示"}
-        <ArrowRight size={18} aria-hidden="true" />
-      </Link>
+      {href ? <Link href={href}>{action?.title || "预约产品演示"}<ArrowRight size={18} aria-hidden="true" /></Link> : <span className={styles.ctaUnavailable} aria-disabled="true">{action?.title || "预约产品演示"}</span>}
     </section>
   );
 }
@@ -288,9 +286,10 @@ export function ExcelProductPage({ page }: ProductPageProps) {
               ))}
             </dl>
           </div>
-          <div data-motion="hero-visual">
-            <ProductVisual page={page} />
-          </div>
+          <a className={styles.heroDiagram} href={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"} target="_blank" rel="noreferrer" data-motion="hero-visual" aria-label="查看Excel标准化流程图原图">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"} alt="Excel温室气体核算标准化流程图" width={1200} height={800} />
+          </a>
         </div>
       </section>
 
@@ -327,11 +326,13 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <ProductMediaGallery
-        eyebrow="PRODUCT SCREENSHOTS"
-        title={screenshotSection?.title || "查看两个版本的完整产品界面"}
-        description={screenshotSection?.description || "切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"}
-        items={screenshotsFor(page, excelScreenshots)}
+      <ReferenceDiagram
+        eyebrow="STANDARDIZED PROCESS"
+        title={diagramSection?.title ?? "Excel 工具的数据维护与核算关系"}
+        description={diagramSection?.description ?? "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"}
+        src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
+        alt="Excel 温室气体核算工具的数据维护与核算关系图"
+        wide
       />
 
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
@@ -357,12 +358,11 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <ReferenceDiagram
-        eyebrow="核算方法"
-        title={diagramSection?.title ?? "Excel 工具的数据维护与核算关系"}
-        description={diagramSection?.description ?? "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"}
-        src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
-        alt="Excel 温室气体核算工具的数据维护与核算关系图"
+      <ProductMediaGallery
+        eyebrow="PRODUCT SCREENSHOTS"
+        title={screenshotSection?.title || "查看两个版本的完整产品界面"}
+        description={screenshotSection?.description || "切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。"}
+        items={screenshotsFor(page, excelScreenshots)}
       />
 
       <ProductResources page={page} />
@@ -601,6 +601,9 @@ export function PlatformProductPage({ page }: ProductPageProps) {
     ? foundationSection.items
     : platformPrinciples.map((item) => ({ title: item.title }));
   const overview = platformOverviewFor(page);
+  const enterpriseUrl = isAllowedContentHref(page.product?.enterpriseUrl) ? page.product?.enterpriseUrl : undefined;
+  const trialUrl = isAllowedContentHref(page.product?.trialUrl) ? page.product?.trialUrl : undefined;
+  const platformScreenshotItems = screenshotsFor(page, platformScreenshots);
 
   return (
     <>
@@ -611,14 +614,15 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             <h1>{page.title}</h1>
             <p className={styles.heroSummary}>{page.summary}</p>
             <div className={styles.platformHeroActions}>
-              <a className={styles.platformHeroLink} href={page.product?.enterpriseUrl || "/sample/"}>
-                进入企业端平台 <ExternalLink size={18} aria-hidden="true" />
-              </a>
-              <Link className={styles.platformSecondaryLink} href={page.product?.trialUrl || "/#contact"}>申请试用账号</Link>
+              {enterpriseUrl ? <a className={styles.platformHeroLink} href={enterpriseUrl}>进入企业端平台 <ExternalLink size={18} aria-hidden="true" /></a> : <span className={`${styles.platformHeroLink} ${styles.actionUnavailable}`} aria-disabled="true">进入企业端平台</span>}
+              {trialUrl ? <Link className={styles.platformSecondaryLink} href={trialUrl}>申请试用账号</Link> : <span className={`${styles.platformSecondaryLink} ${styles.actionUnavailable}`} aria-disabled="true">申请试用账号</span>}
             </div>
             <p className={styles.demoSafety}>企业端演示从官网跳转至专用入口；试用账号与数据权限将在申请审核后开通。</p>
           </div>
-          <ProductVisual page={page} />
+          <a className={styles.heroDiagram} href="/media/reference-diagrams/platform-architecture.svg" target="_blank" rel="noreferrer" aria-label="查看平台架构图原图">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/media/reference-diagrams/platform-architecture.svg" alt="企业碳管理数字化平台架构图" width={1200} height={800} />
+          </a>
         </div>
       </section>
 
@@ -649,8 +653,8 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       <ProductMediaGallery
         eyebrow="PLATFORM SCREENSHOTS"
         title={screenshotSection?.title || "从数据维护到多维分析的真实界面"}
-        description={screenshotSection?.description || "7 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。"}
-        items={screenshotsFor(page, platformScreenshots)}
+        description={screenshotSection?.description || `${platformScreenshotItems.length} 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。`}
+        items={platformScreenshotItems}
       />
 
       <section className={`${styles.platformVideo} ${styles.container}`} aria-labelledby="platform-video-title">
@@ -677,8 +681,8 @@ export function PlatformProductPage({ page }: ProductPageProps) {
         </div>
         <div className={styles.publicDemoActions}>
           {page.product?.publicReportUrl ? <a href={page.product.publicReportUrl} target="_blank" rel="noreferrer">{publicDemoActions[0]?.title || "查看公开数据报告"} <ExternalLink size={17} aria-hidden="true" /></a> : null}
-          <a href={page.product?.enterpriseUrl || "/sample/"}>{publicDemoActions[1]?.title || "进入企业端平台"} <ExternalLink size={17} aria-hidden="true" /></a>
-          <Link href={page.product?.trialUrl || "/#contact"}>{publicDemoActions[2]?.title || "申请试用账号"} <ArrowRight size={17} aria-hidden="true" /></Link>
+          {enterpriseUrl ? <a href={enterpriseUrl}>{publicDemoActions[1]?.title || "进入企业端平台"} <ExternalLink size={17} aria-hidden="true" /></a> : null}
+          {trialUrl ? <Link href={trialUrl}>{publicDemoActions[2]?.title || "申请试用账号"} <ArrowRight size={17} aria-hidden="true" /></Link> : null}
         </div>
       </section>
 

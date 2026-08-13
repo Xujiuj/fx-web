@@ -13,7 +13,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReferenceDiagram } from "@/components/reference-diagram";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
-import { isRuntimeManagedImage } from "@/lib/media-url";
+import { isAllowedContentHref, isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./service-page.module.css";
 
 type SectionItem = SubpageSection["items"][number];
@@ -117,6 +117,7 @@ export function ServicePage({ page }: { page: Subpage }) {
   const deliverablesSection = getSection(page, "service-deliverables");
   const ctaSection = getSection(page, "service-cta");
   const ctaAction = ctaSection?.items[0];
+  const ctaHref = isAllowedContentHref(ctaAction?.value) ? ctaAction?.value : undefined;
   const overviewItems = overviewSection?.items ?? titleItems(profile.suitableFor);
   const taskItems = tasksSection?.items ?? profile.tasks;
   const stepItems = stepsSection?.items ?? profile.steps;
@@ -180,7 +181,7 @@ export function ServicePage({ page }: { page: Subpage }) {
 
       <section className={`${styles.cta} page-reveal`} aria-label="联系顾问" data-motion="cta">
         <div><Database size={24} aria-hidden="true" /><span>{ctaSection?.description || "下一步"}</span><h2>{ctaSection?.title || `咨询${page.title}`}</h2></div>
-        <Link href={ctaAction?.value || "/#contact"}>{ctaAction?.title || "联系顾问"}<ArrowRight size={18} aria-hidden="true" /></Link>
+        {ctaHref ? <Link href={ctaHref}>{ctaAction?.title || "联系顾问"}<ArrowRight size={18} aria-hidden="true" /></Link> : <span className={styles.ctaUnavailable} aria-disabled="true">{ctaAction?.title || "联系顾问"}</span>}
       </section>
     </>
   );

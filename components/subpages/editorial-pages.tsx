@@ -39,16 +39,14 @@ function SectionLabel({ children }: { children: string }) {
 
 function ContactBand({ title, section }: { title: string; section?: SubpageSection }) {
   const action = section?.items[0];
+  const href = isAllowedContentHref(action?.value) ? action?.value : undefined;
   return (
     <section className={`${styles.contactBand} page-reveal`} aria-label="联系顾问" data-motion="cta">
       <div>
         <span>{section?.description || "下一步"}</span>
         <strong>{section?.title || title}</strong>
       </div>
-      <Link href={action?.value || "/#contact"}>
-        {action?.title || "联系顾问"}
-        <ArrowRight size={17} aria-hidden="true" />
-      </Link>
+      {href ? <Link href={href}>{action?.title || "联系顾问"}<ArrowRight size={17} aria-hidden="true" /></Link> : <span className={styles.contactActionUnavailable} aria-disabled="true">{action?.title || "联系顾问"}</span>}
     </section>
   );
 }
@@ -69,8 +67,6 @@ export function CasesPage({ page }: EditorialPageProps) {
   return (
     <>
       <section className={styles.caseHero}>
-        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="100vw" unoptimized={isRuntimeManagedImage(page.image)} />
-        <div className={styles.heroShade} aria-hidden="true" />
         <div className={`${styles.wrap} ${styles.caseHeroInner}`}>
           <div className={`${styles.caseHeroCopy} page-reveal`} data-motion="hero-copy">
             <SectionLabel>客户案例</SectionLabel>
@@ -147,14 +143,55 @@ const fallbackKnowledgeResources: SubpageSection["items"] = [
 ];
 const knowledgeResourceIcons = [Library, GraduationCap, FileSpreadsheet];
 
+type CourseDirectory = { name: string; courses: KnowledgeEntry[]; children: Map<string, CourseDirectory> };
+
+function courseCount(directory: CourseDirectory): number {
+  return directory.courses.length + [...directory.children.values()].reduce((total, child) => total + courseCount(child), 0);
+}
+
+function buildCourseDirectory(courses: KnowledgeEntry[]) {
+  const root: CourseDirectory = { name: "视频课程", courses: [], children: new Map() };
+  courses.forEach((course) => {
+    const path = course.category.split("/").map((part) => part.trim()).filter(Boolean);
+    const directories = path[0] === "视频课程" ? path.slice(1) : path;
+    const normalizedDirectories = directories.length ? directories : ["未分类"];
+    let current = root;
+    normalizedDirectories.forEach((name) => {
+      if (!current.children.has(name)) current.children.set(name, { name, courses: [], children: new Map() });
+      current = current.children.get(name)!;
+    });
+    current.courses.push(course);
+  });
+  return root;
+}
+
+function CourseDirectoryTree({ directory, depth = 0 }: { directory: CourseDirectory; depth?: number }) {
+  return <>
+    {[...directory.children.values()].map((child) => (
+      <details className={styles.courseDirectory} key={`${depth}-${child.name}`} open={depth === 0}>
+        <summary><span>{child.name}</span><small>{courseCount(child)} 课程</small></summary>
+        <div className={styles.courseDirectoryBody}>
+          {child.courses.map((course) => <Link href={`/knowledge-center/${course.slug}`} key={course.slug}><GraduationCap size={18} aria-hidden="true" /><span><strong>{course.title}</strong><small>{course.summary}</small></span><ArrowRight size={17} aria-hidden="true" /></Link>)}
+          <CourseDirectoryTree directory={child} depth={depth + 1} />
+        </div>
+      </details>
+    ))}
+  </>;
+}
+
 export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries }: EditorialPageProps & { knowledgeEntries?: KnowledgeEntry[] }) {
   const videoCourseSection = page.sections.find((section) => section.id === "video-courses");
+  const onlineClassroomSection = page.sections.find((section) => section.id === "online-classroom");
+  const onlineClassroom = onlineClassroomSection?.items[0];
+  const onlineClassroomHref = isAllowedContentHref(onlineClassroom?.value) ? onlineClassroom?.value : undefined;
   const downloadSection = page.sections.find((section) => section.id === "downloads");
   const downloads = downloadSection?.items.length ? downloadSection.items : fallbackKnowledgeResources;
   const ctaSection = page.sections.find((section) => section.id === "knowledge-cta");
   const policyArticles = knowledgeEntries.filter((entry) => entry.type === "article");
   const videoCourses = knowledgeEntries.filter((entry) => entry.type === "course");
-  const featuredArticle = policyArticles[0];
+  const latestArticles = policyArticles.slice(0, 3);
+  const featuredArticle = latestArticles[0];
+  const courseDirectory = buildCourseDirectory(videoCourses);
 
   return (
     <>
@@ -185,10 +222,10 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
         </article>
         <div className={styles.topicIndex} data-motion-role="visual">
           <header data-motion-role="copy">
-            <span>政策文章</span>
-            <small>{String(policyArticles.length).padStart(2, "0")} ARTICLES</small>
+            <span>最新文章</span>
+            <Link href="/knowledge-center/articles">更多文章 <ArrowRight size={15} aria-hidden="true" /></Link>
           </header>
-          {policyArticles.map((article, index) => {
+          {latestArticles.slice(1).map((article, index) => {
             const contents = <><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{article.title}</h3><small>{article.meta}</small></div><ArrowRight size={18} aria-hidden="true" /></>;
             return article.sourceHref ? (
               <a href={article.sourceHref} target="_blank" rel="noreferrer" key={article.slug} data-motion-role="item">{contents}</a>
@@ -203,18 +240,13 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
             <SectionLabel>视频课程</SectionLabel>
             <h2 id="learning-path-title">{videoCourseSection?.title || "循序进入企业碳管理"}</h2>
             <p>{videoCourseSection?.description || "从入门方法到工具实战、集团体系与平台应用，逐步建立企业内部能力。"}</p>
+            {onlineClassroomHref ? (
+              <a className={styles.onlineClassroomLink} href={onlineClassroomHref} target="_blank" rel="noreferrer">{onlineClassroom?.title || "进入在线课堂"}<ArrowRight size={16} aria-hidden="true" /></a>
+            ) : onlineClassroom ? (
+              <span className={styles.onlineClassroomUnavailable} aria-disabled="true">{onlineClassroom.title || "在线课堂暂未开放"}</span>
+            ) : null}
           </div>
-          <ol className={styles.learningPath}>
-            {videoCourses.map((course, index) => (
-              <li key={course.slug} data-motion-role="item">
-                <Link href={`/knowledge-center/${course.slug}`}>
-                  <span>{String(index + 1).padStart(2, "0")}</span>
-                  <div><strong>{course.title}</strong><small>{course.summary}</small></div>
-                  <i aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
-          </ol>
+          <div className={styles.courseCatalog} data-motion-role="visual"><CourseDirectoryTree directory={courseDirectory} /></div>
         </div>
       </section>
 

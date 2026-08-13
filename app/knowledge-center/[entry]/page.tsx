@@ -5,7 +5,8 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getHomeContent, getKnowledgeEntries, getKnowledgeEntry } from "@/lib/cms-content";
 import { courseVideoPlaceholderHref, knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
-import { getManagedVideoStreamUrl } from "@/lib/media-url";
+import { getManagedVideoStreamUrl, isAllowedContentHref, isRuntimeManagedImage } from "@/lib/media-url";
+import Image from "next/image";
 import styles from "./knowledge-entry.module.css";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ entry: st
   const { entry: slug } = await params;
   const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
-  return { title: `${entry.title} - 峰行智成知识课堂`, description: entry.summary };
+  return { title: `${entry.title} - 峰行智成资料中心`, description: entry.summary };
 }
 
 export default async function KnowledgeEntryPage({ params }: { params: Promise<{ entry: string }> }) {
@@ -33,6 +34,7 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
     : undefined;
   const videoSrc = entry.type === "course" ? configuredVideoSrc || courseVideoPlaceholderHref : undefined;
   const usesVideoPlaceholder = entry.type === "course" && !configuredVideoSrc;
+  const externalHref = entry.type === "course" && isAllowedContentHref(entry.externalHref) ? entry.externalHref : undefined;
 
   return (
     <>
@@ -41,7 +43,7 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <nav aria-label="面包屑">
-              <Link href="/knowledge-center"><ArrowLeft size={15} aria-hidden="true" />返回知识课堂</Link>
+              <Link href="/knowledge-center"><ArrowLeft size={15} aria-hidden="true" />返回资料中心</Link>
             </nav>
             <div className={styles.category}><EntryIcon size={18} aria-hidden="true" />{entry.category}</div>
             <h1>{entry.title}</h1>
@@ -52,6 +54,10 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
 
         <div className={styles.contentLayout}>
           <article className={styles.article}>
+            {entry.coverImage ? (
+              <Image className={styles.courseCover} src={entry.coverImage} alt={`${entry.title}课程封面`} width={3334} height={2084} sizes="(max-width: 800px) calc(100vw - 48px), 762px" priority unoptimized={isRuntimeManagedImage(entry.coverImage)} />
+            ) : null}
+
             {entry.type === "course" && videoSrc ? (
               <section className={styles.videoSection} aria-labelledby="course-video-title">
                 <span>{usesVideoPlaceholder ? "COURSE PREVIEW" : "COURSE VIDEO"}</span>
@@ -80,10 +86,10 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
                 <span>政策原文</span>
                 <a href={entry.sourceHref} target="_blank" rel="noreferrer">{entry.sourceName}<ExternalLink size={16} aria-hidden="true" /></a>
               </aside>
-            ) : entry.type === "course" && !entry.videoHref ? (
+            ) : entry.type === "course" && externalHref ? (
               <aside className={styles.courseCta}>
-                <div><span>COURSE ACCESS</span><strong>获取完整课程与企业内训安排</strong></div>
-                <Link href="/#contact">联系课程顾问 <ArrowRight size={17} aria-hidden="true" /></Link>
+                <div><span>COURSE ACCESS</span><strong>观看完整课程</strong></div>
+                <a href={externalHref} target="_blank" rel="noreferrer">{entry.externalLabel || "前往课程平台"} <ExternalLink size={17} aria-hidden="true" /></a>
               </aside>
             ) : null}
           </article>

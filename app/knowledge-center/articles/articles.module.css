@@ -1,0 +1,27 @@
+.page { color: #4d4d4d; background: #fff; }
+.wrap { width: min(calc(100% - 48px), 1120px); margin-inline: auto; }
+.hero { padding: 80px 0 72px; color: #fff; background: #e95513; }
+.hero a { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 54px; color: rgba(255, 255, 255, .82); font-size: 13px; font-weight: 700; }
+.hero span { display: block; color: #ffd477; font-size: 12px; font-weight: 800; }
+.hero h1 { margin: 12px 0 18px; color: #fff; font-size: clamp(44px, 6vw, 68px); letter-spacing: 0; }
+.hero p { max-width: 620px; margin: 0; color: rgba(255, 255, 255, .84); font-size: 17px; line-height: 1.8; }
+.list { padding-block: 64px 96px; }
+.list > a { display: grid; grid-template-columns: 46px 32px minmax(0, 1fr) 24px; gap: 18px; align-items: start; padding: 32px 10px; border-bottom: 1px solid #eadbca; }
+.list > a:first-child { border-top: 2px solid #4d4d4d; }
+.list > a > span { color: #b7551b; font-size: 12px; font-weight: 800; }
+.list > a > svg { color: #e95513; }
+.list h2 { margin: 8px 0 10px; color: #4d4d4d; font-size: 24px; line-height: 1.45; }
+.list small { color: #8a7667; font-weight: 700; }
+.list p { margin: 0; color: #6e655a; line-height: 1.75; }
+.list > a:hover h2 { color: #b7551b; }
+.list > a:focus-visible { outline: 3px solid #f7b52c; outline-offset: 3px; }
+.empty { padding: 42px 0; color: #6e655a; }
+@media (max-width: 680px) {
+  .wrap { width: calc(100% - 36px); }
+  .hero { padding: 58px 0; }
+  .hero a { margin-bottom: 38px; }
+  .list { padding-block: 42px 72px; }
+  .list > a { grid-template-columns: 32px 24px minmax(0, 1fr); gap: 12px; padding: 26px 0; }
+  .list > a > svg:last-child { display: none; }
+  .list h2 { font-size: 20px; }
+}

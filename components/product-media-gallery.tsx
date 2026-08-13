@@ -74,7 +74,7 @@ export function ProductMediaGallery({
   );
 }
 
-export function PlatformOverview({ items, title = "三项能力，贯穿企业碳数据全流程", description = "选择一项能力查看对应说明和真实界面，避免在长页面中重复铺陈同类内容。" }: { items: PlatformOverviewItem[]; title?: string; description?: string }) {
+export function PlatformOverview({ items, title = "平台三项核心优势", description = "选择一项能力查看对应说明和真实界面，避免在长页面中重复铺陈同类内容。" }: { items: PlatformOverviewItem[]; title?: string; description?: string }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const generatedId = useId();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);

@@ -53,6 +53,22 @@
   height: auto;
 }
 
+.wide {
+  grid-template-columns: 1fr;
+  width: min(calc(100% - 48px), 1320px);
+}
+
+.wide .caption {
+  grid-template-columns: 180px minmax(0, 1fr);
+  padding: 0 0 24px;
+  border-right: 0;
+  border-bottom: 1px solid #dbe5df;
+}
+
+.wide .canvas {
+  padding: clamp(8px, 1.2vw, 16px);
+}
+
 .openOriginal {
   position: absolute;
   right: 12px;

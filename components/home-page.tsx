@@ -15,13 +15,11 @@ import {
   Sparkles,
   Workflow
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { FormEvent, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import type { HomeContent, HomeEditorialContent, IconKey } from "@/lib/cms-content";
-import { isRuntimeManagedImage } from "@/lib/media-url";
 import { AnimatedTimeline } from "./animated-timeline";
 import { SiteFooter } from "./site-footer";
 
@@ -47,8 +45,8 @@ export function HomePage({ content }: { content: HomeContent }) {
       <HeroCarousel slides={content.heroSlides} />
       <AnimatedTimeline
         eyebrow={editorial.path.eyebrow}
-        title={editorial.path.title}
-        description={editorial.path.description}
+        title={editorial.path.description || editorial.path.title}
+        description={editorial.path.title}
         summary={editorial.path.summary}
         timeline={content.timeline}
       />
@@ -122,25 +120,13 @@ function HeroCarousel({ slides }: { slides: HomeContent["heroSlides"] }) {
       <div className="hero-gradient" aria-hidden="true" />
       <div className="hero-fade-stage">
         <article className="hero-slide is-active" key={slide.title}>
-          <Image
-            className="hero-bg"
-            src={slide.image}
-            alt=""
-            fill
-            priority={selected === 0}
-            sizes="100vw"
-            unoptimized={isRuntimeManagedImage(slide.image)}
-          />
           <div className="hero-copy" aria-live="polite">
             <p className="hero-copy-eyebrow">{slide.eyebrow}</p>
             <div className="hero-copy-title"><HeroTitle title={slide.title} /></div>
             <span className="hero-description hero-copy-body">{slide.description}</span>
             <div className="hero-actions hero-copy-actions">
-              <Link className="outline-button" href={slide.href ?? "/#contact"}>
-                {slide.cta}
-                <ArrowRight size={16} />
-              </Link>
-              {slide.secondaryCta ? <Link className="hero-secondary-link" href={slide.secondaryHref ?? "/#contact"}>{slide.secondaryCta}</Link> : null}
+              {slide.href ? <Link className="outline-button" href={slide.href}>{slide.cta}<ArrowRight size={16} /></Link> : <span className="outline-button is-disabled" aria-disabled="true">{slide.cta}</span>}
+              {slide.secondaryCta ? slide.secondaryHref ? <Link className="hero-secondary-link" href={slide.secondaryHref}>{slide.secondaryCta}</Link> : <span className="hero-secondary-link is-disabled" aria-disabled="true">{slide.secondaryCta}</span> : null}
             </div>
           </div>
         </article>
@@ -277,14 +263,6 @@ function LatestUpdatesSection({ title, items }: { title: string; items: HomeCont
           {items.map((item, index) => (
             <Link className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
               <span className="latest-update-drawer" aria-hidden="true" />
-              <Image
-                src={item.image}
-                alt=""
-                fill
-                sizes="(max-width: 720px) calc(100vw - 36px), (max-width: 1100px) 50vw, 720px"
-                unoptimized={isRuntimeManagedImage(item.image)}
-              />
-              <span className="latest-update-shade" aria-hidden="true" />
               <div className="latest-update-copy">
                 <span className="latest-update-meta">{item.action}</span>
                 <h3>{item.title}</h3>

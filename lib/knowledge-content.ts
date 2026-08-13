@@ -10,6 +10,7 @@ type KnowledgeEntryBase = {
   title: string;
   summary: string;
   meta: string;
+  coverImage?: string;
   sections: KnowledgeSection[];
 };
 
@@ -19,12 +20,16 @@ export type KnowledgeEntry =
       sourceName?: string;
       sourceHref?: string;
       videoHref?: never;
+      externalHref?: never;
+      externalLabel?: never;
     })
   | (KnowledgeEntryBase & {
       type: "course";
       sourceName?: never;
       sourceHref?: never;
       videoHref?: string;
+      externalHref?: string;
+      externalLabel?: string;
     });
 
 export const courseVideoPlaceholderHref =
@@ -34,6 +39,8 @@ export function normalizeKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
   if (entry.type === "article") {
     const article = { ...entry };
     delete article.videoHref;
+    delete article.externalHref;
+    delete article.externalLabel;
     return article;
   }
   const course = { ...entry };
@@ -107,9 +114,42 @@ export const policyArticles: KnowledgeEntry[] = [
 
 export const videoCourses: KnowledgeEntry[] = [
   {
+    slug: "excel-minimalist-revolution",
+    type: "course",
+    category: "效率课程/Excel实战",
+    title: "Excel极简革命",
+    summary: "破解复杂报表困局，重塑数据价值，从低效加班走向高效分析。",
+    meta: "实战课程 · 9 个章节",
+    coverImage: "/materials/20260813/excel-minimalist-revolution-cover.png",
+    externalHref: "https://www.bilibili.com/cheese/play/ss106298988?query_from=0&search_id=163709088777582423898&search_query=Excel%E6%B8%A9%E5%AE%A4%E6%B0%94%E4%BD%93%E6%A0%B8%E7%AE%97&scource=common_hpsearch_null_null&spm_id_from=333.337.search-card.all.click",
+    externalLabel: "前往 B 站观看课程",
+    sections: [
+      {
+        heading: "你将收获",
+        bullets: ["理解企业复杂报表产生的根本原因", "掌握“三表独立”数据分析方法论", "掌握 Power Query 数据清洗与转换", "掌握 Power Pivot 数据建模核心思想", "提升数据分析效率与业务决策能力", "从表格操作员成长为数据分析者"],
+      },
+      {
+        heading: "课程介绍",
+        paragraphs: ["随着数据量增加和业务复杂度提升，很多企业逐渐陷入数据杂乱、报表复杂、文件难维护和重复加班的困局。真正拉开效率差距的不是零散技巧，而是方法。", "《Excel极简革命》从企业真实业务场景出发，通过数据规范化、关系建模、数据透视表、Power Query、Power Pivot 与数据可视化，帮助学员建立完整的数据分析体系。"],
+      },
+      {
+        heading: "适合人群",
+        bullets: ["财务、行政、人力资源与办公人员", "销售、生产及企业管理人员", "数据分析人员", "需要使用 Excel 处理数据和制作报表的职场人士"],
+      },
+      {
+        heading: "讲师介绍",
+        paragraphs: ["宫亚峰，新疆峰行智成数据科技有限责任公司总经理，Excel / Power BI 专家。拥有 7 年制造业数据分析经验与 5 年 Power BI 业务实践经验，擅长从企业实际业务场景提炼可落地的方法论。"],
+      },
+      {
+        heading: "课程大纲",
+        bullets: ["第1章 课程介绍", "第2章 Excel 数据分析思路优化", "第3章 案例：某餐厅经营分析报告", "第4章 数据透视表的七大类计算", "第5章 Power Pivot 核心用法", "第6章 数据可视化", "第7章 报告输出", "第8章 Power Query 数据清洗", "第9章 总结"],
+      },
+    ],
+  },
+  {
     slug: "enterprise-carbon-accounting-intro",
     type: "course",
-    category: "视频课程",
+    category: "核算课程/入门基础",
     title: "企业碳核算入门",
     summary: "理解组织边界、运营边界、排放源和活动数据，建立企业温室气体核算的完整认识。",
     meta: "入门课程 · 4 个单元",
@@ -122,7 +162,7 @@ export const videoCourses: KnowledgeEntry[] = [
   {
     slug: "excel-accounting-practice",
     type: "course",
-    category: "视频课程",
+    category: "核算课程/Excel实战",
     title: "Excel核算实战",
     summary: "使用Excel工具完成数据维护、因子配置、排放计算与结果复核。",
     meta: "实战课程 · 5 个单元",
@@ -131,7 +171,7 @@ export const videoCourses: KnowledgeEntry[] = [
   {
     slug: "group-accounting-system",
     type: "course",
-    category: "视频课程",
+    category: "核算课程/集团体系",
     title: "集团核算体系建设",
     summary: "统一成员企业数据模板、核算口径、复核流程与集团汇总规则。",
     meta: "进阶课程 · 4 个单元",
@@ -140,7 +180,7 @@ export const videoCourses: KnowledgeEntry[] = [
   {
     slug: "digital-platform-training",
     type: "course",
-    category: "视频课程",
+    category: "平台课程/操作培训",
     title: "数字化平台培训",
     summary: "掌握平台数据维护、自动核算、分析视图和结果追溯的操作流程。",
     meta: "平台课程 · 4 个单元",
@@ -150,7 +190,7 @@ export const videoCourses: KnowledgeEntry[] = [
   {
     slug: "esg-foundation",
     type: "course",
-    category: "视频课程",
+    category: "专题课程/ESG基础",
     title: "ESG基础课程",
     summary: "理解ESG信息披露中的气候与碳排放数据要求，建立跨部门协作框架。",
     meta: "基础课程 · 4 个单元",

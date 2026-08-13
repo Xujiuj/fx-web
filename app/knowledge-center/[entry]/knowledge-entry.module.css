@@ -117,6 +117,14 @@
   margin-top: 56px;
 }
 
+.courseCover {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-bottom: 56px;
+  border-radius: 4px;
+}
+
 .article h2 {
   margin: 0 0 20px;
   padding-left: 16px;

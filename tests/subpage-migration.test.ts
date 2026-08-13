@@ -61,6 +61,15 @@ test("v3 adds only v4 knowledge modules without restoring deleted v3 modules", (
   assert.deepEqual(migrated.sections.map((item) => item.id), ["downloads", "video-courses"]);
 });
 
+test("v4 adds the configured online classroom without restoring older modules", () => {
+  const page: TestPage = { slug: "knowledge-center", schemaVersion: 4, sections: [section("downloads")] };
+  const fallback: TestPage = { slug: "knowledge-center", schemaVersion: 5, sections: [section("video-courses"), section("online-classroom", [{ title: "进入在线课堂" }])] };
+
+  const migrated = migrateStoredSubpage(page, fallback, 5);
+
+  assert.deepEqual(migrated.sections.map((section) => section.id), ["downloads", "online-classroom"]);
+});
+
 test("v2 upgrading directly to v4 receives cumulative section additions", () => {
   const page: TestPage = { slug: "knowledge-center", schemaVersion: 2, sections: [] };
   const fallback: TestPage = {

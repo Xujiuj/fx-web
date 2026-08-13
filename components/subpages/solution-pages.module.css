@@ -1439,7 +1439,8 @@
   line-height: 1.35;
 }
 
-.solutionCta a {
+.solutionCta a,
+.ctaUnavailable {
   display: inline-flex;
   flex: 0 0 auto;
   align-items: center;
@@ -1450,6 +1451,11 @@
   color: #fff;
   font-size: 14px;
   font-weight: 700;
+}
+
+.ctaUnavailable {
+  opacity: 0.58;
+  cursor: default;
 }
 
 .solutionCta a:hover,

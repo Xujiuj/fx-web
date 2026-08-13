@@ -12,7 +12,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReferenceDiagram } from "@/components/reference-diagram";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
-import { isRuntimeManagedImage } from "@/lib/media-url";
+import { isAllowedContentHref, isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./solution-pages.module.css";
 
 type SolutionPageProps = { page: Subpage };
@@ -244,6 +244,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
   const diagramSection = getSection(page, "solution-diagram");
   const ctaSection = getSection(page, "solution-cta");
   const ctaAction = ctaSection?.items[0];
+  const ctaHref = isAllowedContentHref(ctaAction?.value) ? ctaAction?.value : undefined;
   const fitItems = fitSection?.items ?? titleItems(framework.suitableFor);
   const problemItems = problemsSection?.items ?? titleItems(framework.problems);
   const deliverableItems = deliverableSection?.items ?? [{ title: framework.deliverable, description: framework.deliverableDescription }];
@@ -370,10 +371,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           <span>{ctaSection?.description || "下一步"}</span>
           <h2>{ctaSection?.title || `咨询${page.title}`}</h2>
         </div>
-        <Link href={ctaAction?.value || "/#contact"}>
-          {ctaAction?.title || "联系顾问"}
-          <ArrowRight aria-hidden="true" size={18} />
-        </Link>
+        {ctaHref ? <Link href={ctaHref}>{ctaAction?.title || "联系顾问"}<ArrowRight aria-hidden="true" size={18} /></Link> : <span className={styles.ctaUnavailable} aria-disabled="true">{ctaAction?.title || "联系顾问"}</span>}
       </section>
     </>
   );

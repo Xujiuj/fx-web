@@ -89,7 +89,7 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
   if (!(home.certificateImages as unknown[]).every((item) => item === "" || isLocalContentPath(item))) return "证书图片必须使用站内路径";
   if (!(home.partners as unknown[]).every((item) => isRecord(item) && typeof item.name === "string" && (item.logo === "" || item.logo === undefined || isLocalContentPath(item.logo)))) return "伙伴名称或 Logo 路径无效";
   if (!isRecord(home.contact) || !Object.values(home.contact).every((value) => typeof value === "string")) return "联系区文案结构无效";
-  if (!isRecord(home.footer) || typeof home.footer.copyright !== "string" || typeof home.footer.icpText !== "string" || !isAllowedContentHref(home.footer.icpHref) || typeof home.footer.ipv6Text !== "string" || !isOptionalString(home.footer.wecomTitle) || !isOptionalString(home.footer.wecomDescription) || (home.footer.wecomEmail !== undefined && home.footer.wecomEmail !== "service@fengxingdata.com") || (home.footer.wecomAvatar !== undefined && !isLocalContentPath(home.footer.wecomAvatar)) || (home.footer.wecomQr !== undefined && !isLocalContentPath(home.footer.wecomQr)) || (home.footer.wecomOpenByDefault !== undefined && typeof home.footer.wecomOpenByDefault !== "boolean")) return "页脚或企业微信配置无效";
+  if (!isRecord(home.footer) || typeof home.footer.copyright !== "string" || typeof home.footer.icpText !== "string" || !isAllowedContentHref(home.footer.icpHref) || typeof home.footer.ipv6Text !== "string" || !isOptionalString(home.footer.wecomTitle) || !isOptionalString(home.footer.wecomDescription) || (home.footer.wecomEmail !== undefined && home.footer.wecomEmail !== "service@fengxingdata.com") || (home.footer.wecomAvatar !== undefined && !isLocalContentPath(home.footer.wecomAvatar)) || (home.footer.wecomQr !== undefined && !isLocalContentPath(home.footer.wecomQr)) || !isOptionalAllowedContentHref(home.footer.customerServiceHref) || (home.footer.customerServiceQr !== undefined && !isLocalContentPath(home.footer.customerServiceQr)) || (home.footer.wecomOpenByDefault !== undefined && typeof home.footer.wecomOpenByDefault !== "boolean")) return "页脚或企业微信配置无效";
   if (!isRecord(home.editorial) || !isRecord(home.editorial.path) || !isRecord(home.editorial.headings)) return "首页内容结构无效";
   for (const key of ["drivers", "challenges", "managementPath", "services", "cases"] as const) {
     const heading = home.editorial.headings[key];
@@ -121,7 +121,7 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
       return "子页面模块结构、下载链接或图片路径无效: " + page.slug;
     }
   }
-  if (!Array.isArray(knowledge)) return "知识课堂配置必须是数组";
+  if (!Array.isArray(knowledge)) return "资料中心配置必须是数组";
   const knowledgeSlugs = new Set<string>();
   for (const entry of knowledge) {
     if (!isRecord(entry) || !isContentSlug(entry.slug)) return "知识内容 URL 标识只能使用小写字母、数字和单个连字符分隔";
@@ -129,10 +129,11 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
     knowledgeSlugs.add(entry.slug);
     if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !Array.isArray(entry.sections)) return "知识内容结构无效: " + entry.slug;
     if (entry.type === "article") {
-      if (!isOptionalString(entry.sourceName) || (entry.sourceHref !== undefined && entry.sourceHref !== "" && !isHttpsContentUrl(entry.sourceHref)) || (entry.videoHref !== undefined && entry.videoHref !== "")) return "文章只能配置政策原文，不能绑定课程视频: " + entry.slug;
-    } else if (!isOptionalAllowedContentHref(entry.videoHref) || (entry.sourceName !== undefined && entry.sourceName !== "") || (entry.sourceHref !== undefined && entry.sourceHref !== "")) {
+      if (!isOptionalString(entry.sourceName) || (entry.sourceHref !== undefined && entry.sourceHref !== "" && !isHttpsContentUrl(entry.sourceHref)) || (entry.videoHref !== undefined && entry.videoHref !== "") || (entry.externalHref !== undefined && entry.externalHref !== "") || (entry.externalLabel !== undefined && entry.externalLabel !== "")) return "文章只能配置政策原文，不能绑定课程视频: " + entry.slug;
+    } else if (!isOptionalAllowedContentHref(entry.videoHref) || !isOptionalAllowedContentHref(entry.externalHref) || !isOptionalString(entry.externalLabel) || (entry.sourceName !== undefined && entry.sourceName !== "") || (entry.sourceHref !== undefined && entry.sourceHref !== "")) {
       return "视频课程只能配置课程视频，不能绑定政策原文: " + entry.slug;
     }
+    if (entry.coverImage !== undefined && entry.coverImage !== "" && !isLocalContentPath(entry.coverImage)) return "课程封面必须使用站内路径: " + entry.slug;
     if (!entry.sections.every((section) => isRecord(section) && typeof section.heading === "string" && (section.paragraphs === undefined || (Array.isArray(section.paragraphs) && section.paragraphs.every((value) => typeof value === "string"))) && (section.bullets === undefined || (Array.isArray(section.bullets) && section.bullets.every((value) => typeof value === "string"))))) return "知识内容正文无效: " + entry.slug;
   }
   return null;

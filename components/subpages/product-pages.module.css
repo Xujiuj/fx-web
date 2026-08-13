@@ -126,6 +126,20 @@
   font-size: 12px;
 }
 
+.heroDiagram {
+  position: absolute;
+  right: 0;
+  bottom: 58px;
+  display: block;
+  width: min(52%, 640px);
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, .55);
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .2);
+}
+
+.heroDiagram img { display: block; width: 100%; height: auto; }
+
 .heroMetrics dd {
   margin: 7px 0 0;
   color: #fff;
@@ -1295,7 +1309,8 @@
   font-size: 14px;
 }
 
-.cta > a {
+.cta > a,
+.ctaUnavailable {
   display: inline-flex;
   min-height: 48px;
   flex: 0 0 auto;
@@ -1307,6 +1322,13 @@
   font-size: 14px;
   font-weight: 700;
   transition: color 240ms ease, background-color 240ms ease;
+}
+
+.ctaUnavailable,
+.actionUnavailable {
+  opacity: 0.58;
+  cursor: default;
+  pointer-events: none;
 }
 
 .cta > a:hover,
@@ -1853,12 +1875,12 @@
   padding: 38px;
   border-radius: 6px;
   align-items: center;
-  background: #103c32;
+  background: var(--primary-strong);
   color: #fff;
 }
 
 .publicDemo > div:first-child > span {
-  color: #8fd5c2;
+  color: #ffd477;
   font-size: 11px;
   font-weight: 800;
 }
@@ -1895,9 +1917,9 @@
 }
 
 .publicDemoActions a:first-child {
-  border-color: #8fd5c2;
+  border-color: #fff;
   background: #fff;
-  color: #103c32;
+  color: var(--primary-strong);
 }
 
 .productResources {
@@ -1948,6 +1970,12 @@
   .publicDemoActions {
     max-width: none;
     justify-content: flex-start;
+  }
+
+  .heroDiagram {
+    position: static;
+    width: 100%;
+    margin-top: 36px;
   }
 }
 
@@ -2392,4 +2420,25 @@
 
 .platformHero .demoSafety {
   color: var(--muted);
+}
+
+/* All brand-orange panels retain readable text at WCAG-oriented contrast levels. */
+.principleBand h2,
+.principleBand h3,
+.principleBand strong,
+.dataFlow h2,
+.dataFlow h3,
+.dataFlow strong,
+.architectureCore strong,
+.cta h2,
+.cta strong {
+  color: #fff;
+}
+
+.principleBand p,
+.dataFlow p,
+.dataFlow small,
+.architectureCore span,
+.cta p {
+  color: rgba(255, 255, 255, .84);
 }

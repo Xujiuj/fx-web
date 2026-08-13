@@ -7,11 +7,12 @@ type ReferenceDiagramProps = {
   description: string;
   src: string;
   alt: string;
+  wide?: boolean;
 };
 
-export function ReferenceDiagram({ eyebrow, title, description, src, alt }: ReferenceDiagramProps) {
+export function ReferenceDiagram({ eyebrow, title, description, src, alt, wide = false }: ReferenceDiagramProps) {
   return (
-    <figure className={`${styles.figure} page-reveal`} data-motion="diagram" data-motion-group="diagram">
+    <figure className={`${styles.figure} ${wide ? styles.wide : ""} page-reveal`} data-motion="diagram" data-motion-group="diagram">
       <figcaption className={styles.caption} data-motion-role="copy">
         <span>{eyebrow}</span>
         <div>

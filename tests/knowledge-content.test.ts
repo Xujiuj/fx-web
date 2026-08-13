@@ -13,6 +13,8 @@ test("removes course-only fields from articles", () => {
     sections: [],
     sourceHref: "https://mp.weixin.qq.com/s/example",
     videoHref: "/media/videos/legacy.mp4",
+    externalHref: "https://www.bilibili.com/video/example",
+    externalLabel: "观看课程",
   } as unknown as KnowledgeEntry;
 
   assert.deepEqual(normalizeKnowledgeEntry(article), {
@@ -39,6 +41,8 @@ test("removes article-only fields from courses", () => {
     sourceName: "旧政策来源",
     sourceHref: "https://mp.weixin.qq.com/s/legacy",
     videoHref: "/media/videos/course.mp4",
+    externalHref: "https://www.bilibili.com/video/example",
+    externalLabel: "前往观看",
   } as unknown as KnowledgeEntry;
 
   assert.deepEqual(normalizeKnowledgeEntry(course), {
@@ -50,6 +54,8 @@ test("removes article-only fields from courses", () => {
     meta: "入门课程",
     sections: [],
     videoHref: "/media/videos/course.mp4",
+    externalHref: "https://www.bilibili.com/video/example",
+    externalLabel: "前往观看",
   });
 });
 
@@ -66,4 +72,21 @@ test("keeps an explicit empty course video binding", () => {
   };
 
   assert.equal(normalizeKnowledgeEntry(course).videoHref, "");
+});
+
+test("keeps course cover and external access fields", () => {
+  const course: KnowledgeEntry = {
+    slug: "course-with-external-access",
+    type: "course",
+    category: "视频课程",
+    title: "外链课程",
+    summary: "摘要",
+    meta: "课程",
+    coverImage: "/materials/course-cover.png",
+    externalHref: "https://www.bilibili.com/video/example",
+    externalLabel: "前往观看",
+    sections: [],
+  };
+
+  assert.deepEqual(normalizeKnowledgeEntry(course), course);
 });

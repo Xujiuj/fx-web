@@ -47,7 +47,7 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   home: { title: "首页编排", description: "维护首页横幅、首页内容与能力路径。" },
   news: { title: "最新动态", description: "维护首页最新动态的标题、摘要、图片与跳转链接。" },
   pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" },
-  knowledge: { title: "知识课堂", description: "管理双碳专栏文章、视频课程与详情页正文。" }
+  knowledge: { title: "资料中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
 };
 
 function optionalHrefRule(message: string, validate: (value: unknown) => boolean = isOptionalAllowedContentHref) {
@@ -256,7 +256,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
     { key: "navigation", label: "导航配置" },
     { key: "home", label: "首页内容" },
     { key: "news", label: "最新动态" },
-    { key: "knowledge", label: "知识课堂" },
+    { key: "knowledge", label: "资料中心" },
     { key: "website-menu", label: "官网栏目", children: home.navItems.map((item, index) => ({ key: `menu-${index}`, label: item.label })) },
     { key: "pages", label: "全部页面" }
   ];
@@ -350,7 +350,7 @@ function HomeSettings({ home, onCommit, busy }: { home: HomeContent; onCommit: (
   const { active: activeUploads } = useContext(UploadActivityContext);
   const uploadLocked = activeUploads > 0;
   const [open, setOpen] = useState(false);
-  return <Card title="首页与全站文案" extra={<Tooltip title="编辑首页与全站文案"><Button type="text" icon={<EditOutlined />} aria-label="编辑首页与全站文案" onClick={() => setOpen(true)} /></Tooltip>}><ModalForm open={open} width={920} initialValues={home} modalProps={{ destroyOnHidden: true, closable: !uploadLocked, keyboard: !uploadLocked, maskClosable: !uploadLocked, onCancel: () => { if (!uploadLocked) setOpen(false); } }} submitter={{ submitButtonProps: { loading: busy || uploadLocked, disabled: uploadLocked }, resetButtonProps: { disabled: uploadLocked } }} onFinish={async (values) => { if (uploadLocked) return false; const saved = await onCommit((current) => ({ ...current, sectionTitles: { ...current.sectionTitles, ...values.sectionTitles }, thinkingText: values.thinkingText, contact: { ...current.contact, ...values.contact }, footer: { ...current.footer, ...values.footer } })); if (saved) setOpen(false); return saved; }}><ProFormText name={["sectionTitles", "news"]} label="最新动态标题" rules={[{ required: true }]} /><ProFormText name={["sectionTitles", "thinkingEyebrow"]} label="品牌定位英文标识" /><ProFormText name={["sectionTitles", "thinkingTitle"]} label="品牌定位标题" rules={[{ required: true }]} /><ProFormTextArea name="thinkingText" label="品牌定位正文" rules={[{ required: true }]} /><ProFormText name={["contact", "title"]} label="联系区标题" rules={[{ required: true }]} /><ProFormTextArea name={["contact", "description"]} label="联系区说明" rules={[{ required: true }]} /><ProFormText name={["contact", "namePlaceholder"]} label="联系人提示" rules={[{ required: true }]} /><ProFormText name={["contact", "companyPlaceholder"]} label="企业名称提示" rules={[{ required: true }]} /><ProFormText name={["contact", "contactPlaceholder"]} label="手机号/微信号提示" rules={[{ required: true }]} /><ProFormText name={["contact", "emailPlaceholder"]} label="联系邮箱提示" rules={[{ required: true }]} /><ProFormText name={["contact", "messagePlaceholder"]} label="需求说明提示" rules={[{ required: true }]} /><ProFormText name={["contact", "submitLabel"]} label="提交按钮文字" rules={[{ required: true }]} /><ProFormText name={["contact", "successLabel"]} label="提交成功提示" rules={[{ required: true }]} /><ProFormText name={["contact", "errorLabel"]} label="提交失败提示" rules={[{ required: true }]} /><ProFormText name={["footer", "copyright"]} label="页脚版权" rules={[{ required: true }]} /><ProFormText name={["footer", "icpText"]} label="备案文字" rules={[{ required: true }]} /><ProFormText name={["footer", "icpHref"]} label="备案链接" rules={[{ required: true }]} /><ProFormText name={["footer", "ipv6Text"]} label="页脚补充信息" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomTitle"]} label="企业微信浮窗标题" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomDescription"]} label="企业微信浮窗说明" rules={[{ required: true }]} /><ImageUploadField name={["footer", "wecomAvatar"]} label="企业顾问头像" required hint="建议上传清晰的正方形 JPG、PNG 或 WebP 图片。" /><ImageUploadField name={["footer", "wecomQr"]} label="企业微信二维码" required hint="请上传企业微信原始二维码，避免压缩导致无法识别。" /><ProFormSwitch name={["footer", "wecomOpenByDefault"]} label="桌面端默认展开企业微信浮窗" /></ModalForm></Card>;
+  return <Card title="首页与全站文案" extra={<Tooltip title="编辑首页与全站文案"><Button type="text" icon={<EditOutlined />} aria-label="编辑首页与全站文案" onClick={() => setOpen(true)} /></Tooltip>}><ModalForm open={open} width={920} initialValues={home} modalProps={{ destroyOnHidden: true, closable: !uploadLocked, keyboard: !uploadLocked, maskClosable: !uploadLocked, onCancel: () => { if (!uploadLocked) setOpen(false); } }} submitter={{ submitButtonProps: { loading: busy || uploadLocked, disabled: uploadLocked }, resetButtonProps: { disabled: uploadLocked } }} onFinish={async (values) => { if (uploadLocked) return false; const saved = await onCommit((current) => ({ ...current, sectionTitles: { ...current.sectionTitles, ...values.sectionTitles }, thinkingText: values.thinkingText, contact: { ...current.contact, ...values.contact }, footer: { ...current.footer, ...values.footer } })); if (saved) setOpen(false); return saved; }}><ProFormText name={["sectionTitles", "news"]} label="最新动态标题" rules={[{ required: true }]} /><ProFormText name={["sectionTitles", "thinkingEyebrow"]} label="品牌定位英文标识" /><ProFormText name={["sectionTitles", "thinkingTitle"]} label="品牌定位标题" rules={[{ required: true }]} /><ProFormTextArea name="thinkingText" label="品牌定位正文" rules={[{ required: true }]} /><ProFormText name={["contact", "title"]} label="联系区标题" rules={[{ required: true }]} /><ProFormTextArea name={["contact", "description"]} label="联系区说明" rules={[{ required: true }]} /><ProFormText name={["contact", "namePlaceholder"]} label="联系人提示" rules={[{ required: true }]} /><ProFormText name={["contact", "companyPlaceholder"]} label="企业名称提示" rules={[{ required: true }]} /><ProFormText name={["contact", "contactPlaceholder"]} label="手机号/微信号提示" rules={[{ required: true }]} /><ProFormText name={["contact", "emailPlaceholder"]} label="联系邮箱提示" rules={[{ required: true }]} /><ProFormText name={["contact", "messagePlaceholder"]} label="需求说明提示" rules={[{ required: true }]} /><ProFormText name={["contact", "submitLabel"]} label="提交按钮文字" rules={[{ required: true }]} /><ProFormText name={["contact", "successLabel"]} label="提交成功提示" rules={[{ required: true }]} /><ProFormText name={["contact", "errorLabel"]} label="提交失败提示" rules={[{ required: true }]} /><ProFormText name={["footer", "copyright"]} label="页脚版权" rules={[{ required: true }]} /><ProFormText name={["footer", "icpText"]} label="备案文字" rules={[{ required: true }]} /><ProFormText name={["footer", "icpHref"]} label="备案链接" rules={[{ required: true }]} /><ProFormText name={["footer", "ipv6Text"]} label="页脚补充信息" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomTitle"]} label="企业微信浮窗标题" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomDescription"]} label="企业微信浮窗说明" rules={[{ required: true }]} /><ImageUploadField name={["footer", "wecomAvatar"]} label="企业顾问头像" required hint="建议上传清晰的正方形 JPG、PNG 或 WebP 图片。" /><ProFormText name={["footer", "customerServiceHref"]} label="微信客服链接（选填）" rules={[optionalHrefRule("请输入完整的 https:// 客服链接", (value) => value === undefined || value === "" || isHttpsContentUrl(value))]} /><ImageUploadField name={["footer", "customerServiceQr"]} label="微信客服二维码（上方）" hint="链接未配置时二维码仍展示，但不会产生跳转。" /><ImageUploadField name={["footer", "wecomQr"]} label="企业微信个人二维码（下方）" required hint="保留现有个人企业微信二维码，显示在客服二维码下方。" /><ProFormSwitch name={["footer", "wecomOpenByDefault"]} label="桌面端默认展开企业微信浮窗" /></ModalForm></Card>;
 }
 
 function HeroTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -398,14 +398,21 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
       {({ exists }) => <ProFormText name="slug" label="详情 URL 标识" disabled={Boolean(exists)} extra={exists ? "已发布内容的 URL 标识不可修改，以免已有链接失效。" : undefined} rules={[{ required: true, pattern: contentSlugPattern, message: "仅可使用小写字母、数字，并以单个连字符分隔" }]} />}
     </ProFormDependency>
     <ProFormSelect name="type" label="内容类型" rules={[{ required: true }]} options={[{ label: "双碳专栏文章", value: "article" }, { label: "视频课程", value: "course" }]} />
-    <ProFormText name="category" label="栏目名称" rules={[{ required: true }]} />
+    <ProFormDependency name={["type"]}>
+      {({ type }) => <ProFormText name="category" label={type === "course" ? "课程目录" : "栏目名称"} extra={type === "course" ? "使用 / 分隔多级目录，例如：核算课程/入门基础。前台可逐级点击展开。" : undefined} rules={[{ required: true }]} />}
+    </ProFormDependency>
     <ProFormText name="title" label="标题" rules={[{ required: true }]} />
     <ProFormTextArea name="summary" label="摘要" rules={[{ required: true }]} />
     <ProFormText name="meta" label="阅读或课程信息" rules={[{ required: true }]} />
     <ProFormDependency name={["type"]}>
       {({ type }) => type === "article"
         ? <><ProFormText name="sourceName" label="政策原文名称（选填）" /><ProFormText name="sourceHref" label="政策原文链接（选填）" rules={[optionalHrefRule("请输入完整的 https:// 链接", (value) => value === undefined || value === "" || isHttpsContentUrl(value))]} /></>
-        : <VideoUploadField name="videoHref" label="课程视频（推荐）" addressHint="上传视频后系统会自动填写；也可保留已有站内视频路径或可直接播放的 https:// 媒体地址。课程入口始终先进入站内详情页。" />}
+        : <>
+          <ImageUploadField name="coverImage" label="课程封面（选填）" hint="建议使用清晰的 16:10 或 16:9 横图。" />
+          <VideoUploadField name="videoHref" label="课程视频（推荐）" addressHint="上传视频后系统会自动填写；也可保留已有站内视频路径或可直接播放的 https:// 媒体地址。课程入口始终先进入站内详情页。" />
+          <ProFormText name="externalHref" label="外部课程链接（选填）" extra="适用于 B 站、千聊等课程网页。留空时前台不会生成跳转按钮。" rules={[optionalHrefRule("请输入站内路径或完整的 https:// 链接")]} />
+          <ProFormText name="externalLabel" label="外部课程按钮文字（选填）" />
+        </>}
     </ProFormDependency>
     <ProFormList name="sections" label="详情正文" creatorButtonProps={{ creatorButtonText: "新增正文段落" }}>
       <ProFormText name="heading" label="小节标题" rules={[{ required: true }]} />
@@ -450,7 +457,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
       { label: "培训课程", value: "training" }, { label: "核算实战", value: "practical" },
       { label: "集团咨询", value: "consulting" }, { label: "数字化方案", value: "solution-platform" },
       { label: "Excel 产品", value: "excel" }, { label: "平台产品", value: "product-platform" },
-      { label: "客户案例", value: "cases" }, { label: "知识课堂", value: "knowledge" },
+      { label: "客户案例", value: "cases" }, { label: "资料中心", value: "knowledge" },
       { label: "企业介绍", value: "company" }, { label: "企业荣誉", value: "honors" },
       { label: "合作伙伴", value: "partners" }, { label: "联系我们", value: "contact" },
       { label: "实施服务", value: "service" }
