@@ -122,18 +122,18 @@ const solutionFrameworks: Record<string, SolutionFramework> = {
 
 const solutionDiagrams: Record<string, SolutionDiagram> = {
   "solution-standard": {
-    eyebrow: "课程介绍",
-    title: "企业温室气体核算实战（Excel版）",
-    description: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
-    src: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    alt: "企业温室气体核算实战Excel版课程宣传图",
+    eyebrow: "CAPABILITY ROADMAP",
+    title: "企业碳管理能力建设路线图",
+    description: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
+    src: "/media/reference-diagrams/service-process.svg",
+    alt: "企业碳管理能力建设路线图",
   },
   "solution-practical": {
-    eyebrow: "实施流程",
-    title: "企业温室气体核算敏捷实施技术路线",
-    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    src: "/media/reference-diagrams/agile-implementation.svg",
-    alt: "企业温室气体核算敏捷实施技术路线图",
+    eyebrow: "数据治理",
+    title: "企业碳数据治理与标准体系",
+    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    src: "/media/reference-diagrams/carbon-data-governance.svg",
+    alt: "企业碳数据治理与标准体系图",
   },
   "solution-consulting": {
     eyebrow: "集团协同",
@@ -143,11 +143,11 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
     alt: "集团和分子公司温室气体核算实施路径图",
   },
   "solution-platform": {
-    eyebrow: "数据治理",
-    title: "企业碳数据治理与标准体系",
-    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-    src: "/media/reference-diagrams/carbon-data-governance.svg",
-    alt: "企业碳数据治理与标准体系图",
+    eyebrow: "实施流程",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    src: "/media/reference-diagrams/agile-implementation.svg",
+    alt: "企业温室气体核算敏捷实施技术路线图",
   },
 };
 
@@ -263,6 +263,17 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
+  const diagramBlocks = diagramItems.map((item, index) => {
+    const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
+    if (!src) return null;
+    const eyebrow = diagramSection && diagramSection.title !== item.title
+      ? diagramSection.title
+      : diagram?.eyebrow ?? page.eyebrow;
+    return <Fragment key={`${item.title}-${src}-${index}`}>
+      <ReferenceDiagram eyebrow={eyebrow} title={item.title} description={item.description ?? diagramSection?.description ?? diagram?.description ?? ""} src={src} alt={diagram?.alt ?? item.title} />
+      {detailPoints(item).length ? <section aria-label={`${item.title}要点`}><ItemDetails item={item} /></section> : null}
+    </Fragment>;
+  });
 
   return (
     <>
@@ -328,6 +339,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         <ol>{presentationContent.items.map((item, index) => <li key={`${item.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ol>
       </section> : null}
 
+      {framework.sequence === "01" ? diagramBlocks : null}
+
       <section className={styles.serviceContents} aria-labelledby="service-contents-title">
         <div className={`${styles.serviceContentsInner} page-reveal`} data-motion-group="solution-services">
           <header data-motion-role="heading">
@@ -349,17 +362,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      {diagramItems.map((item, index) => {
-        const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
-        if (!src) return null;
-        const eyebrow = diagramSection && diagramSection.title !== item.title
-          ? diagramSection.title
-          : diagram?.eyebrow ?? page.eyebrow;
-        return <Fragment key={`${item.title}-${src}-${index}`}>
-          <ReferenceDiagram eyebrow={eyebrow} title={item.title} description={item.description ?? diagramSection?.description ?? diagram?.description ?? ""} src={src} alt={diagram?.alt ?? item.title} />
-          {detailPoints(item).length ? <section aria-label={`${item.title}要点`}><ItemDetails item={item} /></section> : null}
-        </Fragment>;
-      })}
+      {framework.sequence !== "01" ? diagramBlocks : null}
 
       <section className={`${styles.solutionOutcomes} ${styles[`outcomes${framework.sequence}`] ?? ""}`} aria-labelledby="solution-outcomes-title" data-motion-group={`solution-outcomes-${framework.sequence}`}>
         <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{outcomesSection?.title ?? framework.outcomeLabel}</h2>{outcomesSection?.description ? <p>{outcomesSection.description}</p> : null}</div>

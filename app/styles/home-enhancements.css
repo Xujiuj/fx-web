@@ -1206,6 +1206,17 @@ main .capability-orbit-section .timeline-summary {
   text-align: center;
 }
 
+/* Keep the construction path on the page surface without decorative corner markers. */
+main .capability-orbit-section,
+main .capability-orbit {
+  background: transparent;
+}
+
+main .capability-orbit::before,
+main .capability-orbit::after {
+  display: none;
+}
+
 main .capability-orbit-section .timeline-summary::before { display: none; }
 
 @media (prefers-reduced-motion: no-preference) {

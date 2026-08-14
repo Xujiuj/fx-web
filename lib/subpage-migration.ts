@@ -1,10 +1,14 @@
 type MigrationItem = {
   title: string;
+  description?: string;
+  image?: string;
   details?: Record<string, string>;
 };
 
 type MigrationSection = {
   id: string;
+  title: string;
+  description?: string;
   items: MigrationItem[];
 };
 
@@ -39,11 +43,58 @@ export const v5SectionIdsBySlug: Readonly<Record<string, readonly string[]>> = {
   "knowledge-center": ["online-classroom"],
 };
 
+export const v6SectionIdsBySlug: Readonly<Record<string, readonly string[]>> = {};
+
 const sectionIdsBySchemaVersion = [
   { version: 3, idsBySlug: v3SectionIdsBySlug },
   { version: 4, idsBySlug: v4SectionIdsBySlug },
   { version: 5, idsBySlug: v5SectionIdsBySlug },
+  { version: 6, idsBySlug: v6SectionIdsBySlug },
 ] as const;
+
+type SolutionDiagramReplacement = {
+  fromImage: string;
+  toImage: string;
+  fromTitle: string;
+  toTitle: string;
+  fromDescription: string;
+  toDescription: string;
+};
+
+export function migrateSolutionDiagramBinding<
+  TSection extends MigrationSection,
+  TPage extends MigrationPage<TSection>,
+>(page: TPage, replacement: SolutionDiagramReplacement): TPage {
+  const media = page.media?.diagram === replacement.fromImage
+    ? { ...page.media, diagram: replacement.toImage }
+    : page.media;
+  const sections = page.sections.map((section) => {
+    if (section.id !== "solution-diagram") return section;
+
+    const items = section.items.map((item) => item.image === replacement.fromImage
+      ? {
+          ...item,
+          image: replacement.toImage,
+          ...(item.title === replacement.fromTitle ? { title: replacement.toTitle } : {}),
+          ...(item.description === replacement.fromDescription ? { description: replacement.toDescription } : {}),
+        }
+      : item);
+    const hasChangedItem = items.some((item, index) => item !== section.items[index]);
+    if (!hasChangedItem) return section;
+
+    return {
+      ...section,
+      items,
+      ...(section.title === replacement.fromTitle ? { title: replacement.toTitle } : {}),
+      ...(section.description === replacement.fromDescription ? { description: replacement.toDescription } : {}),
+    } as TSection;
+  });
+  const hasChangedSections = sections.some((section, index) => section !== page.sections[index]);
+
+  return media !== page.media || hasChangedSections
+    ? { ...page, ...(media ? { media } : {}), sections }
+    : page;
+}
 
 function cloneSection<TSection extends MigrationSection>(section: TSection): TSection {
   return {

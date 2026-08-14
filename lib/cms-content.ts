@@ -1,7 +1,7 @@
 ﻿import { prisma } from "@/lib/prisma";
 import { isContentSlug } from "@/lib/content-slug";
 import { knowledgeEntries as defaultKnowledgeEntries, normalizeKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
-import { migrateStoredSubpage } from "@/lib/subpage-migration";
+import { migrateSolutionDiagramBinding, migrateStoredSubpage } from "@/lib/subpage-migration";
 export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "shield" | "sparkles" | "users" | "workflow";
 
 export type NavChild = { label: string; href: string; hidden?: boolean; group?: string };
@@ -119,7 +119,7 @@ const excelImage = "/media/about-philosophy-generated.png";
 const isProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
 const contentSchemaVersion = 2;
 const knowledgeContentSchemaVersion = 3;
-const subpageContentSchemaVersion = 5;
+const subpageContentSchemaVersion = 6;
 const legacyPlatformIsolationDescription = "公开数据报告通过 Power BI 提供浏览；企业端作为独立应用部署，与官网服务和数据完全隔离。";
 const platformDemoDescription = "公开数据报告通过 Power BI 提供浏览；企业端演示入口用于查看平台界面，试用账号需提交申请后审核开通。";
 const standardFooter: FooterContent = {
@@ -162,10 +162,10 @@ const legacyCertificateImages = new Set([
 ]);
 const legacyPartnerLabels = new Set(["制造企业", "集团企业", "园区平台", "咨询机构", "产业链伙伴"]);
 const defaultPageMedia: Record<string, PageMedia> = {
-  "solution-standard": { diagram: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg" },
-  "solution-practical": { diagram: "/media/reference-diagrams/agile-implementation.svg" },
+  "solution-standard": { diagram: "/media/reference-diagrams/service-process.svg" },
+  "solution-practical": { diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
   "solution-consulting": { diagram: "/media/reference-diagrams/group-implementation.svg" },
-  "solution-platform": { diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
+  "solution-platform": { diagram: "/media/reference-diagrams/agile-implementation.svg" },
   "excel-accounting-tool": { screenshot: "/media/product-excel-report.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
   "carbon-management-platform": { screenshot: "/media/product-platform-dashboard.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
   "customer-cases": {
@@ -176,6 +176,36 @@ const defaultPageMedia: Record<string, PageMedia> = {
     operations: "/media/manufacturing-carbon-operations.png"
   }
 };
+
+const solutionDiagramMigrations = [
+  {
+    slug: "solution-standard",
+    fromImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
+    toImage: "/media/reference-diagrams/service-process.svg",
+    fromTitle: "企业温室气体核算实战（Excel版）",
+    toTitle: "企业碳管理能力建设路线图",
+    fromDescription: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
+    toDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
+  },
+  {
+    slug: "solution-practical",
+    fromImage: "/media/reference-diagrams/agile-implementation.svg",
+    toImage: "/media/reference-diagrams/carbon-data-governance.svg",
+    fromTitle: "企业温室气体核算敏捷实施技术路线",
+    toTitle: "企业碳数据治理与标准体系",
+    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    toDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+  },
+  {
+    slug: "solution-platform",
+    fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
+    toImage: "/media/reference-diagrams/agile-implementation.svg",
+    fromTitle: "企业碳数据治理与标准体系",
+    toTitle: "企业温室气体核算敏捷实施技术路线",
+    fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    toDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+  },
+] as const;
 
 const derivedDisplayMedia: Record<string, string> = {
   "/media/reference-diagrams/three-layer-implementation.svg": "/media/derived/service-diagrams/three-layer-implementation-1800.webp",
@@ -597,8 +627,8 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["温室气体核算方法培训", "GHG Protocol培训", "ISO14064培训", "国标培训", "Excel实战演练", "企业案例解析"],
     outcomes: ["建立统一认知", "掌握核算方法", "培养内部人才", "具备独立核算能力"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业温室气体核算实战（Excel版）",
-    diagramDescription: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
+    diagramTitle: "企业碳管理能力建设路线图",
+    diagramDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
     diagramImage: defaultPageMedia["solution-standard"].diagram
   }),
   "solution-practical": solutionSections({
@@ -612,8 +642,8 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据采集梳理", "Excel工具部署", "实操辅导", "过程校核", "成果交付"],
     outcomes: ["完成首次核算", "建立数据台账", "形成标准成果", "支撑核查与披露"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业温室气体核算敏捷实施技术路线",
-    diagramDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    diagramTitle: "企业碳数据治理与标准体系",
+    diagramDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
     diagramImage: defaultPageMedia["solution-practical"].diagram
   }),
   "solution-consulting": solutionSections({
@@ -642,8 +672,8 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业碳数据治理与标准体系",
-    diagramDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    diagramTitle: "企业温室气体核算敏捷实施技术路线",
+    diagramDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
     diagramImage: defaultPageMedia["solution-platform"].diagram
   })
 };
@@ -794,29 +824,31 @@ export function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
     const solutionImage = solutionImages[`/${migrated.slug}`];
     const isLegacySolutionImage = legacySolutionImagePaths.has(migrated.image);
     const withSolutionImage = solutionImage && isLegacySolutionImage ? { ...migrated, image: solutionImage } : migrated;
-    const withProductUpdates = withSolutionImage.slug === "excel-accounting-tool"
+    const diagramUpdate = solutionDiagramMigrations.find((update) => update.slug === withSolutionImage.slug);
+    const withDiagramUpdates = diagramUpdate ? migrateSolutionDiagramBinding(withSolutionImage, diagramUpdate) : withSolutionImage;
+    const withProductUpdates = withDiagramUpdates.slug === "excel-accounting-tool"
       ? {
-          ...withSolutionImage,
-          media: withSolutionImage.media?.diagram === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...withSolutionImage.media, diagram: "/media/reference-diagrams/excel-standard-flow.svg" } : withSolutionImage.media,
-          sections: withSolutionImage.sections.map((section) => section.id === "product-diagram" ? { ...section, items: section.items.map((item) => item.image === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...item, image: "/media/reference-diagrams/excel-standard-flow.svg" } : item) } : section)
+          ...withDiagramUpdates,
+          media: withDiagramUpdates.media?.diagram === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...withDiagramUpdates.media, diagram: "/media/reference-diagrams/excel-standard-flow.svg" } : withDiagramUpdates.media,
+          sections: withDiagramUpdates.sections.map((section) => section.id === "product-diagram" ? { ...section, items: section.items.map((item) => item.image === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...item, image: "/media/reference-diagrams/excel-standard-flow.svg" } : item) } : section)
         }
-      : withSolutionImage.slug === "carbon-management-platform"
+      : withDiagramUpdates.slug === "carbon-management-platform"
         ? {
-            ...withSolutionImage,
-            product: withSolutionImage.product ? {
-              ...withSolutionImage.product,
+            ...withDiagramUpdates,
+            product: withDiagramUpdates.product ? {
+              ...withDiagramUpdates.product,
               screenshots: [
-                ...(withSolutionImage.product.screenshots ?? []),
-                ...((fallback?.product?.screenshots ?? []).filter((screenshot) => screenshot.src.startsWith("/materials/20260813/") && !(withSolutionImage.product?.screenshots ?? []).some((stored) => stored.src === screenshot.src)))
+                ...(withDiagramUpdates.product.screenshots ?? []),
+                ...((fallback?.product?.screenshots ?? []).filter((screenshot) => screenshot.src.startsWith("/materials/20260813/") && !(withDiagramUpdates.product?.screenshots ?? []).some((stored) => stored.src === screenshot.src)))
               ]
             } : fallback?.product,
-            sections: withSolutionImage.sections.map((section) => section.id === "platform-overview" && section.title === "三项能力，贯穿企业碳数据全流程"
+            sections: withDiagramUpdates.sections.map((section) => section.id === "platform-overview" && section.title === "三项能力，贯穿企业碳数据全流程"
               ? { ...section, title: "平台三项核心优势" }
               : section.id === "product-screenshots" && section.description?.startsWith("7 张平台截图")
                 ? { ...section, description: "11 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。" }
                 : section)
           }
-        : withSolutionImage;
+        : withDiagramUpdates;
     const withPlatformImage = withProductUpdates.slug === "carbon-management-platform" && withProductUpdates.image === platformImage
       ? { ...withProductUpdates, image: "/media/product-platform-hero.webp" }
       : withProductUpdates;

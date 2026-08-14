@@ -1,11 +1,12 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { migrateStoredSubpage } from "../lib/subpage-migration.ts";
+import { migrateSolutionDiagramBinding, migrateStoredSubpage } from "../lib/subpage-migration.ts";
 
 type TestSection = {
   id: string;
   title: string;
-  items: Array<{ title: string; description?: string; details?: Record<string, string> }>;
+  description?: string;
+  items: Array<{ title: string; description?: string; image?: string; details?: Record<string, string> }>;
 };
 
 type TestPage = {
@@ -170,4 +171,35 @@ test("legacy content still receives missing defaults without positional item mat
   assert.deepEqual(migrated.sections.map((item) => item.id), ["legacy", "new-default"]);
   assert.deepEqual(migrated.media, fallback.media);
   assert.deepEqual(migrated.product, fallback.product);
+});
+
+test("updates only the previous default solution diagram binding", () => {
+  const page: TestPage = {
+    slug: "solution-standard",
+    schemaVersion: 5,
+    media: { diagram: "/media/old.svg" },
+    sections: [{
+      id: "solution-diagram",
+      title: "旧图示",
+      description: "旧说明",
+      items: [{ title: "旧图示", description: "旧说明", image: "/media/old.svg" }],
+    }],
+  };
+
+  const migrated = migrateSolutionDiagramBinding(page, {
+    fromImage: "/media/old.svg",
+    toImage: "/media/new.svg",
+    fromTitle: "旧图示",
+    toTitle: "新图示",
+    fromDescription: "旧说明",
+    toDescription: "新说明",
+  });
+
+  assert.equal(migrated.media?.diagram, "/media/new.svg");
+  assert.deepEqual(migrated.sections[0], {
+    id: "solution-diagram",
+    title: "新图示",
+    description: "新说明",
+    items: [{ title: "新图示", description: "新说明", image: "/media/new.svg" }],
+  });
 });
