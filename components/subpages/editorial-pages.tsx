@@ -194,7 +194,7 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
             <span>最新文章</span>
             <Link href="/knowledge-center/articles">更多文章 <ArrowRight size={15} aria-hidden="true" /></Link>
           </header>
-          {latestArticles.slice(1).map((article, index) => {
+          {latestArticles.map((article, index) => {
             const contents = <><span>{String(index + 1).padStart(2, "0")}</span><div><h3>{article.title}</h3><small>{getKnowledgeMeta(article)}</small></div><ArrowRight size={18} aria-hidden="true" /></>;
             return article.sourceHref ? (
               <a href={article.sourceHref} target="_blank" rel="noreferrer" key={article.slug} data-motion-role="item">{contents}</a>

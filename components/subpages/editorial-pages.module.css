@@ -652,7 +652,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #2b1a12;
+  color: rgba(255, 255, 255, 0.88);
   font-size: 12px;
   font-weight: 750;
 }
@@ -675,13 +675,13 @@
   display: inline-flex;
   margin: 0;
   padding-bottom: 4px;
-  border-bottom: 1px solid rgba(43, 26, 18, 0.62);
-  color: #2b1a12;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.62);
+  color: #fff;
   font-size: 13px;
 }
 
 .featuredTopic .articleCategories a:hover {
-  border-bottom-color: #2b1a12;
+  border-bottom-color: #fff;
 }
 
 .articleCategories + h2 {
@@ -691,7 +691,7 @@
 .featuredTopic p {
   max-width: 520px;
   margin: 0;
-  color: #2b1a12;
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.85;
 }
 
@@ -700,7 +700,7 @@
   align-items: center;
   gap: 9px;
   margin-top: 38px;
-  color: #2b1a12;
+  color: #fff;
   font-size: 14px;
   font-weight: 750;
 }
