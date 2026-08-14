@@ -15,8 +15,16 @@ type ContactLeadNotification = {
 
 type DeliveryStatus = "PENDING" | "SENT" | "SKIPPED" | "FAILED";
 type DeliveryResult = { status: DeliveryStatus; deliveryId: string };
+type DeliveryRequest = {
+  recipients: string[];
+  subject: string;
+  text: string;
+  replyTo?: string;
+  emptyRecipientError: string;
+};
 
 const emailPattern = /[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}/g;
+const singleEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function configuredSmtp() {
   const host = process.env.SMTP_HOST?.trim();
@@ -43,6 +51,43 @@ function notificationSubject(lead: ContactLeadNotification) {
   return `网站新咨询：${lead.name}`;
 }
 
+function confirmationSubject() {
+  return "已收到您的咨询 - 峰行智成";
+}
+
+function submittedAt(lead: ContactLeadNotification) {
+  return lead.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false });
+}
+
+function internalNotificationText(lead: ContactLeadNotification) {
+  return [
+    "收到一条新的线上咨询。",
+    `联系人：${lead.name}`,
+    `企业名称：${lead.company ?? "未填写"}`,
+    `联系电话/微信：${lead.contact}`,
+    `联系邮箱：${lead.email || "未填写"}`,
+    `提交时间：${submittedAt(lead)}`,
+    "",
+    "企业需求：",
+    lead.message
+  ].join("\n");
+}
+
+function contactConfirmationText(lead: ContactLeadNotification) {
+  return [
+    `您好，${lead.name}：`,
+    "",
+    "我们已收到您的咨询，工作人员将尽快与您联系。",
+    `提交时间：${submittedAt(lead)}`,
+    `联系电话/微信：${lead.contact}`,
+    "",
+    "您提交的需求：",
+    lead.message,
+    "",
+    "峰行智成"
+  ].join("\n");
+}
+
 function errorMessage(error: unknown) {
   const message = error instanceof Error ? error.message : "Unknown mail delivery error";
   return message.replace(/(password|pass|token|authorization)\s*[:=]\s*\S+/gi, "$1=[REDACTED]").slice(0, 1_000);
@@ -51,70 +96,84 @@ function errorMessage(error: unknown) {
 export async function sendContactLeadNotification(lead: ContactLeadNotification): Promise<DeliveryResult> {
   const recipients = recipientEmails((await getHomeContent()).contact.description);
   const smtp = configuredSmtp();
-  const subject = notificationSubject(lead);
-  const delivery = await prisma.contactLeadEmailDelivery.create({
-    data: {
-      leadId: lead.id,
-      recipients: recipients.join(", "),
-      sender: smtp?.from,
-      subject,
-      status: "PENDING"
-    }
-  });
+  const sender = smtp?.from;
+  const requests: DeliveryRequest[] = [{
+    recipients,
+    subject: notificationSubject(lead),
+    text: internalNotificationText(lead),
+    replyTo: singleEmailPattern.test(lead.email) ? lead.email : undefined,
+    emptyRecipientError: "No recipient is configured in the site contact content."
+  }];
 
-  if (!smtp) {
-    await prisma.contactLeadEmailDelivery.update({
-      where: { id: delivery.id },
-      data: { status: "SKIPPED", error: "SMTP is not configured." }
+  if (singleEmailPattern.test(lead.email)) {
+    requests.push({
+      recipients: [lead.email],
+      subject: confirmationSubject(),
+      text: contactConfirmationText(lead),
+      emptyRecipientError: "The contact email is not available."
     });
-    return { status: "SKIPPED", deliveryId: delivery.id };
   }
 
-  if (recipients.length === 0) {
-    await prisma.contactLeadEmailDelivery.update({
-      where: { id: delivery.id },
-      data: { status: "SKIPPED", error: "No recipient is configured in the site contact content." }
-    });
-    return { status: "SKIPPED", deliveryId: delivery.id };
-  }
-
-  const transporter = nodemailer.createTransport({
+  const transporter = smtp ? nodemailer.createTransport({
     host: smtp.host,
     port: smtp.port,
     secure: smtp.secure,
     auth: smtp.auth
-  });
-
-  let result: Awaited<ReturnType<typeof transporter.sendMail>>;
-  try {
-    result = await transporter.sendMail({
-      from: smtp.from,
-      to: recipients,
-      replyTo: lead.email || undefined,
-      subject,
-      text: [
-        "收到一条新的线上咨询。",
-        `联系人：${lead.name}`,
-        `企业名称：${lead.company ?? "未填写"}`,
-        `联系电话/微信：${lead.contact}`,
-        `联系邮箱：${lead.email || "未填写"}`,
-        `提交时间：${lead.createdAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai", hour12: false })}`,
-        "",
-        "企业需求：",
-        lead.message
-      ].join("\n")
+  }) : null;
+  const results = await Promise.all(requests.map(async (request) => {
+    const delivery = await prisma.contactLeadEmailDelivery.create({
+      data: {
+        leadId: lead.id,
+        recipients: request.recipients.join(", "),
+        sender,
+        subject: request.subject,
+        status: "PENDING"
+      }
     });
-  } catch (error) {
-    await prisma.contactLeadEmailDelivery.update({
-      where: { id: delivery.id },
-      data: { status: "FAILED", error: errorMessage(error) }
-    });
-    return { status: "FAILED", deliveryId: delivery.id };
-  }
 
-  await prisma.contactLeadEmailDelivery.update({
-    where: { id: delivery.id },
-    data: { status: "SENT", providerMessageId: result.messageId, sentAt: new Date() }
-  });
-  return { status: "SENT", deliveryId: delivery.id };
+    if (!transporter) {
+      await prisma.contactLeadEmailDelivery.update({
+        where: { id: delivery.id },
+        data: { status: "SKIPPED", error: "SMTP is not configured." }
+      });
+      return { status: "SKIPPED" as const, deliveryId: delivery.id };
+    }
+
+    if (request.recipients.length === 0) {
+      await prisma.contactLeadEmailDelivery.update({
+        where: { id: delivery.id },
+        data: { status: "SKIPPED", error: request.emptyRecipientError }
+      });
+      return { status: "SKIPPED" as const, deliveryId: delivery.id };
+    }
+
+    try {
+      const result = await transporter.sendMail({
+        from: sender,
+        to: request.recipients,
+        replyTo: request.replyTo,
+        subject: request.subject,
+        text: request.text
+      });
+      await prisma.contactLeadEmailDelivery.update({
+        where: { id: delivery.id },
+        data: { status: "SENT", providerMessageId: result.messageId, sentAt: new Date() }
+      });
+      return { status: "SENT" as const, deliveryId: delivery.id };
+    } catch (error) {
+      await prisma.contactLeadEmailDelivery.update({
+        where: { id: delivery.id },
+        data: { status: "FAILED", error: errorMessage(error) }
+      });
+      return { status: "FAILED" as const, deliveryId: delivery.id };
+    }
+  }));
+  const primary = results[0];
+  const status = results.some((result) => result.status === "FAILED")
+    ? "FAILED"
+    : results.some((result) => result.status === "SENT")
+      ? "SENT"
+      : "SKIPPED";
+
+  return { status, deliveryId: primary.deliveryId };
 }
