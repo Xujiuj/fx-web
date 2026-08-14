@@ -922,10 +922,11 @@
 .solutionDetailHeroInner {
   display: grid;
   width: min(calc(100% - 48px), 1140px);
-  grid-template-columns: 1fr;
-  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, .72fr);
+  align-items: center;
+  gap: clamp(40px, 6vw, 88px);
   margin: 0 auto;
-  padding: 58px 0;
+  padding: 64px 0;
 }
 
 .solutionDetailHeroCopy > span,
@@ -962,11 +963,12 @@
 .solutionHeroSignal {
   position: relative;
   display: grid;
+  width: min(100%, 520px);
   min-height: 0;
-  padding: clamp(12px, 2vw, 24px);
+  justify-self: end;
+  padding: clamp(12px, 2vw, 20px);
   overflow: hidden;
-  border-right: 1px solid rgba(255, 255, 255, 0.24);
-  border-left: 1px solid rgba(255, 255, 255, 0.24);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   background: rgba(255, 255, 255, 0.1);
 }
 
@@ -984,9 +986,8 @@
 .solutionHeroSignal img {
   position: relative;
   z-index: 1;
-  width: min(100%, 520px);
+  width: 100%;
   height: auto;
-  justify-self: center;
   object-fit: contain;
   object-position: center;
   padding: clamp(8px, 1.2vw, 16px);
@@ -1462,6 +1463,10 @@
 }
 
 @media (max-width: 860px) {
+  .solutionDetailHeroInner {
+    grid-template-columns: 1fr;
+  }
+
   .solutionStageNav ol { grid-template-columns: repeat(2, 1fr); }
   .serviceContentsInner {
     grid-template-columns: 1fr;
