@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { normalizeKnowledgeEntry, type KnowledgeEntry } from "../lib/knowledge-content.ts";
+import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, normalizeKnowledgeEntry, type KnowledgeEntry } from "../lib/knowledge-content.ts";
 
 test("removes course-only fields from articles", () => {
   const article = {
@@ -89,4 +89,41 @@ test("keeps course cover and external access fields", () => {
   };
 
   assert.deepEqual(normalizeKnowledgeEntry(course), course);
+});
+
+test("builds article categories in editorial order without duplicates", () => {
+  const entries = [
+    { slug: "policy-one", type: "article", category: "碳政策", title: "政策一", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "accounting", type: "article", category: "碳核算", title: "核算", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "policy-two", type: "article", category: " 碳政策 ", title: "政策二", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "course", type: "course", category: "碳政策", title: "课程", summary: "摘要", meta: "课程", sections: [] },
+  ] satisfies KnowledgeEntry[];
+
+  assert.deepEqual(getArticleCategories(entries), ["碳政策", "碳核算"]);
+});
+
+test("filters only articles in the selected category", () => {
+  const entries = [
+    { slug: "policy", type: "article", category: "碳政策", title: "政策", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "accounting", type: "article", category: "碳核算", title: "核算", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "course", type: "course", category: "碳政策", title: "课程", summary: "摘要", meta: "课程", sections: [] },
+  ] satisfies KnowledgeEntry[];
+
+  assert.deepEqual(filterArticlesByCategory(entries).map((entry) => entry.slug), ["policy", "accounting"]);
+  assert.deepEqual(filterArticlesByCategory(entries, "碳政策").map((entry) => entry.slug), ["policy"]);
+  assert.deepEqual(filterArticlesByCategory(entries, "不存在"), []);
+});
+
+test("shows category once when legacy metadata already contains it", () => {
+  const article: KnowledgeEntry = {
+    slug: "policy",
+    type: "article",
+    category: "碳政策",
+    title: "政策",
+    summary: "摘要",
+    meta: "公众号文章 · 碳政策",
+    sections: [],
+  };
+
+  assert.equal(getKnowledgeMeta(article), "碳政策 · 公众号文章");
 });

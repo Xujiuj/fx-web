@@ -51,7 +51,7 @@
 }
 
 .contactBand span {
-  color: #eadbca;
+  color: #2b1a12;
   font-size: 12px;
   font-weight: 700;
 }
@@ -70,6 +70,7 @@
   min-height: 44px;
   padding: 0 17px;
   border: 1px solid rgba(255, 255, 255, 0.55);
+  color: #2b1a12;
   font-size: 14px;
   font-weight: 700;
   transition: border-color 400ms ease, background-color 400ms ease;
@@ -537,7 +538,7 @@
 }
 
 .caseScope .sectionLabel {
-  color: #f1a463;
+  color: #2b1a12;
 }
 
 .caseScopeHeading h2 {
@@ -549,7 +550,7 @@
 
 .caseScopeHeading > p:last-child {
   margin: 22px 0 0;
-  color: #eadbca;
+  color: #2b1a12;
   line-height: 1.85;
 }
 
@@ -569,7 +570,7 @@
 }
 
 .caseScope li > span {
-  color: #f1a463;
+  color: #2b1a12;
   font-size: 12px;
   font-weight: 800;
 }
@@ -581,7 +582,7 @@
 
 .caseScope li p {
   margin: 8px 0 0;
-  color: #eadbca;
+  color: #2b1a12;
   font-size: 14px;
   line-height: 1.75;
 }
@@ -651,7 +652,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  color: #f2a15c;
+  color: #2b1a12;
   font-size: 12px;
   font-weight: 750;
 }
@@ -663,10 +664,34 @@
   line-height: 1.32;
 }
 
+.articleCategories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-top: 28px;
+}
+
+.featuredTopic .articleCategories a {
+  display: inline-flex;
+  margin: 0;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(43, 26, 18, 0.62);
+  color: #2b1a12;
+  font-size: 13px;
+}
+
+.featuredTopic .articleCategories a:hover {
+  border-bottom-color: #2b1a12;
+}
+
+.articleCategories + h2 {
+  margin-top: 48px;
+}
+
 .featuredTopic p {
   max-width: 520px;
   margin: 0;
-  color: #eadbca;
+  color: #2b1a12;
   line-height: 1.85;
 }
 
@@ -675,7 +700,7 @@
   align-items: center;
   gap: 9px;
   margin-top: 38px;
-  color: #fff;
+  color: #2b1a12;
   font-size: 14px;
   font-weight: 750;
 }
@@ -707,42 +732,6 @@
   font-size: 13px;
   font-weight: 800;
 }
-
-.courseCatalog {
-  border-top: 2px solid #4d4d4d;
-}
-
-.courseDirectory {
-  border-bottom: 1px solid #eadbca;
-}
-
-.courseDirectory summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  min-height: 62px;
-  padding: 0 18px;
-  cursor: pointer;
-  color: #4d4d4d;
-  font-weight: 800;
-}
-
-.courseDirectory summary::marker { color: #e95513; }
-.courseDirectory summary small { color: #8a7667; font-size: 12px; }
-.courseDirectoryBody { padding: 0 18px 16px 38px; }
-.courseDirectoryBody > a {
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr) 20px;
-  gap: 12px;
-  align-items: center;
-  padding: 14px 0;
-  color: #4d4d4d;
-}
-.courseDirectoryBody > a > svg { color: #e95513; }
-.courseDirectoryBody > a > span { display: grid; gap: 5px; }
-.courseDirectoryBody > a small { color: #6e655a; line-height: 1.6; }
-.courseDirectoryBody > .courseDirectory { margin-left: 12px; border-left: 1px solid #eadbca; }
 
 .topicIndex header span {
   grid-column: 1 / 3;
@@ -815,7 +804,7 @@
 
 .learningHeading > p:last-child {
   margin: 22px 0 0;
-  color: #eadbca;
+  color: #fff;
   line-height: 1.85;
 }
 
@@ -855,7 +844,7 @@
 .learningPath li > a,
 .videoPending {
   display: grid;
-  grid-template-columns: 54px 1fr;
+  grid-template-columns: 54px minmax(0, 1fr);
   gap: 18px;
   min-height: 92px;
   align-items: center;
@@ -871,7 +860,7 @@
 }
 
 .learningPath span {
-  color: #f2a15c;
+  color: #fff;
   font-size: 12px;
   font-weight: 800;
 }
@@ -887,7 +876,7 @@
   max-width: 580px;
   margin-top: 6px;
   padding-right: 30px;
-  color: rgba(255, 255, 255, 0.72);
+  color: #fff;
   font-size: 12px;
   line-height: 1.65;
 }
@@ -1978,7 +1967,7 @@
 
 .featuredTopic p,
 .contactBand span {
-  color: rgba(255, 255, 255, .86);
+  color: #2b1a12;
 }
 
 .contactBand {

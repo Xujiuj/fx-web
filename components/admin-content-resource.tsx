@@ -374,6 +374,7 @@ function LatestNewsManager({ home, onCommit, busy }: { home: HomeContent; onComm
 
 function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry[]; onCommit: (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => Promise<boolean>; busy: boolean }) {
   const rows: KnowledgeRow[] = entries.map((entry) => ({ ...entry, id: entry.slug, exists: true }));
+  const articleCategories = [...new Set(entries.filter((entry) => entry.type === "article").map((entry) => entry.category.trim()).filter(Boolean))];
   const toKnowledgeEntry = (item: KnowledgeRow, slug = item.slug) => {
     const entry = omitId(item) as KnowledgeEntry & { exists?: boolean };
     delete entry.exists;
@@ -399,7 +400,9 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
     </ProFormDependency>
     <ProFormSelect name="type" label="内容类型" rules={[{ required: true }]} options={[{ label: "双碳专栏文章", value: "article" }, { label: "视频课程", value: "course" }]} />
     <ProFormDependency name={["type"]}>
-      {({ type }) => <ProFormText name="category" label={type === "course" ? "课程目录" : "栏目名称"} extra={type === "course" ? "使用 / 分隔多级目录，例如：核算课程/入门基础。前台可逐级点击展开。" : undefined} rules={[{ required: true }]} />}
+      {({ type }) => type === "course"
+        ? <ProFormText name="category" label="课程目录" extra="使用 / 分隔多级目录，例如：核算课程/入门基础。前台可逐级点击展开。" rules={[{ required: true }]} />
+        : <ProFormText name="category" label="文章分类" extra={articleCategories.length ? `已有分类：${articleCategories.join("、")}。输入已有名称可归入该分类，也可以直接创建新分类。` : "输入分类名称，例如：公司业务、碳政策、碳核算。"} rules={[{ required: true, whitespace: true, message: "请输入文章分类" }]} />}
     </ProFormDependency>
     <ProFormText name="title" label="标题" rules={[{ required: true }]} />
     <ProFormTextArea name="summary" label="摘要" rules={[{ required: true }]} />

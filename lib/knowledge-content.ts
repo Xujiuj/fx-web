@@ -49,6 +49,25 @@ export function normalizeKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
   return course;
 }
 
+export function getArticleCategories(entries: KnowledgeEntry[]): string[] {
+  return [...new Set(entries
+    .filter((entry) => entry.type === "article")
+    .map((entry) => entry.category.trim())
+    .filter(Boolean))];
+}
+
+export function filterArticlesByCategory(entries: KnowledgeEntry[], category?: string): KnowledgeEntry[] {
+  const articles = entries.filter((entry) => entry.type === "article");
+  if (!category) return articles;
+  return articles.filter((entry) => entry.category.trim() === category);
+}
+
+export function getKnowledgeMeta(entry: KnowledgeEntry): string {
+  const category = entry.category.trim();
+  const parts = entry.meta.split("·").map((part) => part.trim()).filter(Boolean);
+  return [category, ...parts.filter((part) => part !== category)].join(" · ");
+}
+
 export const policyArticles: KnowledgeEntry[] = [
   {
     slug: "public-institutions-energy-saving-carbon-reduction-15th-five-year-plan",
