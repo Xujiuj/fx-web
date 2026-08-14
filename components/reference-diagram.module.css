@@ -1,8 +1,8 @@
 .figure {
   display: grid;
-  width: min(calc(100% - 48px), 1200px);
-  grid-template-columns: minmax(240px, 0.38fr) minmax(0, 1fr);
-  gap: clamp(28px, 5vw, 64px);
+  width: min(calc(100% - 48px), 1320px);
+  grid-template-columns: 1fr;
+  gap: 24px;
   align-items: start;
   margin: 0 auto;
   padding: clamp(52px, 6vw, 76px) 0;
@@ -12,8 +12,9 @@
   display: grid;
   gap: 16px;
   margin: 0;
-  padding: 8px clamp(20px, 3vw, 38px) 8px 0;
-  border-right: 1px solid #dbe5df;
+  padding: 0 0 24px;
+  border-right: 0;
+  border-bottom: 1px solid #dbe5df;
   text-align: left;
 }
 
@@ -54,15 +55,11 @@
 }
 
 .wide {
-  grid-template-columns: 1fr;
   width: min(calc(100% - 48px), 1320px);
 }
 
 .wide .caption {
   grid-template-columns: 180px minmax(0, 1fr);
-  padding: 0 0 24px;
-  border-right: 0;
-  border-bottom: 1px solid #dbe5df;
 }
 
 .wide .canvas {

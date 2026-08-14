@@ -922,11 +922,10 @@
 .solutionDetailHeroInner {
   display: grid;
   width: min(calc(100% - 48px), 1140px);
-  min-height: 370px;
-  grid-template-columns: minmax(0, 1fr) minmax(330px, 0.68fr);
-  align-items: center;
-  gap: 40px;
+  grid-template-columns: 1fr;
+  gap: 28px;
   margin: 0 auto;
+  padding: 58px 0;
 }
 
 .solutionDetailHeroCopy > span,
@@ -962,7 +961,9 @@
 
 .solutionHeroSignal {
   position: relative;
-  align-self: stretch;
+  display: grid;
+  min-height: 0;
+  padding: clamp(12px, 2vw, 24px);
   overflow: hidden;
   border-right: 1px solid rgba(255, 255, 255, 0.24);
   border-left: 1px solid rgba(255, 255, 255, 0.24);
@@ -981,23 +982,18 @@
 }
 
 .solutionHeroSignal img {
-  position: absolute;
-  right: -7%;
-  bottom: 20px;
-  width: 114%;
-  height: 58%;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
   object-fit: contain;
   object-position: center;
-  padding: 14px;
+  padding: clamp(8px, 1.2vw, 16px);
   border: 1px solid rgba(255, 255, 255, 0.35);
   background: rgba(255, 255, 255, 0.9);
   box-shadow: 0 18px 44px rgba(113, 40, 8, 0.18);
-  transform: rotate(-2deg);
 }
 
-.solutionHero02 .solutionHeroSignal img { right: -12%; transform: rotate(2deg); }
-.solutionHero03 .solutionHeroSignal img { right: 2%; width: 76%; height: 68%; transform: rotate(0); }
-.solutionHero04 .solutionHeroSignal img { right: -9%; transform: rotate(-1deg); }
 
 .solutionFramework {
   width: min(calc(100% - 48px), 1140px);
@@ -1465,7 +1461,6 @@
 }
 
 @media (max-width: 860px) {
-  .solutionDetailHeroInner { grid-template-columns: minmax(0, 1fr) minmax(250px, .65fr); }
   .solutionStageNav ol { grid-template-columns: repeat(2, 1fr); }
   .serviceContentsInner {
     grid-template-columns: 1fr;
@@ -1517,14 +1512,7 @@
   }
 
   .solutionDetailHeroInner {
-    position: relative;
-    min-height: 350px;
-    grid-template-columns: 1fr;
-  }
-
-  .solutionDetailHeroCopy {
-    position: relative;
-    z-index: 2;
+    padding: 42px 0;
   }
 
   .solutionDetailHeroCopy h1 {
@@ -1549,16 +1537,11 @@
   }
 
   .solutionHeroSignal {
-    position: absolute;
-    inset: 0 -70px 0 auto;
-    width: 280px;
-    border: 0;
-    opacity: .18;
-    pointer-events: none;
+    padding: 10px;
   }
 
-  .solutionHeroSignal strong { top: 52px; right: 68px; font-size: 100px; }
-  .solutionHeroSignal img { right: -5%; bottom: 20px; width: 110%; height: 52%; padding: 8px; }
+  .solutionHeroSignal strong { top: 28px; right: 18px; font-size: 84px; }
+  .solutionHeroSignal img { padding: 8px; }
 
   .solutionStageNav { padding-top: 28px; }
   .solutionStageNav > p { margin-bottom: 20px; font-size: 14px; line-height: 1.7; }

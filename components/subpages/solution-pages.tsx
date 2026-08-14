@@ -263,6 +263,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
+  const heroDiagram = diagramItems[0]?.image ?? page.media?.diagram ?? diagram?.src ?? page.image;
+  const heroDiagramAlt = diagram?.alt ?? diagramItems[0]?.title ?? `${page.title}方案主图`;
   const diagramBlocks = diagramItems.map((item, index) => {
     const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
     if (!src) return null;
@@ -286,7 +288,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </div>
           <div className={styles.solutionHeroSignal} data-motion="hero-support">
             <strong>{framework.sequence}</strong>
-            <Image src={page.image} alt={`${page.title}方案主图`} width={720} height={440} priority sizes="(max-width: 760px) calc(100vw - 36px), 440px" unoptimized={isRuntimeManagedImage(page.image)} />
+            <Image src={heroDiagram} alt={heroDiagramAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 1140px" unoptimized={isRuntimeManagedImage(heroDiagram)} />
           </div>
         </div>
       </section>
@@ -301,6 +303,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </li>)}
         </ol>
       </nav>
+
+      {framework.sequence === "01" ? diagramBlocks : null}
 
       <section className={`${styles.solutionFramework} page-reveal`} aria-labelledby="solution-framework-title" data-motion-group="solution-framework">
         <header data-motion-role="heading">

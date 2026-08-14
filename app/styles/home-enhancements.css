@@ -1576,6 +1576,20 @@ main .home-challenge-list li:nth-child(2),
 main .home-challenge-list li:nth-child(4) { margin-top: 22px; }
 main .home-challenge-list li:nth-child(3) { margin-left: 32px; }
 
+/* Preserve readable supporting copy against the dark challenge surface. */
+main .home-challenge-intro > span,
+main .home-challenge-intro p,
+main .home-challenge-list li > span,
+main .home-challenge-list li > svg,
+main .home-challenge-list p {
+  color: #fff;
+}
+
+main .home-challenge-intro p,
+main .home-challenge-list p {
+  font-weight: 600;
+}
+
 main .home-management-flow {
   position: relative;
   gap: 24px;
