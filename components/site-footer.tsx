@@ -35,7 +35,7 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
 
       <aside className="wecom-consultant" aria-label="企业微信咨询">
         {open ? (
-          <div className="wecom-panel">
+          <div className="wecom-panel" role="dialog" aria-label="企业微信咨询">
             <button className="wecom-close" type="button" onClick={() => setOpen(false)} aria-label="收起企业微信咨询">
               <X size={17} aria-hidden="true" />
             </button>

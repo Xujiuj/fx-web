@@ -1207,7 +1207,68 @@
 }
 
 @media (max-width: 720px) {
+  .wecom-consultant {
+    right: 12px;
+    bottom: 12px;
+    left: 12px;
+    width: auto;
+    max-width: none;
+  }
+
   .wecom-panel {
-    width: min(224px, calc(100vw - 24px));
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+    padding: 16px 14px 14px;
+    box-sizing: border-box;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+  }
+
+  .wecom-avatar {
+    position: static;
+    display: block;
+    width: 56px;
+    height: 56px;
+    margin: 0 auto 8px;
+    transform: none;
+  }
+
+  .wecom-panel > strong {
+    padding-inline: 38px;
+    font-size: 16px;
+  }
+
+  .wecom-panel > p {
+    margin: 5px 0 10px;
+  }
+
+  .wecom-qr-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    align-items: start;
+  }
+
+  .wecom-qr-item > span {
+    min-height: 34px;
+    margin-bottom: 5px;
+    line-height: 1.4;
+  }
+
+  .wecom-qr-wrap {
+    padding: 6px;
+  }
+
+  .wecom-panel > a {
+    margin-top: 8px;
+  }
+
+  .wecom-service-link {
+    padding: 7px 10px;
+  }
+}
+
+@media (max-width: 360px) {
+  .wecom-qr-list {
+    grid-template-columns: 1fr;
   }
 }
