@@ -984,7 +984,7 @@
 .solutionHeroSignal img {
   position: relative;
   z-index: 1;
-  width: min(100%, 840px);
+  width: min(100%, 520px);
   height: auto;
   justify-self: center;
   object-fit: contain;

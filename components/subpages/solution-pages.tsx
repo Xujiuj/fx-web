@@ -288,7 +288,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </div>
           <div className={styles.solutionHeroSignal} data-motion="hero-support">
             <strong>{framework.sequence}</strong>
-            <Image src={heroDiagram} alt={heroDiagramAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 840px" unoptimized={isRuntimeManagedImage(heroDiagram)} />
+            <Image src={heroDiagram} alt={heroDiagramAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 520px" unoptimized={isRuntimeManagedImage(heroDiagram)} />
           </div>
         </div>
       </section>
