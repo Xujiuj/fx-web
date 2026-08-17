@@ -263,8 +263,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
-  const heroDiagram = diagramItems[0]?.image ?? page.media?.diagram ?? diagram?.src ?? page.image;
-  const heroDiagramAlt = diagram?.alt ?? diagramItems[0]?.title ?? `${page.title}方案主图`;
+  const heroImage = page.image || page.media?.diagram || diagram?.src;
+  const heroImageAlt = `${page.title}方案主图`;
   const diagramBlocks = diagramItems.map((item, index) => {
     const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
     if (!src) return null;
@@ -288,7 +288,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </div>
           <div className={styles.solutionHeroSignal} data-motion="hero-support">
             <strong>{framework.sequence}</strong>
-            <Image src={heroDiagram} alt={heroDiagramAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 520px" unoptimized={isRuntimeManagedImage(heroDiagram)} />
+            <Image src={heroImage} alt={heroImageAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 1140px" unoptimized={isRuntimeManagedImage(heroImage)} />
           </div>
         </div>
       </section>
@@ -342,8 +342,6 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         <header data-motion-role="heading"><span>{presentationContent.eyebrow}</span><h2 id="solution-presentation-title">{presentationContent.title}</h2>{presentationContent.description ? <p>{presentationContent.description}</p> : null}</header>
         <ol>{presentationContent.items.map((item, index) => <li key={`${item.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ol>
       </section> : null}
-
-      {framework.sequence === "01" ? diagramBlocks : null}
 
       <section className={styles.serviceContents} aria-labelledby="service-contents-title">
         <div className={`${styles.serviceContentsInner} page-reveal`} data-motion-group="solution-services">

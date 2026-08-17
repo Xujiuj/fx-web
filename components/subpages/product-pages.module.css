@@ -2202,10 +2202,10 @@
 }
 
 .principleBand {
-  color: var(--text);
-  background: #fffaf4;
-  border-top: 1px solid #eadfd4;
-  border-bottom: 1px solid #eadfd4;
+  color: #fff;
+  background: linear-gradient(110deg, #b83d0d 0%, #e95513 58%, #f47a18 100%);
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  border-bottom: 1px solid rgba(123, 40, 9, 0.24);
 }
 
 .principleInner {
@@ -2222,23 +2222,23 @@
 
 .principleInner > header > span {
   grid-column: 1 / -1;
-  color: #bf3f08;
+  color: #ffd477;
 }
 
 .principleInner h2 {
-  color: #4d4d4d;
+  color: #fff;
 }
 
 .principleInner > header > p {
   margin: 0;
-  color: #6e655a;
+  color: rgba(255, 255, 255, 0.86);
 }
 
 .principleGrid {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   margin-top: 40px;
   border: 0;
-  border-top: 2px solid #e95513;
+  border-top: 2px solid rgba(255, 255, 255, 0.72);
 }
 
 .principleGrid li {
@@ -2246,11 +2246,11 @@
   min-height: 148px;
   padding: 25px 22px 23px;
   border: 0;
-  border-left: 1px solid #e5d8ca;
+  border-left: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .principleGrid li:last-child {
-  border-right: 1px solid #e5d8ca;
+  border-right: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .principleGrid li::before {
@@ -2260,17 +2260,17 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #e95513;
+  background: #ffd477;
   content: "";
 }
 
 .principleGrid li > span,
 .principleGrid li > svg {
-  color: #bf3f08;
+  color: #ffd477;
 }
 
 .principleGrid li > strong {
-  color: #4d4d4d;
+  color: #fff;
   font-size: 18px;
 }
 

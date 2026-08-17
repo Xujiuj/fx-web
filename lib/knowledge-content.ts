@@ -10,6 +10,7 @@ type KnowledgeEntryBase = {
   title: string;
   summary: string;
   meta: string;
+  publishedAt?: string;
   coverImage?: string;
   sections: KnowledgeSection[];
 };
@@ -56,10 +57,35 @@ export function getArticleCategories(entries: KnowledgeEntry[]): string[] {
     .filter(Boolean))];
 }
 
+function knowledgePublishTime(entry: KnowledgeEntry): number {
+  if (!entry.publishedAt) return Number.NEGATIVE_INFINITY;
+  const timestamp = Date.parse(entry.publishedAt);
+  return Number.isFinite(timestamp) ? timestamp : Number.NEGATIVE_INFINITY;
+}
+
 export function filterArticlesByCategory(entries: KnowledgeEntry[], category?: string): KnowledgeEntry[] {
-  const articles = entries.filter((entry) => entry.type === "article");
-  if (!category) return articles;
-  return articles.filter((entry) => entry.category.trim() === category);
+  return entries
+    .map((entry, index) => ({ entry, index }))
+    .filter(({ entry }) => entry.type === "article" && (!category || entry.category.trim() === category))
+    .sort((left, right) => knowledgePublishTime(right.entry) - knowledgePublishTime(left.entry) || left.index - right.index)
+    .map(({ entry }) => entry);
+}
+
+export function paginateKnowledgeEntries<T extends KnowledgeEntry>(entries: T[], requestedPage: number, requestedPageSize = 10) {
+  const pageSize = Number.isFinite(requestedPageSize) ? Math.max(1, Math.trunc(requestedPageSize)) : 10;
+  const totalItems = entries.length;
+  const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+  const normalizedPage = Number.isFinite(requestedPage) ? Math.trunc(requestedPage) : 1;
+  const currentPage = Math.min(Math.max(normalizedPage, 1), totalPages);
+  const start = (currentPage - 1) * pageSize;
+
+  return {
+    items: entries.slice(start, start + pageSize),
+    currentPage,
+    totalPages,
+    totalItems,
+    pageSize,
+  };
 }
 
 export function getKnowledgeMeta(entry: KnowledgeEntry): string {

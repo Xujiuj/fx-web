@@ -326,15 +326,6 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <ReferenceDiagram
-        eyebrow="STANDARDIZED PROCESS"
-        title={diagramSection?.title ?? "Excel 工具的数据维护与核算关系"}
-        description={diagramSection?.description ?? "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。"}
-        src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
-        alt="Excel 温室气体核算工具的数据维护与核算关系图"
-        wide
-      />
-
       <section className={styles.functionBand} aria-labelledby="excel-function-title" data-motion-group="product-grid">
         <div className={styles.container}>
           <header className={styles.sectionHeading} data-motion-role="heading">

@@ -247,8 +247,8 @@ function normalizeHomeContent(content: HomeContent): HomeContent {
         : storedLogo
     },
     navItems: usesCurrentSchema && Array.isArray(content.navItems)
-      ? content.navItems.map((item) => item.href === "/knowledge-center" && item.label === "知识课堂" ? { ...item, label: "资料中心" } : item)
-      : content.navItems?.length ? content.navItems.map((item) => item.href === "/knowledge-center" && item.label === "知识课堂" ? { ...item, label: "资料中心" } : item) : cloneDefaultNavItems(),
+      ? content.navItems.map((item) => item.href === "/knowledge-center" && (item.label === "知识课堂" || item.label === "资料中心") ? { ...item, label: "资源中心" } : item)
+      : content.navItems?.length ? content.navItems.map((item) => item.href === "/knowledge-center" && (item.label === "知识课堂" || item.label === "资料中心") ? { ...item, label: "资源中心" } : item) : cloneDefaultNavItems(),
     contact: {
       ...defaultHomeContent.contact,
       ...content.contact,
@@ -417,7 +417,7 @@ const defaultNavItems: NavItem[] = [
     { label: "企业碳管理数字化平台", href: "/carbon-management-platform" }
   ] },
   { label: "客户案例", href: "/customer-cases" },
-  { label: "资料中心", href: "/knowledge-center", children: [
+  { label: "资源中心", href: "/knowledge-center", children: [
     { label: "双碳专栏", href: "/knowledge-center#double-carbon" },
     { label: "视频课程", href: "/knowledge-center#video-courses" },
     { label: "资料下载", href: "/knowledge-center#downloads" }
@@ -792,7 +792,7 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
     { src: "/materials/20260813/platform-greenhouse-gas-analysis.png", alt: "企业碳管理数字化平台温室气体构成分析视图", label: "温室气体构成分析", width: 3840, height: 2040 }
   ] }, sections: platformProductSections },
   { slug: "customer-cases", layout: "cases", navLabel: "客户案例", eyebrow: "CLIENT CASES", title: "客户案例", summary: "围绕企业碳管理能力建设的不同阶段，按培训赋能、Excel单公司版、Excel集团版和数字化平台四类展示项目案例。", image: dataImage, icon: "building", metrics: [{ label: "案例分类", value: "4类" }, { label: "统一结构", value: "6项" }], features: ["培训赋能案例", "Excel单公司版案例", "Excel集团版案例", "数字化平台案例"], steps: ["项目背景", "面临问题", "建设内容", "实施过程", "建设成果", "客户价值"], sections: defaultCustomerCaseSections },
-  { slug: "knowledge-center", navLabel: "资料中心", eyebrow: "RESOURCE CENTER", title: "企业碳管理资料中心", summary: "围绕企业碳管理所需的政策、方法、工具与实践，提供双碳专栏、视频课程和资料下载。", image: dataImage, icon: "sparkles", metrics: [{ label: "内容栏目", value: "3类" }, { label: "课程方向", value: "5类" }, { label: "服务对象", value: "企业" }], features: ["双碳政策解读", "温室气体核算", "ESG管理", "CDP问卷", "CBAM", "碳市场动态"], steps: ["企业碳核算入门", "Excel核算实战", "集团核算体系建设", "数字化平台培训", "ESG基础课程"], sections: [
+  { slug: "knowledge-center", navLabel: "资源中心", eyebrow: "RESOURCE CENTER", title: "企业碳管理资源中心", summary: "围绕企业碳管理所需的政策、方法、工具与实践，提供双碳专栏、视频课程和资料下载。", image: dataImage, icon: "sparkles", metrics: [{ label: "内容栏目", value: "3类" }, { label: "课程方向", value: "5类" }, { label: "服务对象", value: "企业" }], features: ["双碳政策解读", "温室气体核算", "ESG管理", "CDP问卷", "CBAM", "碳市场动态"], steps: ["企业碳核算入门", "Excel核算实战", "集团核算体系建设", "数字化平台培训", "ESG基础课程"], sections: [
     { id: "video-courses", kind: "process", title: "循序进入企业碳管理", description: "从入门方法到工具实战、集团体系与平台应用，逐步建立企业内部能力。", items: [] },
     { id: "online-classroom", kind: "resources", title: "在线课堂", description: "查看直播与在线课程内容。", items: [{ title: "进入在线课堂", description: "千聊课堂", value: "https://h5.qlchat.com/wechat/page/live/320000078097038?liveId=320000078097038" }] },
     { id: "downloads", kind: "resources", title: "课程、工具与方案资料", description: "获取产品手册、解决方案与Excel核算工具的当前有效版本。", items: [{ title: "产品手册" }, { title: "解决方案" }, { title: "Excel核算工具" }] },
@@ -852,9 +852,15 @@ export function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
     const withPlatformImage = withProductUpdates.slug === "carbon-management-platform" && withProductUpdates.image === platformImage
       ? { ...withProductUpdates, image: "/media/product-platform-hero.webp" }
       : withProductUpdates;
-    return withPlatformImage.slug === "knowledge-center" && withPlatformImage.navLabel === "知识课堂"
-      ? { ...withPlatformImage, navLabel: "资料中心", eyebrow: "RESOURCE CENTER", title: "企业碳管理资料中心" }
-      : withPlatformImage;
+    if (withPlatformImage.slug !== "knowledge-center") return withPlatformImage;
+    const usesLegacyNavLabel = withPlatformImage.navLabel === "知识课堂" || withPlatformImage.navLabel === "资料中心";
+    const usesLegacyTitle = withPlatformImage.title === "企业碳管理知识课堂" || withPlatformImage.title === "企业碳管理资料中心";
+    return {
+      ...withPlatformImage,
+      ...(usesLegacyNavLabel ? { navLabel: "资源中心" } : {}),
+      ...(usesLegacyTitle ? { title: "企业碳管理资源中心" } : {}),
+      eyebrow: "RESOURCE CENTER",
+    };
   });
   const preservesManagedPages = stored.some((page) => (page.schemaVersion ?? 0) >= 2);
   const storedSlugs = new Set(stored.map((page) => page.slug));

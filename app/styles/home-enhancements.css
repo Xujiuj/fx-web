@@ -877,7 +877,11 @@ main .capability-orbit-section {
 
 /* Homepage palette adjustments: flat brand surfaces and high-contrast copy. */
 .hero {
-  background: #e95513;
+  background: linear-gradient(112deg, #e95513 0%, #f47721 56%, #f7b52c 100%);
+}
+
+main .hero {
+  background: linear-gradient(112deg, #e95513 0%, #f47721 56%, #f7b52c 100%) !important;
 }
 
 .hero-gradient,
@@ -3184,10 +3188,15 @@ main .outline-button {
   background: #e95513;
 }
 
-.hero-gradient {
+main .hero-gradient {
   position: absolute;
   inset: 0;
-  background: linear-gradient(112deg, #bf3f08 0%, #e95513 48%, #f7b52c 100%);
+  background: linear-gradient(112deg, #e95513 0%, #f47721 56%, #f7b52c 100%);
+  background-size: auto;
+}
+
+main .hero-gradient::before {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .hero-slide {
@@ -3196,21 +3205,23 @@ main .outline-button {
 
 .hero-slide::after {
   display: block;
-  background: linear-gradient(90deg, rgba(64, 28, 9, 0.86) 0%, rgba(64, 28, 9, 0.62) 46%, rgba(64, 28, 9, 0.12) 100%);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.04) 46%, rgba(247, 181, 44, 0) 100%);
 }
 
-.hero-copy {
-  text-shadow: 0 2px 18px rgba(93, 35, 7, 0.26);
+main .hero-copy {
+  left: clamp(72px, 17vw, 250px);
+  color: var(--text);
+  text-shadow: none;
 }
 
 .hero-copy p,
 .hero-description {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(43, 41, 37, 0.82);
 }
 
 .hero-copy h1,
 .hero-secondary-link {
-  color: #fff;
+  color: var(--text);
 }
 
 .outline-button {
@@ -3223,7 +3234,11 @@ main .outline-button {
 
 @media (max-width: 720px) {
   .hero-slide::after {
-    background: linear-gradient(90deg, rgba(64, 28, 9, 0.9), rgba(64, 28, 9, 0.58));
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.14), rgba(247, 181, 44, 0.02));
+  }
+
+  main .hero-copy {
+    left: 22px;
   }
 }
 

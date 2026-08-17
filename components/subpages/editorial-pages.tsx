@@ -14,7 +14,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
-import { getArticleCategories, getKnowledgeMeta, knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
+import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
 import { isAllowedContentHref, isManagedDocumentPath, isRuntimeManagedImage } from "@/lib/media-url";
 import styles from "./editorial-pages.module.css";
 
@@ -151,7 +151,7 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
   const downloadSection = page.sections.find((section) => section.id === "downloads");
   const downloads = downloadSection?.items.length ? downloadSection.items : fallbackKnowledgeResources;
   const ctaSection = page.sections.find((section) => section.id === "knowledge-cta");
-  const policyArticles = knowledgeEntries.filter((entry) => entry.type === "article");
+  const policyArticles = filterArticlesByCategory(knowledgeEntries);
   const articleCategories = getArticleCategories(knowledgeEntries);
   const videoCourses = knowledgeEntries.filter((entry) => entry.type === "course");
   const latestArticles = policyArticles.slice(0, 3);

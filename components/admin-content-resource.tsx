@@ -47,7 +47,7 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   home: { title: "首页编排", description: "维护首页横幅、首页内容与能力路径。" },
   news: { title: "最新动态", description: "维护首页最新动态的标题、摘要、图片与跳转链接。" },
   pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" },
-  knowledge: { title: "资料中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
+  knowledge: { title: "资源中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
 };
 
 function optionalHrefRule(message: string, validate: (value: unknown) => boolean = isOptionalAllowedContentHref) {
@@ -256,7 +256,7 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
     { key: "navigation", label: "导航配置" },
     { key: "home", label: "首页内容" },
     { key: "news", label: "最新动态" },
-    { key: "knowledge", label: "资料中心" },
+    { key: "knowledge", label: "资源中心" },
     { key: "website-menu", label: "官网栏目", children: home.navItems.map((item, index) => ({ key: `menu-${index}`, label: item.label })) },
     { key: "pages", label: "全部页面" }
   ];
@@ -388,10 +388,11 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
       { title: "类型", dataIndex: "type", render: (_, record) => <Tag color={record.type === "article" ? "blue" : "green"}>{record.type === "article" ? "双碳文章" : "视频课程"}</Tag> },
       { title: "标题", dataIndex: "title" },
       { title: "栏目", dataIndex: "category" },
+      { title: "发布时间", dataIndex: "publishedAt", renderText: (value) => value ? new Date(value).toLocaleString("zh-CN", { hour12: false }) : "旧内容" },
       { title: "详情地址", dataIndex: "slug", renderText: (slug) => `/knowledge-center/${slug}` }
     ]}
-    createItem={() => ({ id: crypto.randomUUID(), exists: false, slug: "new-knowledge-entry", type: "article" as const, category: "双碳政策", title: "", summary: "", meta: "", sections: [] })}
-    onCreate={(item) => onCommit((current) => [...current, toKnowledgeEntry(item)])}
+    createItem={() => ({ id: crypto.randomUUID(), exists: false, slug: "new-knowledge-entry", type: "article" as const, category: "双碳政策", title: "", summary: "", meta: "", publishedAt: new Date().toISOString(), sections: [] })}
+    onCreate={(item) => onCommit((current) => [toKnowledgeEntry(item), ...current])}
     onUpdate={(item) => onCommit((current) => current.map((entry) => entry.slug === item.id ? toKnowledgeEntry(item, item.id) : entry))}
     onDelete={(item) => onCommit((current) => current.filter((entry) => entry.slug !== item.id))}
   >
@@ -460,7 +461,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
       { label: "培训课程", value: "training" }, { label: "核算实战", value: "practical" },
       { label: "集团咨询", value: "consulting" }, { label: "数字化方案", value: "solution-platform" },
       { label: "Excel 产品", value: "excel" }, { label: "平台产品", value: "product-platform" },
-      { label: "客户案例", value: "cases" }, { label: "资料中心", value: "knowledge" },
+      { label: "客户案例", value: "cases" }, { label: "资源中心", value: "knowledge" },
       { label: "企业介绍", value: "company" }, { label: "企业荣誉", value: "honors" },
       { label: "合作伙伴", value: "partners" }, { label: "联系我们", value: "contact" },
       { label: "实施服务", value: "service" }

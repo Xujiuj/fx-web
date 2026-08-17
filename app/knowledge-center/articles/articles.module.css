@@ -21,6 +21,17 @@
 .list > a:hover h2 { color: #b7551b; }
 .list > a:focus-visible { outline: 3px solid #f7b52c; outline-offset: 3px; }
 .empty { padding: 42px 0; color: #6e655a; }
+.pagination { margin-top: -54px; padding-bottom: 96px; }
+.pagination > div { display: flex; align-items: center; justify-content: center; gap: 12px; }
+.pagination > div > a,
+.pagination > div > span { display: inline-flex; min-height: 40px; align-items: center; gap: 7px; padding: 0 12px; border-bottom: 2px solid transparent; color: #6e655a; font-size: 14px; font-weight: 750; }
+.pagination > div > span { color: #aaa097; }
+.pagination ol { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.pagination li a { display: grid; width: 40px; height: 40px; border: 1px solid #d9c9ba; border-radius: 4px; place-items: center; color: #6e655a; font-size: 14px; font-weight: 800; }
+.pagination a:hover { border-color: #e95513; color: #b7551b; }
+.pagination a:focus-visible { outline: 3px solid #f7b52c; outline-offset: 2px; }
+.pagination li a[aria-current="page"] { border-color: #e95513; color: #fff; background: #e95513; }
+.pagination p { margin: 14px 0 0; color: #8a7667; font-size: 13px; text-align: center; }
 @media (max-width: 680px) {
   .wrap { width: calc(100% - 36px); }
   .hero { padding: 58px 0; }
@@ -31,4 +42,9 @@
   .list > a { grid-template-columns: 32px 24px minmax(0, 1fr); gap: 12px; padding: 26px 0; }
   .list > a > svg:last-child { display: none; }
   .list h2 { font-size: 20px; }
+  .pagination { margin-top: -38px; padding-bottom: 72px; }
+  .pagination > div { gap: 6px; }
+  .pagination > div > a,
+  .pagination > div > span { padding-inline: 6px; }
+  .pagination li a { width: 36px; height: 36px; }
 }

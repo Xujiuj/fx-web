@@ -41,6 +41,10 @@ function isOptionalString(value: unknown) {
   return value === undefined || typeof value === "string";
 }
 
+function isOptionalIsoDate(value: unknown) {
+  return value === undefined || (typeof value === "string" && Number.isFinite(Date.parse(value)));
+}
+
 function isPositiveDimension(value: unknown) {
   return value === undefined || (typeof value === "number" && Number.isFinite(value) && value > 0 && value <= 100_000);
 }
@@ -121,13 +125,13 @@ function validateContent(home: unknown, subpages: unknown, knowledge: unknown): 
       return "子页面模块结构、下载链接或图片路径无效: " + page.slug;
     }
   }
-  if (!Array.isArray(knowledge)) return "资料中心配置必须是数组";
+  if (!Array.isArray(knowledge)) return "资源中心配置必须是数组";
   const knowledgeSlugs = new Set<string>();
   for (const entry of knowledge) {
     if (!isRecord(entry) || !isContentSlug(entry.slug)) return "知识内容 URL 标识只能使用小写字母、数字和单个连字符分隔";
     if (knowledgeSlugs.has(entry.slug)) return "知识内容 URL 标识不能重复: " + entry.slug;
     knowledgeSlugs.add(entry.slug);
-    if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !Array.isArray(entry.sections)) return "知识内容结构无效: " + entry.slug;
+    if ((entry.type !== "article" && entry.type !== "course") || typeof entry.category !== "string" || typeof entry.title !== "string" || typeof entry.summary !== "string" || typeof entry.meta !== "string" || !isOptionalIsoDate(entry.publishedAt) || !Array.isArray(entry.sections)) return "知识内容结构无效: " + entry.slug;
     if (entry.type === "article") {
       if (!isOptionalString(entry.sourceName) || (entry.sourceHref !== undefined && entry.sourceHref !== "" && !isHttpsContentUrl(entry.sourceHref)) || (entry.videoHref !== undefined && entry.videoHref !== "") || (entry.externalHref !== undefined && entry.externalHref !== "") || (entry.externalLabel !== undefined && entry.externalLabel !== "")) return "文章只能配置政策原文，不能绑定课程视频: " + entry.slug;
     } else if (!isOptionalAllowedContentHref(entry.videoHref) || !isOptionalAllowedContentHref(entry.externalHref) || !isOptionalString(entry.externalLabel) || (entry.sourceName !== undefined && entry.sourceName !== "") || (entry.sourceHref !== undefined && entry.sourceHref !== "")) {

@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ entry: st
   const { entry: slug } = await params;
   const entry = await getKnowledgeEntry(slug);
   if (!entry) notFound();
-  return { title: `${entry.title} - 峰行智成资料中心`, description: entry.summary };
+  return { title: `${entry.title} - 峰行智成资源中心`, description: entry.summary };
 }
 
 export default async function KnowledgeEntryPage({ params }: { params: Promise<{ entry: string }> }) {
@@ -43,7 +43,7 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
         <header className={styles.hero}>
           <div className={styles.heroInner}>
             <nav aria-label="面包屑">
-              <Link href="/knowledge-center"><ArrowLeft size={15} aria-hidden="true" />返回资料中心</Link>
+              <Link href="/knowledge-center"><ArrowLeft size={15} aria-hidden="true" />返回资源中心</Link>
             </nav>
             <div className={styles.category}><EntryIcon size={18} aria-hidden="true" />{entry.category}</div>
             <h1>{entry.title}</h1>

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, normalizeKnowledgeEntry, type KnowledgeEntry } from "../lib/knowledge-content.ts";
+import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, normalizeKnowledgeEntry, paginateKnowledgeEntries, type KnowledgeEntry } from "../lib/knowledge-content.ts";
 
 test("removes course-only fields from articles", () => {
   const article = {
@@ -112,6 +112,36 @@ test("filters only articles in the selected category", () => {
   assert.deepEqual(filterArticlesByCategory(entries).map((entry) => entry.slug), ["policy", "accounting"]);
   assert.deepEqual(filterArticlesByCategory(entries, "碳政策").map((entry) => entry.slug), ["policy"]);
   assert.deepEqual(filterArticlesByCategory(entries, "不存在"), []);
+});
+
+test("sorts articles by publish time descending and keeps undated legacy content stable", () => {
+  const entries = [
+    { slug: "legacy-one", type: "article", category: "碳政策", title: "旧文章一", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "older", type: "article", category: "碳政策", title: "较早文章", summary: "摘要", meta: "文章", publishedAt: "2026-08-10T08:00:00.000Z", sections: [] },
+    { slug: "legacy-two", type: "article", category: "碳政策", title: "旧文章二", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "newer", type: "article", category: "碳政策", title: "最新文章", summary: "摘要", meta: "文章", publishedAt: "2026-08-17T08:00:00.000Z", sections: [] },
+    { slug: "course", type: "course", category: "碳政策", title: "课程", summary: "摘要", meta: "课程", publishedAt: "2026-08-18T08:00:00.000Z", sections: [] },
+  ] satisfies KnowledgeEntry[];
+
+  assert.deepEqual(filterArticlesByCategory(entries).map((entry) => entry.slug), ["newer", "older", "legacy-one", "legacy-two"]);
+});
+
+test("paginates entries and clamps requested pages to the available range", () => {
+  const entries = Array.from({ length: 23 }, (_, index) => ({
+    slug: `article-${index + 1}`,
+    type: "article" as const,
+    category: "碳政策",
+    title: `文章 ${index + 1}`,
+    summary: "摘要",
+    meta: "文章",
+    sections: [],
+  }));
+
+  const secondPage = paginateKnowledgeEntries(entries, 2, 10);
+  assert.deepEqual(secondPage.items.map((entry) => entry.slug), entries.slice(10, 20).map((entry) => entry.slug));
+  assert.deepEqual({ currentPage: secondPage.currentPage, totalPages: secondPage.totalPages, totalItems: secondPage.totalItems }, { currentPage: 2, totalPages: 3, totalItems: 23 });
+  assert.equal(paginateKnowledgeEntries(entries, 99, 10).currentPage, 3);
+  assert.equal(paginateKnowledgeEntries(entries, 0, 10).currentPage, 1);
 });
 
 test("shows category once when legacy metadata already contains it", () => {
