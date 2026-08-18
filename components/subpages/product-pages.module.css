@@ -2445,103 +2445,27 @@
   color: rgba(255, 255, 255, .84);
 }
 
-/* The platform product uses the blue half of the logo for its darker surfaces. */
-.platformProductPage {
-  --platform-blue: #176b8c;
-  --platform-blue-deep: #104c6a;
-  --platform-blue-ink: #315d77;
-  --platform-blue-muted: #667f8f;
-  --platform-blue-line: #d5e3ea;
-  --platform-blue-soft: #eef6f9;
-}
-
 .platformProductPage .principleBand {
-  border-bottom-color: rgba(16, 76, 106, 0.3);
-  background: linear-gradient(110deg, #104c6a 0%, #176b8c 58%, #2b7ab9 100%);
+  background: var(--primary);
 }
 
-.platformProductPage .publicDemo,
+.platformProductPage .publicDemo {
+  background: var(--primary-strong);
+}
+
 .platformProductPage .cta {
-  background: var(--platform-blue-deep);
-}
-
-.platformProductPage .publicDemoActions a:first-child {
-  color: var(--platform-blue-deep);
-}
-
-.platformProductPage .cta span {
-  color: #ffd477;
-}
-
-.platformProductPage .sectionHeading h2 {
-  color: var(--platform-blue-deep);
-}
-
-.platformProductPage .sectionHeading p {
-  color: var(--platform-blue-muted);
+  background: var(--primary);
 }
 
 .platformProductPage .mediaStage > span {
-  background: rgba(16, 76, 106, 0.94);
+  background: rgba(191, 63, 8, 0.94);
 }
 
 .platformProductPage .mediaThumbs {
-  scrollbar-color: var(--platform-blue) var(--platform-blue-soft);
-}
-
-.platformProductPage .mediaThumbs button {
-  border-color: var(--platform-blue-line);
-  color: var(--platform-blue-ink);
-}
-
-.platformProductPage .mediaThumbs button:focus-visible,
-.platformProductPage .mediaThumbs .activeThumb {
-  border-color: var(--platform-blue);
-  outline-color: rgba(23, 107, 140, 0.2);
-}
-
-.platformProductPage .platformOverview,
-.platformProductPage .productResources {
-  border-color: var(--platform-blue-line);
+  scrollbar-color: var(--primary) #eef3ef;
 }
 
 .platformProductPage .overviewTabs,
 .platformProductPage .resourceRows {
-  border-top-color: var(--platform-blue-deep);
-}
-
-.platformProductPage .overviewTabs button,
-.platformProductPage .resourceRows > a,
-.platformProductPage .resourceRows > div {
-  border-bottom-color: var(--platform-blue-line);
-  color: var(--platform-blue-ink);
-}
-
-.platformProductPage .overviewTabs .activeOverviewTab {
-  border-left-color: var(--primary);
-}
-
-.platformProductPage .overviewTabs button > span,
-.platformProductPage .resourceRows > a > svg:first-child,
-.platformProductPage .resourceRows > div > svg:first-child {
-  color: var(--primary);
-}
-
-.platformProductPage .overviewTabs button > strong {
-  color: var(--platform-blue-deep);
-}
-
-.platformProductPage .overviewTabs button > p,
-.platformProductPage .overviewVisual li,
-.platformProductPage .resourceRows span {
-  color: var(--platform-blue-muted);
-}
-
-.platformProductPage .overviewTabs .activeOverviewTab,
-.platformProductPage .overviewVisual {
-  background: var(--platform-blue-soft);
-}
-
-.platformProductPage .resourceRows > .resourceUnavailable {
-  color: #8195a2;
+  border-top-color: var(--primary);
 }
