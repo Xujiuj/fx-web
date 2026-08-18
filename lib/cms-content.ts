@@ -165,7 +165,7 @@ const defaultPageMedia: Record<string, PageMedia> = {
   "solution-standard": { diagram: "/media/reference-diagrams/service-process.svg" },
   "solution-practical": { diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
   "solution-consulting": { diagram: "/media/reference-diagrams/group-implementation.svg" },
-  "solution-platform": { diagram: "/media/reference-diagrams/agile-implementation.svg" },
+  "solution-platform": { diagram: "/media/reference-diagrams/platform-architecture.svg" },
   "excel-accounting-tool": { screenshot: "/media/product-excel-report.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
   "carbon-management-platform": { screenshot: "/media/product-platform-dashboard.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
   "customer-cases": {
@@ -199,11 +199,20 @@ const solutionDiagramMigrations = [
   {
     slug: "solution-platform",
     fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
-    toImage: "/media/reference-diagrams/agile-implementation.svg",
+    toImage: "/media/reference-diagrams/platform-architecture.svg",
     fromTitle: "企业碳数据治理与标准体系",
-    toTitle: "企业温室气体核算敏捷实施技术路线",
+    toTitle: "企业碳管理平台架构图",
     fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-    toDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    toDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
+  },
+  {
+    slug: "solution-platform",
+    fromImage: "/media/reference-diagrams/agile-implementation.svg",
+    toImage: "/media/reference-diagrams/platform-architecture.svg",
+    fromTitle: "企业温室气体核算敏捷实施技术路线",
+    toTitle: "企业碳管理平台架构图",
+    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    toDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
   },
 ] as const;
 
@@ -672,8 +681,8 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业温室气体核算敏捷实施技术路线",
-    diagramDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    diagramTitle: "企业碳管理平台架构图",
+    diagramDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
     diagramImage: defaultPageMedia["solution-platform"].diagram
   })
 };
@@ -824,8 +833,11 @@ export function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
     const solutionImage = solutionImages[`/${migrated.slug}`];
     const isLegacySolutionImage = legacySolutionImagePaths.has(migrated.image);
     const withSolutionImage = solutionImage && isLegacySolutionImage ? { ...migrated, image: solutionImage } : migrated;
-    const diagramUpdate = solutionDiagramMigrations.find((update) => update.slug === withSolutionImage.slug);
-    const withDiagramUpdates = diagramUpdate ? migrateSolutionDiagramBinding(withSolutionImage, diagramUpdate) : withSolutionImage;
+    const diagramUpdates = solutionDiagramMigrations.filter((update) => update.slug === withSolutionImage.slug);
+    const withDiagramUpdates = diagramUpdates.reduce(
+      (current, update) => migrateSolutionDiagramBinding(current, update),
+      withSolutionImage
+    );
     const withProductUpdates = withDiagramUpdates.slug === "excel-accounting-tool"
       ? {
           ...withDiagramUpdates,

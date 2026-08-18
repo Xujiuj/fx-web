@@ -144,10 +144,10 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   },
   "solution-platform": {
     eyebrow: "实施流程",
-    title: "企业温室气体核算敏捷实施技术路线",
-    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    src: "/media/reference-diagrams/agile-implementation.svg",
-    alt: "企业温室气体核算敏捷实施技术路线图",
+    title: "企业碳管理平台架构图",
+    description: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
+    src: "/media/reference-diagrams/platform-architecture.svg",
+    alt: "企业碳管理平台架构图",
   },
 };
 
@@ -263,7 +263,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
-  const heroImage = page.image || page.media?.diagram || diagram?.src;
+  const diagramImage = diagramItems.find((item) => item.image)?.image ?? page.media?.diagram ?? diagram?.src;
+  const heroImage = diagramImage || page.image;
   const heroImageAlt = `${page.title}方案主图`;
   const diagramBlocks = diagramItems.map((item, index) => {
     const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);

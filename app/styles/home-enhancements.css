@@ -922,6 +922,7 @@ main .home-challenges {
 .capability-orbit-stage > a {
   display: grid;
   width: 100%;
+  grid-column: 1 / -1;
   grid-template-columns: inherit;
   gap: inherit;
   align-items: center;
@@ -1127,6 +1128,26 @@ main .capability-orbit-stage-3 .capability-orbit-node { grid-column: 1; }
 
 main .capability-orbit-stage-2 .capability-orbit-copy,
 main .capability-orbit-stage-3 .capability-orbit-copy { grid-column: 2; grid-row: 1; }
+
+main .capability-orbit-copy,
+main .capability-orbit-copy h3,
+main .capability-orbit-copy ul,
+main .capability-orbit-copy li {
+  writing-mode: horizontal-tb;
+  text-orientation: mixed;
+}
+
+main .capability-orbit-copy {
+  min-width: 0;
+}
+
+main .capability-orbit-copy ul {
+  display: block;
+}
+
+main .capability-orbit-copy li {
+  overflow-wrap: anywhere;
+}
 
 main .capability-orbit-node {
   position: relative;
@@ -1336,6 +1357,10 @@ main .capability-orbit-section .timeline-summary::before { display: none; }
 main .hero {
   min-height: 600px;
   background: #d84c12;
+}
+
+main .hero-copy h1 {
+  color: #fff !important;
 }
 
 main .hero-gradient {

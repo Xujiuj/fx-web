@@ -35,7 +35,7 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
 
       <aside className="wecom-consultant" aria-label="咨询方式">
         {activePanel ? (
-          <div className={`wecom-panel${activePanel === "service" ? " is-service" : ""}`} id="consultation-panel" role="dialog" aria-label={activePanel === "service" ? "微信客服咨询" : "企业微信咨询"}>
+          <div className={`wecom-panel${activePanel === "service" ? " is-service" : ""}`} id="consultation-panel">
             <button className="wecom-close" type="button" onClick={() => setActivePanel(null)} aria-label="收起咨询二维码">
               <X size={17} aria-hidden="true" />
             </button>
@@ -54,11 +54,11 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
                   </div>
                 </div>
               ) : (
-                <div className="wecom-qr-item">
-                  <div className="wecom-qr-wrap">
-                    <Image src={wecomQr} alt="峰行智成企业微信二维码" width={712} height={727} sizes="176px" unoptimized={isRuntimeManagedImage(wecomQr)} />
-                  </div>
+              <div className="wecom-qr-item">
+                <div className="wecom-qr-wrap">
+                  <Image src={wecomQr} alt="峰行智成企业微信二维码" width={712} height={727} sizes="176px" unoptimized={isRuntimeManagedImage(wecomQr)} />
                 </div>
+              </div>
               )}
             </div>
             {activePanel === "service" && customerServiceHref ? <a className="wecom-service-link" href={customerServiceHref} target="_blank" rel="noreferrer">打开微信客服</a> : null}
@@ -66,12 +66,12 @@ export function SiteFooter({ footer }: { footer: FooterContent }) {
           </div>
         ) : null}
         <div className="wecom-actions">
-          <button className={`wecom-open${activePanel === "wecom" ? " is-active" : ""}`} type="button" onClick={() => setActivePanel(activePanel === "wecom" ? null : "wecom")} aria-label={activePanel === "wecom" ? "收起企业微信二维码" : "打开企业微信二维码"} aria-controls="consultation-panel" aria-expanded={activePanel === "wecom"} title="企业微信">
+          <button className={`wecom-open${activePanel === "wecom" ? " is-active" : ""}`} type="button" onClick={() => setActivePanel(activePanel === "wecom" ? null : "wecom")} aria-label="打开企业微信二维码" aria-controls="consultation-panel" aria-expanded={activePanel === "wecom"} title="企业微信">
             <UserRoundPlus size={23} aria-hidden="true" />
             <span>企业微信</span>
           </button>
           {customerServiceQr ? (
-            <button className={`wecom-open wecom-open--service${activePanel === "service" ? " is-active" : ""}`} type="button" onClick={() => setActivePanel(activePanel === "service" ? null : "service")} aria-label={activePanel === "service" ? "收起客服咨询二维码" : "打开客服咨询二维码"} aria-controls="consultation-panel" aria-expanded={activePanel === "service"} title="客服咨询">
+            <button className={`wecom-open wecom-open--service${activePanel === "service" ? " is-active" : ""}`} type="button" onClick={() => setActivePanel(activePanel === "service" ? null : "service")} aria-label="打开客服咨询二维码" aria-controls="consultation-panel" aria-expanded={activePanel === "service"} title="客服咨询">
               <MessageCircle size={23} aria-hidden="true" />
               <span>客服咨询</span>
             </button>

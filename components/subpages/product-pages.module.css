@@ -1697,13 +1697,19 @@
 }
 
 .mediaThumbs {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-color: #1f8a70 #eef3ef;
+  scrollbar-width: thin;
   gap: 10px;
   margin-top: 12px;
+  padding: 2px 2px 10px;
 }
 
 .mediaThumbs button {
+  flex: 0 0 clamp(156px, 15vw, 190px);
   min-width: 0;
   padding: 8px;
   border: 1px solid #d9e2dd;
@@ -1997,10 +2003,6 @@
   .mediaStage {
     min-height: 250px;
     padding: 10px;
-  }
-
-  .mediaThumbs {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .overviewVisual > a {

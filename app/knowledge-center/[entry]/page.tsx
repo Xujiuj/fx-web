@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { getHomeContent, getKnowledgeEntries, getKnowledgeEntry } from "@/lib/cms-content";
-import { courseVideoPlaceholderHref, knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
+import { knowledgeEntries as defaultKnowledgeEntries } from "@/lib/knowledge-content";
 import { getManagedVideoStreamUrl, isAllowedContentHref, isRuntimeManagedImage } from "@/lib/media-url";
 import Image from "next/image";
 import styles from "./knowledge-entry.module.css";
@@ -29,11 +29,7 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
   const [home, knowledgeEntries] = await Promise.all([getHomeContent(), getKnowledgeEntries()]);
   const related = knowledgeEntries.filter((item) => item.type === entry.type && item.slug !== entry.slug).slice(0, 3);
   const EntryIcon = entry.type === "article" ? BookOpen : GraduationCap;
-  const configuredVideoSrc = entry.type === "course"
-    ? getManagedVideoStreamUrl(entry.videoHref) ?? entry.videoHref
-    : undefined;
-  const videoSrc = entry.type === "course" ? configuredVideoSrc || courseVideoPlaceholderHref : undefined;
-  const usesVideoPlaceholder = entry.type === "course" && !configuredVideoSrc;
+  const videoSrc = entry.type === "course" ? getManagedVideoStreamUrl(entry.videoHref) ?? entry.videoHref : undefined;
   const externalHref = entry.type === "course" && isAllowedContentHref(entry.externalHref) ? entry.externalHref : undefined;
 
   return (
@@ -60,10 +56,9 @@ export default async function KnowledgeEntryPage({ params }: { params: Promise<{
 
             {entry.type === "course" && videoSrc ? (
               <section className={styles.videoSection} aria-labelledby="course-video-title">
-                <span>{usesVideoPlaceholder ? "COURSE PREVIEW" : "COURSE VIDEO"}</span>
+                <span>COURSE VIDEO</span>
                 <h2 id="course-video-title">课程视频</h2>
-                {usesVideoPlaceholder ? <p id="course-video-hint" className={styles.videoHint}>当前课程视频正在完善，暂以统一课程视频展示。</p> : null}
-                <video controls playsInline preload="metadata" src={videoSrc} aria-describedby={usesVideoPlaceholder ? "course-video-hint" : undefined}>
+                <video controls playsInline preload="metadata" src={videoSrc}>
                   您的浏览器暂不支持视频播放。
                 </video>
               </section>

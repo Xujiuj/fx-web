@@ -33,9 +33,6 @@ export type KnowledgeEntry =
       externalLabel?: string;
     });
 
-export const courseVideoPlaceholderHref =
-  "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4";
-
 export function normalizeKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
   if (entry.type === "article") {
     const article = { ...entry };
