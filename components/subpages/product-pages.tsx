@@ -597,7 +597,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   const platformScreenshotItems = screenshotsFor(page, platformScreenshots);
 
   return (
-    <>
+    <div className={styles.platformProductPage}>
       <section className={styles.platformHero}>
         <div className={styles.container}>
           <div className={styles.platformHeroCopy}>
@@ -679,6 +679,6 @@ export function PlatformProductPage({ page }: ProductPageProps) {
 
       <ProductResources page={page} />
       <PageCta page={page} />
-    </>
+    </div>
   );
 }
