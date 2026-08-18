@@ -922,10 +922,12 @@
 .solutionDetailHeroInner {
   display: grid;
   width: min(calc(100% - 48px), 1140px);
-  grid-template-columns: 1fr;
-  gap: 28px;
+  min-height: 410px;
+  grid-template-columns: minmax(0, 1fr) minmax(400px, .82fr);
+  align-items: center;
+  gap: 52px;
   margin: 0 auto;
-  padding: 58px 0;
+  padding: 44px 0;
 }
 
 .solutionDetailHeroCopy > span,
@@ -960,10 +962,13 @@
 }
 
 .solutionHeroSignal {
+  --signal-image-inset: 22px;
+  --signal-image-gutter: 44px;
   position: relative;
   display: grid;
-  min-height: 0;
-  padding: clamp(12px, 2vw, 24px);
+  place-items: center;
+  align-self: stretch;
+  min-height: 320px;
   overflow: hidden;
   border-right: 1px solid rgba(255, 255, 255, 0.24);
   border-left: 1px solid rgba(255, 255, 255, 0.24);
@@ -982,10 +987,12 @@
 }
 
 .solutionHeroSignal img {
-  position: relative;
+  position: absolute;
   z-index: 1;
-  width: 100%;
-  height: auto;
+  inset: var(--signal-image-inset);
+  box-sizing: border-box;
+  width: calc(100% - var(--signal-image-gutter));
+  height: calc(100% - var(--signal-image-gutter));
   object-fit: contain;
   object-position: center;
   padding: clamp(8px, 1.2vw, 16px);
@@ -1461,6 +1468,18 @@
 }
 
 @media (max-width: 860px) {
+  .solutionDetailHeroInner {
+    min-height: 0;
+    grid-template-columns: 1fr;
+    gap: 28px;
+    padding: 48px 0;
+  }
+
+  .solutionHeroSignal {
+    height: 280px;
+    min-height: 280px;
+  }
+
   .solutionStageNav ol { grid-template-columns: repeat(2, 1fr); }
   .serviceContentsInner {
     grid-template-columns: 1fr;
@@ -1512,6 +1531,7 @@
   }
 
   .solutionDetailHeroInner {
+    gap: 24px;
     padding: 42px 0;
   }
 
@@ -1537,7 +1557,10 @@
   }
 
   .solutionHeroSignal {
-    padding: 10px;
+    --signal-image-inset: 10px;
+    --signal-image-gutter: 20px;
+    height: 220px;
+    min-height: 220px;
   }
 
   .solutionHeroSignal strong { top: 28px; right: 18px; font-size: 84px; }
