@@ -1965,7 +1965,10 @@
   color: #fff;
 }
 
-.featuredTopic p,
+.featuredTopic p {
+  color: #fff;
+}
+
 .contactBand span {
   color: #2b1a12;
 }
