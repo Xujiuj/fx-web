@@ -2,7 +2,6 @@ import { Fragment } from "react";
 import {
   ArrowRight,
   Check,
-  ChevronRight,
   FileCheck2,
   Target,
   UsersRound,
@@ -216,13 +215,6 @@ function getFramework(page: Subpage): SolutionFramework {
   };
 }
 
-const solutionStages = [
-  { sequence: "01", label: "标准版", caption: "培训赋能", href: "/solution-standard" },
-  { sequence: "02", label: "实战营", caption: "Excel单公司版", href: "/solution-practical" },
-  { sequence: "03", label: "咨询版", caption: "Excel集团版", href: "/solution-consulting" },
-  { sequence: "04", label: "平台版", caption: "数字化升级", href: "/solution-platform" }
-];
-
 function SolutionHeroTitle({ title }: { title: string }) {
   const match = title.match(/^(.+?)(（.+）)$/);
   if (!match) return <h1>{title}</h1>;
@@ -294,16 +286,9 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      <nav className={styles.solutionStageNav} aria-label="企业碳管理能力建设路径" data-motion-group="solution-stage-nav">
+      <section className={styles.solutionStageNav} aria-label="企业碳管理能力建设路径" data-motion-group="solution-stage-nav">
         <p data-motion-role="copy">我们提供从Excel工具到数字化平台的全阶段解决方案，企业可依据自身发展阶段与管理成熟度，选择最适配的能力建设路径，实现渐进式、可持续的碳管理能力提升。</p>
-        <ol data-motion-role="visual">
-          {solutionStages.map((stage) => <li key={stage.sequence} className={stage.sequence === framework.sequence ? styles.activeStage : undefined}>
-            <Link href={stage.href} aria-current={stage.sequence === framework.sequence ? "page" : undefined} data-motion-role="item">
-              <span>{stage.sequence}</span><div><strong>{stage.label}</strong><small>{stage.caption}</small></div><ChevronRight size={16} aria-hidden="true" />
-            </Link>
-          </li>)}
-        </ol>
-      </nav>
+      </section>
 
       {framework.sequence === "01" ? diagramBlocks : null}
 
