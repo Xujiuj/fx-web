@@ -2450,7 +2450,7 @@
 }
 
 .platformProductPage .publicDemo {
-  background: var(--primary-strong);
+  background: var(--primary);
 }
 
 .platformProductPage .cta {
@@ -2458,7 +2458,7 @@
 }
 
 .platformProductPage .mediaStage > span {
-  background: rgba(191, 63, 8, 0.94);
+  background: rgba(233, 85, 19, 0.94);
 }
 
 .platformProductPage .mediaThumbs {
