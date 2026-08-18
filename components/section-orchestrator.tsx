@@ -154,7 +154,6 @@ export function SectionOrchestrator({ scope }: { scope: HTMLElement | null }) {
         ".capability-orbit-stage",
         ".capability-orbit-link",
         ".capability-orbit-node",
-        ".timeline-summary",
         ".home-drivers .home-editorial-heading",
         ".home-driver-grid > article",
         ".home-challenge-intro",
@@ -187,7 +186,6 @@ export function SectionOrchestrator({ scope }: { scope: HTMLElement | null }) {
         const entries = query<HTMLElement>(".capability-orbit-stage");
         const links = query<HTMLElement>(".capability-orbit-link");
         const nodes = query<HTMLElement>(".capability-orbit-node");
-        const summary = query<HTMLElement>(".timeline-summary");
         const timeline = createScrollTimeline(timelineSection, compact);
 
         addHeadingReveal(timeline, heading, headingFrom, compact).fromTo(tracks, {
@@ -247,9 +245,6 @@ export function SectionOrchestrator({ scope }: { scope: HTMLElement | null }) {
           scale: 1, rotation: 0, duration: 0.66, stagger: compact ? 0.2 : 0.26,
           ease: "back.out(1.8)", clearProps: "transform"
         }, "<+=0.08");
-        timeline.fromTo(summary, { autoAlpha: 0, y: 22 }, {
-          autoAlpha: 1, y: 0, duration: 1, ease: "power2.out", clearProps
-        }, ">+0.2");
       }
 
       const drivers = query<HTMLElement>(".home-drivers")[0];

@@ -19,8 +19,11 @@ export function AnimatedTimeline({ title, eyebrow, description, summary, timelin
 
   return <section className="timeline-section capability-orbit-section" id="path">
     <div className="timeline-section-heading">
-      <SectionHeading eyebrow={eyebrow} title={title} />
-      {description ? <p>{description}</p> : null}
+      <div className="timeline-section-heading-copy">
+        <SectionHeading eyebrow={eyebrow} title={title} />
+        {summary ? <p className="timeline-summary">{summary}</p> : null}
+      </div>
+      {description ? <p className="timeline-description">{description}</p> : null}
     </div>
     <div className="capability-orbit">
       <div className="capability-orbit-visual" aria-hidden="true">
@@ -50,6 +53,5 @@ export function AnimatedTimeline({ title, eyebrow, description, summary, timelin
         })}
       </ol>
     </div>
-    {summary ? <p className="timeline-summary">{summary}</p> : null}
   </section>;
 }

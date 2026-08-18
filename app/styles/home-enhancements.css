@@ -3407,3 +3407,58 @@ main .hero-copy {
 .timeline-entry-copy li::marker {
   color: #bf3f08;
 }
+
+/* Latest homepage layout decisions. */
+main .hero .hero-copy,
+main .hero .hero-copy h1,
+main .hero .hero-copy p,
+main .hero .hero-description,
+main .hero .hero-secondary-link {
+  color: #fff;
+}
+
+main .capability-orbit-section .timeline-section-heading-copy {
+  min-width: 0;
+}
+
+main .capability-orbit-section .timeline-section-heading-copy .section-heading {
+  margin-bottom: 20px;
+}
+
+main .capability-orbit-section .timeline-section-heading-copy .section-heading h2 {
+  max-width: 100%;
+  text-wrap: balance;
+}
+
+main .capability-orbit-section .timeline-section-heading-copy .timeline-summary {
+  max-width: 720px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  color: rgba(36, 36, 36, 0.7);
+  line-height: 1.9;
+  text-align: left;
+}
+
+main .capability-orbit-section .timeline-section-heading-copy .timeline-summary::before {
+  display: none;
+}
+
+main .capability-orbit-section .timeline-description {
+  margin: 0;
+  padding-left: 24px;
+  border-left: 2px solid #f7b52c;
+  color: rgba(36, 36, 36, 0.68);
+  font-weight: 700;
+  text-align: left;
+}
+
+@media (max-width: 720px) {
+  main .capability-orbit-section .timeline-section-heading-copy .section-heading {
+    margin-bottom: 16px;
+  }
+
+  main .capability-orbit-section .timeline-description {
+    padding-left: 16px;
+  }
+}
