@@ -160,8 +160,6 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
   return (
     <>
       <section className={styles.knowledgeHero}>
-        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="100vw" unoptimized={isRuntimeManagedImage(page.image)} />
-        <div className={styles.heroShade} aria-hidden="true" />
         <div className={`${styles.wrap} ${styles.knowledgeHeroInner}`}>
           <div className={`${styles.knowledgeHeroTitle} page-reveal`} data-motion="hero-copy">
             <Breadcrumb page={page} />
