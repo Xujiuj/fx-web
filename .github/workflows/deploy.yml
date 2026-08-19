@@ -265,7 +265,7 @@ jobs:
               if [ -f "$target/.env" ]; then
                 sed -E '/^SMTP_(HOST|PORT|SECURE|USER|PASSWORD|FROM)=/d' "$target/.env"
               fi
-              printf '%s\n' 'SMTP_HOST=smtp.qq.com' 'SMTP_PORT=465' 'SMTP_SECURE=true'
+              printf '%s\n' 'SMTP_HOST=smtp.exmail.qq.com' 'SMTP_PORT=465' 'SMTP_SECURE=true'
               printf 'SMTP_USER=%s\nSMTP_PASSWORD=%s\nSMTP_FROM=%s\n' "$SMTP_USER" "$SMTP_PASSWORD" "$SMTP_FROM"
             } > "$smtp_env"
             install -o fx-web -g fx-web -m 0600 "$smtp_env" "$target/.env"

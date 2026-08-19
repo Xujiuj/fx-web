@@ -14,7 +14,8 @@ history.
 The host `.env` also contains the outbound-mail configuration. Set
 `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD`, and
 `SMTP_FROM` there; QQ Mail uses `smtp.qq.com`, port `465`, and an SMTP
-authorization code as `SMTP_PASSWORD`. Contact-form notifications are sent to
+authorization code as `SMTP_PASSWORD`. For Tencent Enterprise Mail, use
+`smtp.exmail.qq.com` on port `465`. Contact-form notifications are sent to
 the email address currently published in the site's contact content, so the
 recipient changes automatically when that content is updated.
 
