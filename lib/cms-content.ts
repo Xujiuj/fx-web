@@ -190,10 +190,19 @@ const solutionDiagramMigrations = [
   {
     slug: "solution-practical",
     fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
-    toImage: "/media/reference-diagrams/agile-implementation.svg",
+    toImage: "/media/reference-diagrams/excel-standard-flow.svg",
     fromTitle: "企业碳数据治理与标准体系",
-    toTitle: "企业温室气体核算敏捷实施技术路线",
+    toTitle: "企业碳数据治理与标准体系",
     fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    toDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+  },
+  {
+    slug: "solution-practical",
+    fromImage: "/media/reference-diagrams/agile-implementation.svg",
+    toImage: "/media/reference-diagrams/excel-standard-flow.svg",
+    fromTitle: "企业温室气体核算敏捷实施技术路线",
+    toTitle: "企业温室气体核算敏捷实施技术路线",
+    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
     toDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
   },
   {
