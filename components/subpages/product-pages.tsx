@@ -92,8 +92,25 @@ function optimizedScreenshot(item: ProductScreenshot): ProductMediaItem {
   return { ...item, width: item.width ?? 1920, height: item.height ?? 1080 };
 }
 
+function platformScreenshotOrder(items: ProductScreenshot[]) {
+  const numbered = new Map<number, ProductScreenshot>();
+  const unnumbered: ProductScreenshot[] = [];
+
+  for (const item of items) {
+    const match = item.src.match(/\/平台截图\/([1-7])\.png$/);
+    if (match) numbered.set(Number(match[1]), item);
+    else unnumbered.push(item);
+  }
+
+  return [4, 5, 6, 7, ...Array.from(numbered.keys()).filter((number) => ![4, 5, 6, 7].includes(number)).sort((a, b) => a - b)]
+    .map((number) => numbered.get(number))
+    .filter((item): item is ProductScreenshot => Boolean(item))
+    .concat(unnumbered);
+}
+
 function screenshotsFor(page: Subpage, fallback: ProductScreenshot[]): ProductMediaItem[] {
-  return (page.product?.screenshots?.length ? page.product.screenshots : fallback).map(optimizedScreenshot);
+  const items = page.product?.screenshots?.length ? page.product.screenshots : fallback;
+  return (page.slug === "carbon-management-platform" ? platformScreenshotOrder(items) : items).map(optimizedScreenshot);
 }
 
 function ProductVisual({ page }: ProductPageProps) {
