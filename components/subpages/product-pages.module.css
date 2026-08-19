@@ -140,6 +140,11 @@
 
 .heroDiagram img { display: block; width: 100%; height: auto; }
 
+.excelFlowBand {
+  border-block: 1px solid #dfe5e1;
+  background: #f5f7f4;
+}
+
 .heroMetrics dd {
   margin: 7px 0 0;
   color: #fff;
@@ -1745,6 +1750,11 @@
 
 .platformOverview {
   border-bottom: 1px solid #dfe5e1;
+}
+
+.platformProductPage .mediaGallery {
+  border-block: 1px solid #dfe5e1;
+  background: #f5f7f4;
 }
 
 .overviewWorkspace {
