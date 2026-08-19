@@ -255,11 +255,11 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
-  const diagramImage = diagramItems.find((item) => item.image)?.image ?? page.media?.diagram ?? diagram?.src;
+  const diagramImage = diagram?.src ?? diagramItems.find((item) => item.image)?.image ?? page.media?.diagram;
   const heroImage = diagramImage || page.image;
   const heroImageAlt = `${page.title}方案主图`;
   const diagramBlocks = diagramItems.map((item, index) => {
-    const src = item.image ?? (index === 0 ? page.media?.diagram ?? diagram?.src : undefined);
+    const src = index === 0 ? diagramImage : item.image;
     if (!src) return null;
     const eyebrow = diagramSection && diagramSection.title !== item.title
       ? diagramSection.title
