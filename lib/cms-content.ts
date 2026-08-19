@@ -180,21 +180,21 @@ const defaultPageMedia: Record<string, PageMedia> = {
 const solutionDiagramMigrations = [
   {
     slug: "solution-standard",
-    fromImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    toImage: "/media/reference-diagrams/service-process.svg",
-    fromTitle: "企业温室气体核算实战（Excel版）",
-    toTitle: "企业碳管理能力建设路线图",
-    fromDescription: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
-    toDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
+    fromImage: "/media/reference-diagrams/service-process.svg",
+    toImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
+    fromTitle: "企业碳管理能力建设路线图",
+    toTitle: "企业温室气体核算实战（Excel版）",
+    fromDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
+    toDescription: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
   },
   {
     slug: "solution-practical",
-    fromImage: "/media/reference-diagrams/agile-implementation.svg",
-    toImage: "/media/reference-diagrams/carbon-data-governance.svg",
-    fromTitle: "企业温室气体核算敏捷实施技术路线",
-    toTitle: "企业碳数据治理与标准体系",
-    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    toDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
+    toImage: "/media/reference-diagrams/agile-implementation.svg",
+    fromTitle: "企业碳数据治理与标准体系",
+    toTitle: "企业温室气体核算敏捷实施技术路线",
+    fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
+    toDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
   },
   {
     slug: "solution-platform",
@@ -753,7 +753,10 @@ const excelProductSections: SubpageSection[] = [
     kind: "gallery",
     title: "Excel 工具的数据维护与核算关系",
     description: "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。",
-    items: [{ title: "Excel 工具的数据维护与核算关系", description: "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。", image: defaultPageMedia["excel-accounting-tool"].diagram }]
+    items: [
+      { title: "企业温室气体核算标准化流程图", description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。", image: "/media/reference-diagrams/excel-standard-flow.svg" },
+      { title: "企业温室气体核算数据建模流程图（Excel版）", description: "围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。", image: "/media/reference-diagrams/data-modeling-flow.svg" }
+    ]
   },
   { id: "product-screenshots", kind: "gallery", title: "查看两个版本的完整产品界面", description: "切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。", items: [] },
   { id: "product-features", kind: "capabilities", title: "产品特点", description: "把核算方法落实到可持续使用的工具中，兼顾单体核算、集团汇总与多年数据积累。", items: [] },
@@ -841,8 +844,19 @@ export function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
     const withProductUpdates = withDiagramUpdates.slug === "excel-accounting-tool"
       ? {
           ...withDiagramUpdates,
-          media: withDiagramUpdates.media?.diagram === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...withDiagramUpdates.media, diagram: "/media/reference-diagrams/excel-standard-flow.svg" } : withDiagramUpdates.media,
-          sections: withDiagramUpdates.sections.map((section) => section.id === "product-diagram" ? { ...section, items: section.items.map((item) => item.image === "/media/reference-diagrams/data-modeling-flow.svg" ? { ...item, image: "/media/reference-diagrams/excel-standard-flow.svg" } : item) } : section)
+          media: { ...(withDiagramUpdates.media ?? {}), diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
+          sections: withDiagramUpdates.sections.map((section) => {
+            if (section.id !== "product-diagram") return section;
+            const hasStandardFlow = section.items.some((item) => item.image === "/media/reference-diagrams/excel-standard-flow.svg");
+            const hasDataModelingFlow = section.items.some((item) => item.image === "/media/reference-diagrams/data-modeling-flow.svg");
+            return {
+              ...section,
+              items: [
+                ...(hasStandardFlow ? section.items : [{ title: "企业温室气体核算标准化流程图", description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。", image: "/media/reference-diagrams/excel-standard-flow.svg" }]),
+                ...(hasDataModelingFlow ? [] : [{ title: "企业温室气体核算数据建模流程图（Excel版）", description: "围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。", image: "/media/reference-diagrams/data-modeling-flow.svg" }]),
+              ],
+            };
+          })
         }
       : withDiagramUpdates.slug === "carbon-management-platform"
         ? {
