@@ -206,7 +206,7 @@ function platformOverviewFor(page: Subpage) {
   const section = page.sections.find((item) => item.id === "platform-overview");
   if (!section?.items.length) return { items: platformOverviewItems, title: undefined, description: undefined };
   return {
-    title: section.title,
+    title: page.slug === "carbon-management-platform" ? "平台三项核心优势" : section.title,
     description: section.description,
     items: section.items.map((item, index): PlatformOverviewItem => {
       const fallback = platformOverviewItems[index % platformOverviewItems.length];
@@ -214,8 +214,8 @@ function platformOverviewFor(page: Subpage) {
         label: item.title,
         summary: item.description ?? fallback.summary,
         points: itemPoints(item.details).length ? itemPoints(item.details) : fallback.points,
-        src: item.image ?? fallback.src,
-        fullSrc: !item.image || item.image === fallback.src ? fallback.fullSrc : undefined,
+        src: page.slug === "carbon-management-platform" ? fallback.src : item.image ?? fallback.src,
+        fullSrc: page.slug === "carbon-management-platform" || !item.image || item.image === fallback.src ? fallback.fullSrc : undefined,
         alt: item.title,
         width: fallback.width,
         height: fallback.height
@@ -282,6 +282,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
   const editions = [editionSection?.items[0] ?? defaultEditions[0], editionSection?.items[1] ?? defaultEditions[1]];
   const diagramSection = page.sections.find((section) => section.id === "product-diagram");
   const diagramItem = diagramSection?.items[0];
+  const excelDiagramSrc = "/media/reference-diagrams/excel-standard-flow.svg";
 
   return (
     <>
@@ -303,9 +304,9 @@ export function ExcelProductPage({ page }: ProductPageProps) {
               ))}
             </dl>
           </div>
-          <a className={styles.heroDiagram} href={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"} target="_blank" rel="noreferrer" data-motion="hero-visual" aria-label="查看Excel标准化流程图原图">
+          <a className={styles.heroDiagram} href={excelDiagramSrc} target="_blank" rel="noreferrer" data-motion="hero-visual" aria-label="查看Excel标准化流程图原图">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"} alt="Excel温室气体核算标准化流程图" width={1200} height={800} />
+            <img src={excelDiagramSrc} alt="Excel温室气体核算标准化流程图" width={1200} height={800} />
           </a>
         </div>
       </section>
@@ -315,7 +316,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
           eyebrow="CORE METHODOLOGY"
           title="企业温室气体核算标准化流程图"
           description="以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。"
-          src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
+          src={excelDiagramSrc}
           alt="企业温室气体核算标准化流程图"
           wide
         />
