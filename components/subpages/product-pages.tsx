@@ -378,10 +378,6 @@ export function ExcelProductPage({ page }: ProductPageProps) {
             <ul>
               {itemPoints(editions[0]?.details).map((point) => <li key={point}><CheckCircle2 size={16} aria-hidden="true" />{point}</li>)}
             </ul>
-            <a className={styles.editionDiagram} href={excelDiagramSrc} target="_blank" rel="noreferrer" aria-label="查看单公司版标准化流程图原图">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={excelDiagramSrc} alt="单公司版企业温室气体核算标准化流程图" width={715} height={350} loading="lazy" />
-            </a>
           </article>
           <div className={styles.compareAxis} aria-hidden="true" data-motion-role="item">
             <span>统一口径</span>
