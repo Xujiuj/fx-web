@@ -61,11 +61,11 @@ const excelScreenshots: ProductScreenshot[] = [
 ];
 
 const platformScreenshots: ProductScreenshot[] = Array.from({ length: 7 }, (_, index) => ({
-  src: `/media/derived/platform-screenshots/platform-${String(index + 1).padStart(2, "0")}-gallery-1920.webp`,
-  thumbnailSrc: `/media/derived/platform-screenshots/platform-${String(index + 1).padStart(2, "0")}-thumb-640.webp`,
-  fullSrc: `${materialRoot}/产品/平台截图/${index + 1}.png`,
-  alt: `企业碳管理数字化平台界面截图${index + 1}`,
-  label: ["数据维护", "分析首页", "分析目录", "排放总览", "多标准排放总表", "基准年对比", "强度分析"][index],
+  src: `/media/derived/platform-screenshots/platform-${String([4, 5, 6, 7, 1, 2, 3][index]).padStart(2, "0")}-gallery-1920.webp`,
+  thumbnailSrc: `/media/derived/platform-screenshots/platform-${String([4, 5, 6, 7, 1, 2, 3][index]).padStart(2, "0")}-thumb-640.webp`,
+  fullSrc: `${materialRoot}/产品/平台截图/${[4, 5, 6, 7, 1, 2, 3][index]}.png`,
+  alt: `企业碳管理数字化平台界面截图${[4, 5, 6, 7, 1, 2, 3][index]}`,
+  label: ["排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据", "分析模块封面", "分析目录"][index],
   width: 1920,
   height: 1020,
 }));
@@ -293,6 +293,17 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
+      <div className={styles.excelFlowBand}>
+        <ReferenceDiagram
+          eyebrow="CORE METHODOLOGY"
+          title="企业温室气体核算标准化流程图"
+          description="以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。"
+          src={diagramItem?.image ?? page.media?.diagram ?? "/media/reference-diagrams/excel-standard-flow.svg"}
+          alt="企业温室气体核算标准化流程图"
+          wide
+        />
+      </div>
+
       <section className={`${styles.versionSection} ${styles.container} page-reveal`} aria-labelledby="excel-version-title" data-motion-group="product-compare">
         <header className={styles.sectionHeading} data-motion-role="heading">
           <span>ORGANIZATION EDITIONS</span>
@@ -407,7 +418,7 @@ export function LegacyPlatformProductPage({ page }: ProductPageProps) {
         <header className={styles.advantageIntro} data-motion-group="section-heading" data-motion-role="heading">
           <div>
             <span>CORE ADVANTAGES</span>
-            <h2 id="platform-advantages-title">三大核心优势</h2>
+            <h2 id="platform-advantages-title">平台三项核心优势</h2>
           </div>
           <p>从业务数据驱动核算，到一次治理、多场景复用，再到全流程可信追溯，平台让碳数据成为可持续运营的业务资产。</p>
         </header>
