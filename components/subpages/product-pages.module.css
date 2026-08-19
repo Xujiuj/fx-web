@@ -362,6 +362,20 @@
   line-height: 1.75;
 }
 
+.editionDiagram {
+  display: block;
+  margin-top: 24px;
+  padding: 8px;
+  border: 1px solid #d9e2dd;
+  background: #f5f7f4;
+}
+
+.editionDiagram img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 .versionCompare ul {
   display: grid;
   gap: 10px;
@@ -1763,9 +1777,11 @@
   gap: 38px;
   margin-top: 36px;
   align-items: start;
+  min-width: 0;
 }
 
 .overviewTabs {
+  min-width: 0;
   border-top: 2px solid #103c32;
 }
 
@@ -1782,6 +1798,7 @@
   color: #52605a;
   cursor: pointer;
   text-align: left;
+  min-width: 0;
 }
 
 .overviewTabs button > span {
@@ -1791,6 +1808,7 @@
 }
 
 .overviewTabs button > strong {
+  min-width: 0;
   color: #17201d;
   font-size: 19px;
   line-height: 1.45;
@@ -1799,6 +1817,7 @@
 .overviewTabs button > p {
   grid-column: 2;
   margin: 4px 0 0;
+  min-width: 0;
   color: #5e6a65;
   font-size: 14px;
   line-height: 1.75;
@@ -1811,6 +1830,7 @@
 }
 
 .overviewVisual {
+  min-width: 0;
   padding: 18px;
   border-radius: 6px;
   background: #eef4f1;
@@ -1821,6 +1841,24 @@
   min-height: 390px;
   place-items: center;
   background: #fff;
+}
+
+.overviewGallery {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overviewGallery a {
+  display: grid;
+  min-height: 180px;
+  place-items: center;
+  overflow: hidden;
+  background: #fff;
+}
+
+.overviewGallery img {
+  max-height: 260px;
 }
 
 .overviewVisual img {
@@ -2016,6 +2054,21 @@
   }
 
   .overviewVisual > a {
+    min-height: 0;
+  }
+
+  .overviewGallery {
+    display: flex;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-color: #1f8a70 #eef3ef;
+    scrollbar-width: thin;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .overviewGallery a {
+    flex: 0 0 min(82vw, 420px);
     min-height: 0;
   }
 
