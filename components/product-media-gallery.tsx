@@ -77,6 +77,7 @@ export function ProductMediaGallery({
 
 export function PlatformOverview({ items, title = "平台三项核心优势", description = "选择一项能力查看对应说明和真实界面，避免在长页面中重复铺陈同类内容。" }: { items: PlatformOverviewItem[]; title?: string; description?: string }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [gallerySelections, setGallerySelections] = useState<Record<number, number>>({});
   const generatedId = useId();
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const activeIndex = items[selectedIndex] ? selectedIndex : 0;
@@ -159,14 +160,33 @@ export function PlatformOverview({ items, title = "平台三项核心优势", de
             {index === activeIndex ? (
               <>
                 {item.gallery?.length ? (
-                  <div className={styles.overviewGallery} aria-label={`${item.label}图组`}>
-                    {item.gallery.map((galleryItem) => (
-                      <a href={galleryItem.fullSrc ?? galleryItem.src} target="_blank" rel="noreferrer" key={galleryItem.src}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={galleryItem.src} alt={galleryItem.alt} width={galleryItem.width} height={galleryItem.height} />
-                      </a>
-                    ))}
-                  </div>
+                  (() => {
+                    const galleryIndex = Math.min(gallerySelections[index] ?? 0, item.gallery.length - 1);
+                    const selectedGalleryItem = item.gallery[galleryIndex];
+                    if (!selectedGalleryItem) return null;
+
+                    return (
+                      <>
+                        <a className={styles.overviewGalleryStage} href={selectedGalleryItem.fullSrc ?? selectedGalleryItem.src} target="_blank" rel="noreferrer">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={selectedGalleryItem.src} alt={selectedGalleryItem.alt} width={selectedGalleryItem.width} height={selectedGalleryItem.height} />
+                        </a>
+                        <div className={styles.overviewGalleryControls} role="group" aria-label={`${item.label}图组切换`}>
+                          {item.gallery.map((galleryItem, galleryItemIndex) => (
+                            <button
+                              type="button"
+                              key={galleryItem.src}
+                              aria-pressed={galleryItemIndex === galleryIndex}
+                              className={galleryItemIndex === galleryIndex ? styles.activeGalleryControl : undefined}
+                              onClick={() => setGallerySelections((current) => ({ ...current, [index]: galleryItemIndex }))}
+                            >
+                              {String(galleryItemIndex + 1).padStart(2, "0")} {galleryItem.label}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    );
+                  })()
                 ) : (
                   <a href={item.fullSrc ?? item.src} target="_blank" rel="noreferrer">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
