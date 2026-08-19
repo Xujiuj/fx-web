@@ -18,6 +18,7 @@ export type ProductMediaItem = {
 export type PlatformOverviewItem = ProductMediaItem & {
   summary: string;
   points: string[];
+  gallery?: ProductMediaItem[];
 };
 
 export function ProductMediaGallery({
@@ -157,10 +158,21 @@ export function PlatformOverview({ items, title = "平台三项核心优势", de
           >
             {index === activeIndex ? (
               <>
-                <a href={item.fullSrc ?? item.src} target="_blank" rel="noreferrer">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={item.src} alt={item.alt} width={item.width} height={item.height} />
-                </a>
+                {item.gallery?.length ? (
+                  <div className={styles.overviewGallery} aria-label={`${item.label}图组`}>
+                    {item.gallery.map((galleryItem) => (
+                      <a href={galleryItem.fullSrc ?? galleryItem.src} target="_blank" rel="noreferrer" key={galleryItem.src}>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={galleryItem.src} alt={galleryItem.alt} width={galleryItem.width} height={galleryItem.height} />
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <a href={item.fullSrc ?? item.src} target="_blank" rel="noreferrer">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={item.src} alt={item.alt} width={item.width} height={item.height} />
+                  </a>
+                )}
                 <ul>
                   {item.points.map((point) => (
                     <li key={point}><CheckCircle2 size={16} aria-hidden="true" />{point}</li>
