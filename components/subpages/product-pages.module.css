@@ -1843,22 +1843,54 @@
   background: #fff;
 }
 
-.overviewGallery {
+.overviewGalleryStage {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.overviewGallery a {
-  display: grid;
-  min-height: 180px;
+  min-height: 390px;
   place-items: center;
   overflow: hidden;
   background: #fff;
 }
 
-.overviewGallery img {
-  max-height: 260px;
+.overviewGalleryStage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 540px;
+  object-fit: contain;
+}
+
+.overviewGalleryControls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.overviewGalleryControls button {
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid #cddbd4;
+  border-radius: 2px;
+  background: #fff;
+  color: #385249;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.overviewGalleryControls button:hover,
+.overviewGalleryControls button:focus-visible {
+  border-color: #1f8a70;
+  color: #145c4b;
+  outline: 2px solid rgba(31, 138, 112, 0.22);
+  outline-offset: 2px;
+}
+
+.overviewGalleryControls .activeGalleryControl {
+  border-color: #1f8a70;
+  background: #1f8a70;
+  color: #fff;
 }
 
 .overviewVisual img {
@@ -2057,18 +2089,7 @@
     min-height: 0;
   }
 
-  .overviewGallery {
-    display: flex;
-    overflow-x: auto;
-    overscroll-behavior-inline: contain;
-    scrollbar-color: #1f8a70 #eef3ef;
-    scrollbar-width: thin;
-    gap: 10px;
-    padding-bottom: 8px;
-  }
-
-  .overviewGallery a {
-    flex: 0 0 min(82vw, 420px);
+  .overviewGalleryStage {
     min-height: 0;
   }
 
