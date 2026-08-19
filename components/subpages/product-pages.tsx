@@ -41,6 +41,7 @@ const platformPrinciples = [
 ];
 
 const materialRoot = "/materials/20260803/资料20260803";
+const platformGovernanceDiagramSrc = "/media/reference-diagrams/carbon-data-governance.svg";
 const excelScreenshots: ProductScreenshot[] = [
   {
     src: "/media/derived/product-excel/excel-single-company-1962.webp",
@@ -60,12 +61,13 @@ const excelScreenshots: ProductScreenshot[] = [
   },
 ];
 
-const platformScreenshots: ProductScreenshot[] = Array.from({ length: 7 }, (_, index) => ({
-  src: `/media/derived/platform-screenshots/platform-${String([4, 5, 6, 7, 1, 2, 3][index]).padStart(2, "0")}-gallery-1920.webp`,
-  thumbnailSrc: `/media/derived/platform-screenshots/platform-${String([4, 5, 6, 7, 1, 2, 3][index]).padStart(2, "0")}-thumb-640.webp`,
-  fullSrc: `${materialRoot}/产品/平台截图/${[4, 5, 6, 7, 1, 2, 3][index]}.png`,
-  alt: `企业碳管理数字化平台界面截图${[4, 5, 6, 7, 1, 2, 3][index]}`,
-  label: ["排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据", "分析模块封面", "分析目录"][index],
+const platformScreenshotSequence = [2, 3, 4, 5, 6, 7, 1] as const;
+const platformScreenshots: ProductScreenshot[] = platformScreenshotSequence.map((number, index) => ({
+  src: `/media/derived/platform-screenshots/platform-${String(number).padStart(2, "0")}-gallery-1920.webp`,
+  thumbnailSrc: `/media/derived/platform-screenshots/platform-${String(number).padStart(2, "0")}-thumb-640.webp`,
+  fullSrc: `${materialRoot}/产品/平台截图/${number}.png`,
+  alt: `企业碳管理数字化平台界面截图${number}`,
+  label: ["分析模块封面", "分析目录", "排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据"][index],
   width: 1920,
   height: 1020,
 }));
@@ -102,10 +104,14 @@ function platformScreenshotOrder(items: ProductScreenshot[]) {
     else unnumbered.push(item);
   }
 
-  return [4, 5, 6, 7, ...Array.from(numbered.keys()).filter((number) => ![4, 5, 6, 7].includes(number)).sort((a, b) => a - b)]
+  const orderedNumbers = [2, 3, 4, 5, 6, 7, 1];
+  const ordered = orderedNumbers
     .map((number) => numbered.get(number))
     .filter((item): item is ProductScreenshot => Boolean(item))
-    .concat(unnumbered);
+    .slice(0, 5)
+    .concat(unnumbered)
+    .concat(orderedNumbers.slice(5).map((number) => numbered.get(number)).filter((item): item is ProductScreenshot => Boolean(item)));
+  return ordered;
 }
 
 function screenshotsFor(page: Subpage, fallback: ProductScreenshot[]): ProductMediaItem[] {
@@ -169,6 +175,40 @@ const platformAdvantages: Array<PlatformOverviewItem & {
     alt: "一套数据支持多标准核算结果输出",
     width: 5383,
     height: 3285,
+    gallery: [
+      {
+        src: "/media/derived/platform-advantages/reuse-standard-output-gallery-1920.webp",
+        fullSrc: "/media/platform-advantages/reuse-standard-output.png",
+        alt: "同一套碳数据按 GHG Protocol、ISO 14064-1 与 GB/T 32150-2025 输出核算结果",
+        label: "多标准输出",
+        width: 5383,
+        height: 3285,
+      },
+      {
+        src: "/media/derived/platform-advantages/reuse-activity-data-gallery-1920.webp",
+        fullSrc: "/media/platform-advantages/reuse-activity-data.png",
+        alt: "排放总量、活动数据、温室气体构成与碳排放强度四类关键成果",
+        label: "关键数据成果",
+        width: 5491,
+        height: 3367,
+      },
+      {
+        src: "/media/derived/platform-advantages/reuse-trend-analysis-gallery-1920.webp",
+        fullSrc: "/media/platform-advantages/reuse-trend-analysis.png",
+        alt: "支持年度、月份、单位、因子与工厂切换的多维交互分析",
+        label: "多维交互分析",
+        width: 5491,
+        height: 3379,
+      },
+      {
+        src: "/media/derived/platform-advantages/reuse-baseline-analysis-gallery-1920.webp",
+        fullSrc: "/media/platform-advantages/reuse-baseline-analysis.png",
+        alt: "企业温室气体排放基准年管理与对比分析界面",
+        label: "基准年分析",
+        width: 5491,
+        height: 3369,
+      },
+    ],
   },
   {
     number: "03",
@@ -196,6 +236,7 @@ const platformOverviewItems: PlatformOverviewItem[] = platformAdvantages.map((it
   alt: item.alt,
   width: item.width,
   height: item.height,
+  gallery: item.gallery,
 }));
 
 function itemPoints(details?: Record<string, string>) {
@@ -218,7 +259,8 @@ function platformOverviewFor(page: Subpage) {
         fullSrc: page.slug === "carbon-management-platform" || !item.image || item.image === fallback.src ? fallback.fullSrc : undefined,
         alt: item.title,
         width: fallback.width,
-        height: fallback.height
+        height: fallback.height,
+        gallery: page.slug === "carbon-management-platform" && index === 1 ? fallback.gallery : undefined,
       };
     })
   };
@@ -280,9 +322,8 @@ export function ExcelProductPage({ page }: ProductPageProps) {
     { title: "集团版", description: "面向多法人、多层级组织，支持分子公司独立维护、集团自动汇总与统一复核。", details: { "要点": "组织数据分级维护\n集团结果自动汇总" } }
   ];
   const editions = [editionSection?.items[0] ?? defaultEditions[0], editionSection?.items[1] ?? defaultEditions[1]];
-  const diagramSection = page.sections.find((section) => section.id === "product-diagram");
-  const diagramItem = diagramSection?.items[0];
   const excelDiagramSrc = "/media/reference-diagrams/excel-standard-flow.svg";
+  const excelDataModelingDiagramSrc = "/media/reference-diagrams/data-modeling-flow.svg";
 
   return (
     <>
@@ -313,11 +354,11 @@ export function ExcelProductPage({ page }: ProductPageProps) {
 
       <div className={styles.excelFlowBand}>
         <ReferenceDiagram
-          eyebrow="CORE METHODOLOGY"
-          title="企业温室气体核算标准化流程图"
-          description="以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。"
-          src={excelDiagramSrc}
-          alt="企业温室气体核算标准化流程图"
+          eyebrow="SINGLE-COMPANY MODEL"
+          title="企业温室气体核算数据建模流程图（Excel版）"
+          description="围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。"
+          src={excelDataModelingDiagramSrc}
+          alt="企业温室气体核算数据建模流程图（Excel版）"
           wide
         />
       </div>
@@ -337,6 +378,10 @@ export function ExcelProductPage({ page }: ProductPageProps) {
             <ul>
               {itemPoints(editions[0]?.details).map((point) => <li key={point}><CheckCircle2 size={16} aria-hidden="true" />{point}</li>)}
             </ul>
+            <a className={styles.editionDiagram} href={excelDiagramSrc} target="_blank" rel="noreferrer" aria-label="查看单公司版标准化流程图原图">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={excelDiagramSrc} alt="单公司版企业温室气体核算标准化流程图" width={715} height={350} loading="lazy" />
+            </a>
           </article>
           <div className={styles.compareAxis} aria-hidden="true" data-motion-role="item">
             <span>统一口径</span>
@@ -667,6 +712,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
           </ol>
         </div>
       </section>
+
+      <ReferenceDiagram
+        eyebrow="PLATFORM STANDARD SYSTEM"
+        title="企业碳数据治理与标准体系"
+        description="将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。"
+        src={platformGovernanceDiagramSrc}
+        alt="企业碳数据治理与标准体系图"
+      />
 
       <PlatformOverview items={overview.items} title={overview.title} description={overview.description} />
 
