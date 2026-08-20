@@ -1009,18 +1009,96 @@
 }
 
 .solutionStageNav {
-  width: min(calc(100% - 48px), 1140px);
-  margin: 0 auto;
-  padding: 42px 0 12px;
+  margin: 0;
+  padding: 34px max(24px, calc((100% - 1200px) / 2)) 42px;
+  border-block: 1px solid #e1e6e1;
+  background: #f3f4f2;
 }
 
-.solutionStageNav > p {
-  max-width: none;
+.solutionStageNavInner {
+  width: min(100%, 1140px);
+  margin: 0 auto;
+}
+
+.solutionStageNavInner > p {
+  max-width: 940px;
   margin: 0;
   color: var(--muted);
   font-size: clamp(12px, 1.2vw, 16px);
   line-height: 1.85;
-  white-space: nowrap;
+}
+
+.solutionStageNav ol {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 28px 0 0;
+  padding: 0;
+  border-top: 1px solid #dfe5df;
+  border-left: 1px solid #dfe5df;
+  list-style: none;
+}
+
+.solutionStageNav li {
+  min-width: 0;
+}
+
+.solutionStageNav a {
+  display: grid;
+  min-height: 92px;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 18px;
+  border-right: 1px solid #dfe5df;
+  border-bottom: 1px solid #dfe5df;
+  color: var(--text);
+  background: #fff;
+  transition: background-color 220ms ease, color 220ms ease, border-color 220ms ease;
+}
+
+.solutionStageNav a > span {
+  color: var(--eyebrow-color);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.solutionStageNav a div {
+  display: grid;
+  gap: 5px;
+}
+
+.solutionStageNav a strong {
+  color: inherit;
+  font-size: 16px;
+}
+
+.solutionStageNav a small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.solutionStageNav a > svg {
+  color: var(--muted);
+}
+
+.solutionStageNav a:hover,
+.solutionStageNav a:focus-visible,
+.solutionStageNav .activeStage a {
+  color: #fff;
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.solutionStageNav a:hover > span,
+.solutionStageNav a:focus-visible > span,
+.solutionStageNav .activeStage a > span,
+.solutionStageNav a:hover small,
+.solutionStageNav a:focus-visible small,
+.solutionStageNav .activeStage a small,
+.solutionStageNav a:hover > svg,
+.solutionStageNav a:focus-visible > svg,
+.solutionStageNav .activeStage a > svg {
+  color: #fff;
 }
 
 .solutionFramework header {
@@ -1485,13 +1563,21 @@
 
 @media (max-width: 620px) {
   .solutionDetailHeroInner,
-  .solutionStageNav,
   .solutionFramework,
   .solutionPresentation,
   .serviceContentsInner,
   .solutionOutcomes,
   .solutionCta {
     width: calc(100% - 36px);
+  }
+
+  .solutionStageNav {
+    padding-right: 18px;
+    padding-left: 18px;
+  }
+
+  .solutionStageNavInner {
+    width: 100%;
   }
 
   .solutionDetailHeroInner {
@@ -1530,11 +1616,18 @@
   .solutionHeroSignal strong { top: 28px; right: 18px; font-size: 84px; }
   .solutionHeroSignal img { padding: 8px; }
 
-  .solutionStageNav { padding-top: 28px; }
-  .solutionStageNav > p {
+  .solutionStageNavInner > p {
     font-size: 14px;
     line-height: 1.7;
-    white-space: normal;
+  }
+
+  .solutionStageNav {
+    padding: 28px 18px 32px;
+  }
+
+  .solutionStageNav ol {
+    grid-template-columns: repeat(2, 1fr);
+    margin-top: 22px;
   }
 
   .frameworkGrid {
