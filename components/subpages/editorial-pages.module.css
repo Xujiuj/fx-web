@@ -976,7 +976,12 @@
 
 /* Company: brand statement, operating beliefs and an honest service chronology. */
 .companyHero {
-  background: #6d3a21;
+  background: #e95513;
+}
+
+.companyHero .heroImage,
+.companyHero .heroShade {
+  display: none;
 }
 
 .companyHeroInner {

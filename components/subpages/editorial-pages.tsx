@@ -15,7 +15,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Subpage, SubpageSection } from "@/lib/cms-content";
 import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
-import { isAllowedContentHref, isManagedDocumentPath, isRuntimeManagedImage } from "@/lib/media-url";
+import { isAllowedContentHref, isManagedDocumentPath } from "@/lib/media-url";
 import styles from "./editorial-pages.module.css";
 
 type EditorialPageProps = { page: Subpage };
@@ -278,8 +278,6 @@ export function CompanyPage({ page }: EditorialPageProps) {
   return (
     <>
       <section className={styles.companyHero}>
-        <Image className={styles.heroImage} src={page.image} alt="" fill priority sizes="100vw" unoptimized={isRuntimeManagedImage(page.image)} />
-        <div className={styles.heroShade} aria-hidden="true" />
         <div className={`${styles.wrap} ${styles.companyHeroInner}`}>
           <div className={`${styles.companyHeroTop} page-reveal`} data-motion="hero-copy">
             <Breadcrumb page={page} />
