@@ -39,14 +39,14 @@ function addHeadingReveal(
   }, position);
 }
 
-function animateLatestUpdates(query: gsap.utils.SelectorFunc, compact: boolean) {
-  const list = query<HTMLElement>(".latest-updates-list")[0];
-  const cards = query<HTMLElement>(".latest-update");
+function animateProductCenter(query: gsap.utils.SelectorFunc, compact: boolean) {
+  const list = query<HTMLElement>(".product-center-list")[0];
+  const cards = query<HTMLElement>(".product-center-card");
   if (!list || cards.length === 0) return;
 
-  const origins = [-18, 12, -10, 16];
+  const origins = [-18, 18];
   const desktopStarts = cards.map((_, index) => index * 0.3);
-  const heading = query<HTMLElement>(".latest-updates-section .home-editorial-heading");
+  const heading = query<HTMLElement>(".product-center-section .home-editorial-heading");
   const headingDuration = compact ? 0.98 : 1.12;
   const timeline = gsap.timeline({
     scrollTrigger: {
@@ -76,10 +76,7 @@ function animateLatestUpdates(query: gsap.utils.SelectorFunc, compact: boolean) 
   cards.forEach((card, index) => {
     const origin = compact ? (index % 2 === 0 ? -12 : 12) : origins[index % origins.length];
     const startAt = (heading.length ? headingDuration + 0.24 : 0) + (compact ? index * 0.26 : desktopStarts[index] ?? index * 0.3);
-    const image = card.querySelector("img");
-    const shade = card.querySelector<HTMLElement>(".latest-update-shade");
-    const drawer = card.querySelector<HTMLElement>(".latest-update-drawer");
-    const copy = card.querySelector<HTMLElement>(".latest-update-copy");
+    const copy = card.querySelector<HTMLElement>(".product-center-copy");
 
     timeline.fromTo(card, {
       autoAlpha: 0,
@@ -93,37 +90,6 @@ function animateLatestUpdates(query: gsap.utils.SelectorFunc, compact: boolean) 
       ease: "power3.out",
       clearProps: "transform"
     }, startAt);
-
-    if (drawer) {
-      timeline.fromTo(drawer, {
-        scaleX: 1,
-        autoAlpha: 1,
-        transformOrigin: index % 2 === 0 ? "left center" : "right center"
-      }, {
-        scaleX: 0,
-        autoAlpha: 0,
-        duration: compact ? 0.92 : 1.12,
-        ease: "power4.inOut"
-      }, startAt);
-    }
-
-    if (image) {
-      timeline.fromTo(image, { scale: compact ? 1.035 : 1.05 }, {
-        scale: 1,
-        duration: compact ? 1.2 : 1.55,
-        ease: "power2.inOut",
-        clearProps: "transform"
-      }, startAt);
-    }
-
-    if (shade) {
-      timeline.fromTo(shade, { opacity: 0.72 }, {
-        opacity: 1,
-        duration: compact ? 0.92 : 1.16,
-        ease: "sine.out",
-        clearProps: "opacity"
-      }, startAt);
-    }
 
     if (copy) {
       timeline.fromTo(copy, { autoAlpha: 0, y: 16 }, {
@@ -169,8 +135,8 @@ export function SectionOrchestrator({ scope }: { scope: HTMLElement | null }) {
         ".home-positioning p",
         ".contact-intro",
         ".contact-form-panel",
-        ".latest-updates-section .home-editorial-heading",
-        ".latest-update"
+        ".product-center-section .home-editorial-heading",
+        ".product-center-card"
       ].join(", ")), { autoAlpha: 0 });
 
       const headingFrom = compact
@@ -347,13 +313,13 @@ export function SectionOrchestrator({ scope }: { scope: HTMLElement | null }) {
         }, compact ? 0.16 : 0.08);
       }
 
-      animateLatestUpdates(query, compact);
+      animateProductCenter(query, compact);
     };
 
     media.add("(min-width: 769px) and (prefers-reduced-motion: no-preference)", () => setupMotion(false));
     media.add("(max-width: 768px) and (prefers-reduced-motion: no-preference)", () => setupMotion(true));
     media.add("(prefers-reduced-motion: reduce)", () => {
-      gsap.set(query(".timeline-section, .home-drivers, .home-challenges, .home-management-path, .home-services, .home-cases, .latest-updates-section, .home-positioning, .contact-section"), { clearProps: "all" });
+      gsap.set(query(".timeline-section, .home-drivers, .home-challenges, .home-management-path, .home-services, .product-center-section, .home-cases, .home-positioning, .contact-section"), { clearProps: "all" });
     });
 
     gsap.set(root, { attr: { "data-motion-ready": "true" } });

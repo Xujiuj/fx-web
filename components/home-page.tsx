@@ -54,8 +54,8 @@ export function HomePage({ content }: { content: HomeContent }) {
       <ChallengesSection heading={editorial.headings.challenges} items={editorial.challenges} />
       <ManagementPathSection heading={editorial.headings.managementPath} items={editorial.managementPath} />
       <ServicesSection heading={editorial.headings.services} items={editorial.services} />
+      <ProductCenterSection items={content.products} />
       <CasesSection heading={editorial.headings.cases} items={editorial.cases} />
-      <LatestUpdatesSection title={content.sectionTitles.news} items={content.newsItems} />
       <BrandPositioningSection eyebrow={content.sectionTitles.thinkingEyebrow} title={content.sectionTitles.thinkingTitle} text={content.thinkingText} />
       <ContactSection contact={content.contact} />
       <SiteFooter footer={content.footer} />
@@ -249,27 +249,69 @@ function CasesSection({ heading, items }: { heading: HomeEditorialContent["headi
   );
 }
 
-function LatestUpdatesSection({ title, items }: { title: string; items: HomeContent["newsItems"] }) {
-  if (!items.length) return null;
+type ProductCenterCard = {
+  stage: string;
+  title: string;
+  description: string;
+  audience: string[];
+  tags: string[];
+  action: string;
+};
+
+const productCenterCopy: ProductCenterCard[] = [
+  {
+    stage: "STAGE 01",
+    title: "Excel版温室气体核算工具",
+    description: "面向首次开展温室气体核算的企业，快速建立核算台账，沉淀年度数据，支持单公司核算与集团汇总分析。",
+    audience: ["首次开展温室气体核算", "单公司独立核算", "中小型集团企业", "希望快速落地碳管理工作"],
+    tags: ["单公司版", "集团版", "自动汇总", "多年度分析"],
+    action: "查看产品"
+  },
+  {
+    stage: "STAGE 02",
+    title: "企业碳管理数字化平台",
+    description: "构建企业统一碳数据体系，实现数据治理、核算分析、ESG支撑与持续运营管理。",
+    audience: ["集团化企业", "多组织协同管理", "ESG信息披露需求", "长期数字化运营建设"],
+    tags: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"],
+    action: "查看平台"
+  }
+];
+
+function ProductCenterSection({ items }: { items: HomeContent["products"] }) {
+  const products = items.slice(0, 2);
 
   return (
-    <section className="latest-updates-section" id="updates">
-      <div className="latest-updates-inner">
+    <section className="product-center-section" id="products" aria-labelledby="product-center-title">
+      <div className="product-center-inner">
         <div className="home-editorial-heading">
-          <span>INSIGHTS</span>
-          <h2>{title}</h2>
+          <span>PRODUCT CENTER</span>
+          <h2 id="product-center-title">选择适合企业当前阶段的碳管理方案</h2>
+          <p>从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。</p>
         </div>
-        <div className="latest-updates-list">
-          {items.map((item, index) => (
-            <Link className={`latest-update latest-update-${index + 1}`} href={item.href} key={item.title}>
-              <span className="latest-update-drawer" aria-hidden="true" />
-              <div className="latest-update-copy">
-                <span className="latest-update-meta">{item.action}</span>
-                <h3>{item.title}</h3>
-                <p>{item.subtitle ?? item.summary ?? item.action}</p>
-              </div>
-            </Link>
-          ))}
+        <div className="product-center-list">
+          {products.map((item, index) => {
+            const copy = productCenterCopy[index];
+            if (!copy) return null;
+            return (
+              <Link className={`product-center-card product-center-card-${index + 1}`} href={item.href} key={item.href}>
+                <div className="product-center-copy">
+                  <span className="product-center-stage">{copy.stage}</span>
+                  <h3>{copy.title}</h3>
+                  <p className="product-center-description">{copy.description}</p>
+                  <div className="product-center-audience">
+                    <strong>适用企业</strong>
+                    <ul>
+                      {copy.audience.map((audience) => <li key={audience}>{audience}</li>)}
+                    </ul>
+                  </div>
+                  <div className="product-center-tags" aria-label={`${copy.title}能力标签`}>
+                    {copy.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                  </div>
+                  <span className="product-center-action">{copy.action}<ArrowRight size={16} aria-hidden="true" /></span>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
