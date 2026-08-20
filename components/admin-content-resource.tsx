@@ -411,7 +411,7 @@ function frontendImageForPage(page: Subpage) {
   const sectionImage = (sectionId: string) => page.sections.find((section) => section.id === sectionId)?.items.find((item) => item.image)?.image;
   const currentSolutionImages: Record<string, string> = {
     "solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    "solution-practical": "/media/reference-diagrams/excel-standard-flow.svg",
+    "solution-practical": "/media/reference-diagrams/agile-implementation.svg",
     "solution-consulting": "/media/reference-diagrams/group-implementation.svg",
     "solution-platform": "/media/reference-diagrams/platform-architecture.svg",
   };

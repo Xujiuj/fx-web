@@ -132,8 +132,8 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
     eyebrow: "实施路径",
     title: "企业温室气体核算敏捷实施技术路线",
     description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    src: "/media/reference-diagrams/excel-standard-flow.svg",
-    alt: "企业温室气体核算标准化流程图（Excel版）",
+    src: "/media/reference-diagrams/agile-implementation.svg",
+    alt: "企业温室气体核算敏捷实施技术路线",
   },
   "solution-consulting": {
     eyebrow: "集团协同",

@@ -418,9 +418,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据采集梳理", "Excel工具部署", "实操辅导", "过程校核", "成果交付"],
     outcomes: ["完成首次核算", "建立数据台账", "形成标准成果", "支撑核查与披露"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业温室气体核算标准化流程图（Excel版）",
-    diagramDescription: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示。",
-    diagramImage: "/media/reference-diagrams/excel-standard-flow.svg"
+    diagramTitle: "企业温室气体核算敏捷实施技术路线",
+    diagramDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    diagramImage: "/media/reference-diagrams/agile-implementation.svg"
   }),
   "solution-consulting": solutionSections({
     suitableFor: ["多法人或多层级集团", "成员企业独立核算", "需要集团统一汇总", "需要支撑ESG披露"],
@@ -611,8 +611,8 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
     description: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
   },
   "solution-practical": {
-    image: "/media/reference-diagrams/excel-standard-flow.svg",
-    title: "企业温室气体核算标准化流程图",
+    image: "/media/reference-diagrams/agile-implementation.svg",
+    title: "企业温室气体核算敏捷实施技术路线",
     description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
   },
   "solution-consulting": {
@@ -640,10 +640,12 @@ const legacySolutionDiagramPaths: Record<string, ReadonlySet<string>> = {
   "solution-practical": new Set([
     "/media/reference-diagrams/service-process.svg",
     "/media/derived/service-diagrams/service-process-1800.webp",
+    "/media/reference-diagrams/excel-standard-flow.svg",
     "/media/reference-diagrams/agile-implementation.svg",
     "/media/reference-diagrams/carbon-data-governance.svg",
     "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "/media/product-excel-hero.webp",
+    "/media/solution-platform-generated.png",
   ]),
   "solution-consulting": new Set([
     "/media/reference-diagrams/service-process.svg",
