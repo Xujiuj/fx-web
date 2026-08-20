@@ -9,14 +9,15 @@ import type { HomeContent, NavItem, ProductItem, SiteContentBundle, Subpage } fr
 import { toCurrentKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
 import { isHttpsContentUrl, isOptionalAllowedContentHref } from "@/lib/media-url";
 
-export type AdminContentResourceName = "site" | "navigation" | "home" | "pages" | "knowledge";
+export type AdminContentResourceName = "site" | "navigation" | "home" | "pages" | "knowledge" | "downloads";
 type RowItem = { id: string };
 type MenuRow = NavItem & RowItem;
 type ProductRow = ProductItem & RowItem;
 type HeroRow = HomeContent["heroSlides"][number] & RowItem;
 type TimelineRow = HomeContent["timeline"][number] & RowItem;
-type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }> };
+type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }>; frontendImage: string };
 type KnowledgeRow = KnowledgeEntry & RowItem & { exists: boolean };
+type DownloadRow = { title: string; description?: string; value?: string } & RowItem;
 type UploadActivity = { active: number; begin: () => () => void };
 
 const UploadActivityContext = createContext<UploadActivity>({ active: 0, begin: () => () => undefined });
@@ -44,7 +45,8 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   navigation: { title: "官网导航", description: "维护当前官网固定菜单的名称、链接和显示状态。" },
   home: { title: "官网首页", description: "维护当前首页横幅、内容栏目与能力路径。" },
   pages: { title: "业务页面", description: "按当前官网固定模板维护解决方案、产品、案例、服务和企业页面。" },
-  knowledge: { title: "资源中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
+  knowledge: { title: "资源中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" },
+  downloads: { title: "资料下载", description: "上传并配置资源中心前台的 Word、PPT、Excel、PDF 和压缩包下载资料。" }
 };
 
 function optionalHrefRule(message: string, validate: (value: unknown) => boolean = isOptionalAllowedContentHref) {
@@ -252,6 +254,7 @@ export function AdminContentResource({ resource, initialContent, title, descript
     { key: "navigation", label: "官网导航" },
     { key: "pages", label: "业务页面" },
     { key: "knowledge", label: "资源中心" },
+    { key: "downloads", label: "资料下载" },
   ];
   const resourceContent = <>
     {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
@@ -259,6 +262,7 @@ export function AdminContentResource({ resource, initialContent, title, descript
     {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
     {selectedResource === "knowledge" ? <KnowledgeManager entries={knowledge} onCommit={changeKnowledge} busy={busy} /> : null}
+    {selectedResource === "downloads" ? <DownloadsManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
   </>;
   return (
     <UploadActivityContext.Provider value={uploadActivity}>
@@ -403,9 +407,43 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
   </CrudTable>;
 }
 
+function frontendImageForPage(page: Subpage) {
+  const sectionImage = (sectionId: string) => page.sections.find((section) => section.id === sectionId)?.items.find((item) => item.image)?.image;
+  if (page.slug.startsWith("solution-")) return sectionImage("solution-diagram") ?? page.media?.diagram ?? page.image;
+  if (page.slug === "excel-accounting-tool") return sectionImage("product-diagram") ?? page.media?.diagram ?? page.image;
+  if (page.slug === "carbon-management-platform") return page.media?.diagram ?? page.image;
+  return page.media?.screenshot ?? page.image;
+}
+
+function DownloadsManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; busy: boolean }) {
+  const knowledgePage = pages.find((page) => page.slug === "knowledge-center");
+  const downloadSection = knowledgePage?.sections.find((section) => section.id === "downloads");
+  const rows: DownloadRow[] = (downloadSection?.items ?? []).map((item, index) => ({ ...item, id: String(index) }));
+  const updateItems = (items: DownloadRow[]) => onCommit((current) => current.map((page) => page.slug !== "knowledge-center" ? page : {
+    ...page,
+    sections: page.sections.map((section) => section.id !== "downloads" ? section : { ...section, items: items.map(({ id: _, ...item }) => item) })
+  }));
+  return <Card title="资源中心 / 资料下载" extra={<Tag color="green">前台位置：资源中心 → 资料下载</Tag>}>
+    <p style={{ marginTop: 0, color: "rgba(0, 0, 0, 0.65)" }}>在这里直接上传并绑定资料。保存后，前台资源中心的下载卡片会立即显示“立即下载”。支持 Word、PPT、Excel、PDF、ZIP、7Z、RAR，单个文件不超过 20MB。</p>
+    <CrudTable title="资料下载项" rows={rows} busy={busy} columns={[{ title: "资料名称", dataIndex: "title" }, { title: "说明", dataIndex: "description" }, { title: "当前地址", dataIndex: "value", renderText: (value) => value || "未绑定资料" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", description: "", value: "" })} onCreate={(item) => updateItems([...rows, item])} onUpdate={(item) => updateItems(rows.map((entry) => entry.id === item.id ? item : entry))} onDelete={(item) => updateItems(rows.filter((entry) => entry.id !== item.id))}>
+      <ProFormText name="title" label="资料名称" rules={[{ required: true, message: "请输入资料名称" }]} />
+      <ProFormTextArea name="description" label="资料说明" />
+      <ProFormText name="value" label="下载地址（可选）" rules={[optionalHrefRule("请输入站内路径或完整的 https:// 下载地址")]} extra="上传资料后会自动填写；也可以手动填写站内路径或外部 https:// 地址。" />
+      <ProFormItem name="value" label="上传资料"><DocumentUploadField /></ProFormItem>
+    </CrudTable>
+  </Card>;
+}
+
 function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; busy: boolean }) {
-  const rows: PageRow[] = pages.map((page) => ({ ...page, id: page.slug, mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }));
-  return <CrudTable
+  const rows: PageRow[] = pages.map((page) => ({ ...page, id: page.slug, frontendImage: frontendImageForPage(page), mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }));
+  return <><Card title="前台图片配置位置" style={{ marginBottom: 16 }}>
+    <Descriptions column={1} items={[
+      { key: "solutions", label: "解决方案 Banner", children: "编辑对应页面 → 页面专属模块 → solution-diagram → 条目图片" },
+      { key: "excel", label: "Excel 两张流程图", children: "编辑 Excel 页面 → 页面专属模块 → product-diagram → 两个条目图片" },
+      { key: "platform", label: "平台架构与三项优势", children: "编辑平台页面 → 模板图片中的 diagram；平台三项核心优势在 platform-overview 条目中配置" },
+      { key: "downloads", label: "资料下载", children: "使用左侧独立的“资料下载”菜单配置文件，不需要进入页面模块" },
+    ]} />
+  </Card><CrudTable
     title="业务子页面"
     rows={rows}
     busy={busy}
@@ -416,7 +454,7 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
       { title: "版式", dataIndex: "layout" },
       { title: "URL 标识", dataIndex: "slug" },
       { title: "页面标题", dataIndex: "title" },
-      { title: "页面配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || record.navLabel} /> }
+      { title: "前台实际主图", dataIndex: "frontendImage", render: (_, record) => <MediaPreview src={record.frontendImage} alt={`${record.title || record.navLabel}前台主图`} /> }
     ]}
     createItem={() => rows[0]}
     onCreate={async () => false}
@@ -430,7 +468,8 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
     <ProFormText name="title" label="页面标题" rules={[{ required: true }]} />
     <ProFormTextArea name="summary" label="页面摘要" rules={[{ required: true }]} />
     <ProFormText name="icon" label="页面图标" disabled extra="图标与当前页面模板绑定。" />
-    <ImageUploadField name="image" label="页面配图" required hint="建议上传与该页面业务内容相符的明亮企业场景图。" />
+    <ProFormText name="frontendImage" label="前台实际主图地址" disabled extra="只读展示：解决方案 Banner、Excel 流程图和平台架构图均从这里对应的模块读取。" />
+    <ImageUploadField name="image" label="页面备用配图" required hint="当前解决方案、Excel 和平台页面优先使用对应模块图片；此图仅在模板未配置模块图片时作为备用。" />
     <ProFormList name="metrics" label="页面指标" creatorButtonProps={{ creatorButtonText: "新增指标" }}><Row gutter={12}><Col xs={24} md={12}><ProFormText name="label" label="指标名称" rules={[{ required: true }]} /></Col><Col xs={24} md={12}><ProFormText name="value" label="指标值" rules={[{ required: true }]} /></Col></Row></ProFormList>
     <ProFormDependency name={["layout"]}>
       {({ layout }) => layout === "excel" || layout === "product-platform" ? <>
@@ -496,10 +535,10 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
         </ProFormList>}}
       </ProFormDependency>
     </ProFormList>
-  </CrudTable>;
+  </CrudTable></>;
 }
 
-function toSubpage({ id: _, mediaEntries, ...page }: PageRow): Subpage {
+function toSubpage({ id: _, frontendImage: __, mediaEntries, ...page }: PageRow): Subpage {
   return {
     ...page,
     media: Object.fromEntries(mediaEntries.filter((entry) => entry.key && entry.path).map((entry) => [entry.key, entry.path]))
