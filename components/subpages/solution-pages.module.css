@@ -1441,7 +1441,7 @@
   border-bottom: 1px solid var(--line);
 }
 
-.solutionOutcomes li > span { color: #a79281; font-size: 11px; font-weight: 800; }
+.solutionOutcomes li > span { color: var(--eyebrow-color); font-size: 11px; font-weight: 800; }
 .solutionOutcomes li > svg { color: var(--primary); }
 .solutionOutcomes li strong { line-height: 1.5; }
 

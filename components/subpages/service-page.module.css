@@ -115,11 +115,11 @@
   gap: 72px;
 }
 
-.taskBand header > span { color: #2b1a12; }
+.taskBand header > span { color: var(--eyebrow-color); }
 .taskBand h2 { color: #fff; }
 .taskGrid { display: grid; grid-template-columns: repeat(2, 1fr); border-top: 1px solid rgba(255,255,255,.24); border-left: 1px solid rgba(255,255,255,.24); }
 .taskGrid article { position: relative; min-height: 210px; padding: 26px; border-right: 1px solid rgba(255,255,255,.24); border-bottom: 1px solid rgba(255,255,255,.24); }
-.taskGrid article > span { color: #2b1a12; font-size: 11px; font-weight: 800; }
+.taskGrid article > span { color: var(--eyebrow-color); font-size: 11px; font-weight: 800; }
 .taskGrid article > svg { position: absolute; top: 24px; right: 24px; color: #2b1a12; }
 .taskGrid h3 { margin: 48px 0 10px; font-size: 20px; }
 .taskGrid p { margin: 0; color: #2b1a12; font-size: 14px; line-height: 1.75; }

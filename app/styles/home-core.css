@@ -177,7 +177,7 @@
 }
 
 .section-heading span {
-  color: var(--primary);
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
   letter-spacing: 0;

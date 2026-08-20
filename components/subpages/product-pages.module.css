@@ -723,7 +723,7 @@
 .principleInner > header > span {
   display: block;
   margin-bottom: 14px;
-  color: #ffad6c;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -763,7 +763,7 @@
 }
 
 .principleGrid li > span {
-  color: #ffad6c;
+  color: var(--eyebrow-color);
   font-size: 11px;
   font-weight: 800;
 }
@@ -1175,7 +1175,7 @@
 }
 
 .flowHeading > span {
-  color: #e08a50;
+  color: var(--eyebrow-color);
 }
 
 .flowHeading h2 {
@@ -1202,7 +1202,7 @@
 }
 
 .dataFlow li > span {
-  color: #e08a50;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -1310,7 +1310,7 @@
 }
 
 .cta span {
-  color: #efaa73;
+  color: var(--eyebrow-color);
   font-size: 11px;
   font-weight: 800;
 }
@@ -1966,7 +1966,7 @@
 }
 
 .publicDemo > div:first-child > span {
-  color: #ffd477;
+  color: var(--eyebrow-color);
   font-size: 11px;
   font-weight: 800;
 }

@@ -470,12 +470,12 @@ main .home-challenges::before {
 .home-challenges::before { position: absolute; right: 0; left: 0; z-index: -1; height: 100%; background: #2d2b27; content: ""; }
 .home-challenges { position: relative; z-index: 0; color: #fff; }
 .home-challenge-intro { padding: 10px 0; }
-.home-challenge-intro > span { color: #ffae6c; }
+.home-challenge-intro > span { color: var(--eyebrow-color); }
 .home-challenge-intro h2 { color: #fff; }
 .home-challenge-intro p { margin: 28px 0 0; color: #cfc9c1; line-height: 1.9; }
 .home-challenge-list { margin: 0; padding: 0; border-top: 1px solid rgba(255,255,255,.22); list-style: none; }
 .home-challenge-list li { display: grid; grid-template-columns: 48px 34px 1fr; gap: 18px; align-items: center; min-height: 112px; border-bottom: 1px solid rgba(255,255,255,.22); }
-.home-challenge-list li > span { color: #f5a361; font-size: 12px; font-weight: 800; }
+.home-challenge-list li > span { color: var(--eyebrow-color); font-size: 12px; font-weight: 800; }
 .home-challenge-list li > svg { color: #f5a361; }
 .home-challenge-list h3 { margin: 0; color: #fff; font-size: 20px; }
 .home-challenge-list p { margin: 7px 0 0; color: #c9c3ba; line-height: 1.65; }
@@ -538,7 +538,7 @@ main .home-challenges::before {
 .home-positioning header > span {
   display: block;
   margin-bottom: 13px;
-  color: #ffad6c;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -1064,7 +1064,7 @@ main .capability-orbit-core::after { left: calc(100% + 16px); }
 
 main .capability-orbit-core span,
 main .capability-orbit-core small {
-  color: #e95513;
+  color: var(--eyebrow-color);
   font-size: 10px;
   font-weight: 800;
 }
@@ -1075,7 +1075,7 @@ main .capability-orbit-core strong {
   font-size: 25px;
 }
 
-main .capability-orbit-core small { color: #e95513; }
+main .capability-orbit-core small { color: var(--eyebrow-color); }
 
 main .capability-orbit-stages {
   position: relative;
@@ -1194,13 +1194,13 @@ main .capability-orbit-stage-3 .capability-orbit-link {
 }
 
 main .capability-orbit-copy small {
-  color: #e95513;
+  color: var(--eyebrow-color);
   font-size: 10px;
   font-weight: 850;
 }
 
 main .capability-orbit-stage-2 .capability-orbit-copy small,
-main .capability-orbit-stage-4 .capability-orbit-copy small { color: #e95513; }
+main .capability-orbit-stage-4 .capability-orbit-copy small { color: var(--eyebrow-color); }
 
 main .capability-orbit-copy h3 {
   margin: 7px 0 8px;
