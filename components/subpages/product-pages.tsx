@@ -737,6 +737,14 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       </section>
 
       <ReferenceDiagram
+        eyebrow="PLATFORM ARCHITECTURE"
+        title="企业碳管理平台功能架构"
+        description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
+        src={platformArchitectureSrc}
+        alt="企业碳管理平台功能架构图"
+      />
+
+      <ReferenceDiagram
         eyebrow="PLATFORM STANDARD SYSTEM"
         title="企业碳数据治理与标准体系"
         description="将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。"
