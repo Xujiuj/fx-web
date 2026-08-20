@@ -3484,7 +3484,7 @@ main .capability-orbit-section .timeline-description {
 
 .product-center-section .home-editorial-heading > span {
   margin: 0 0 15px;
-  color: #e95513;
+  color: var(--eyebrow-color);
   font-size: 14px;
   letter-spacing: 2px;
 }
@@ -3557,7 +3557,7 @@ main .capability-orbit-section .timeline-description {
 .product-center-stage {
   display: block;
   margin-bottom: 15px;
-  color: #e95513;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 1px;
