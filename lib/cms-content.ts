@@ -1,7 +1,12 @@
 ﻿import { prisma } from "@/lib/prisma";
-import { isContentSlug } from "@/lib/content-slug";
-import { knowledgeEntries as defaultKnowledgeEntries, normalizeKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
-import { migrateSolutionDiagramBinding, migrateStoredSubpage } from "@/lib/subpage-migration";
+import { knowledgeEntries as defaultKnowledgeEntries, type KnowledgeEntry } from "@/lib/knowledge-content";
+import {
+  isCurrentHomeContent,
+  isCurrentKnowledge,
+  isCurrentSubpages,
+  parseSiteContentDocument,
+  serializeSiteContentDocument,
+} from "@/lib/site-content-contract";
 export type IconKey = "chart" | "building" | "database" | "layers" | "line" | "shield" | "sparkles" | "users" | "workflow";
 
 export type NavChild = { label: string; href: string; hidden?: boolean; group?: string };
@@ -31,7 +36,6 @@ export type FooterContent = {
 export type ContactContent = { title: string; description: string; namePlaceholder: string; companyPlaceholder: string; contactPlaceholder: string; emailPlaceholder: string; messagePlaceholder: string; submitLabel: string; successLabel: string; errorLabel: string };
 
 export type HomeContent = {
-  schemaVersion?: number;
   site: { title: string; description: string };
   brand: { name: string; logo: string; href: string };
   navItems: NavItem[];
@@ -92,7 +96,6 @@ export type ProductPageConfig = {
 };
 
 export type Subpage = {
-  schemaVersion?: number;
   slug: string;
   layout: SubpageLayout;
   navLabel: string;
@@ -109,7 +112,7 @@ export type Subpage = {
   product?: ProductPageConfig;
 };
 
-type StoredSubpage = Omit<Subpage, "layout" | "sections"> & Partial<Pick<Subpage, "layout" | "sections">>;
+type SubpageTemplate = Omit<Subpage, "layout"> & { layout?: SubpageLayout };
 
 const heroVisual = "/media/fengxing-hero-accounting.png";
 const heroPlatform = "/media/fengxing-hero-management.png";
@@ -117,10 +120,6 @@ const platformImage = heroVisual;
 const dataImage = heroPlatform;
 const excelImage = "/media/about-philosophy-generated.png";
 const isProductionBuild = process.env.NEXT_PHASE === "phase-production-build";
-const contentSchemaVersion = 2;
-const knowledgeContentSchemaVersion = 3;
-const subpageContentSchemaVersion = 6;
-const legacyPlatformIsolationDescription = "公开数据报告通过 Power BI 提供浏览；企业端作为独立应用部署，与官网服务和数据完全隔离。";
 const platformDemoDescription = "公开数据报告通过 Power BI 提供浏览；企业端演示入口用于查看平台界面，试用账号需提交申请后审核开通。";
 const standardFooter: FooterContent = {
   copyright: "© 新疆峰行智成数据科技有限责任公司 版权所有",
@@ -137,94 +136,6 @@ const standardFooter: FooterContent = {
   wecomOpenByDefault: false
 };
 
-const canonicalEmail = "service@fengxingdata.com";
-const companyEmailPattern = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-
-const legacyB2BMedia: Record<string, string> = {
-  "/media/candidate-team-1.jpg": excelImage,
-  "/media/candidate-engineer-1.jpg": dataImage,
-  "/media/candidate-plans-1.jpg": platformImage,
-  "/media/about-vision.jpg": "/media/about-vision-generated.png",
-  "/media/fengxing-data.jpg": dataImage,
-  "/media/fengxing-excel.jpg": excelImage,
-  "/media/fengxing-platform.jpg": platformImage,
-  "/media/hero-carbon-warm.jpg": heroVisual,
-  "/media/hero-carbon-enterprise.png": heroVisual,
-  "/media/path-carbon-warm.jpg": heroVisual
-};
-
-const legacyCertificateImages = new Set([
-  "/media/cert-1.png",
-  "/media/cert-2.png",
-  "/media/cert-3.png",
-  "/media/cert-4.png",
-  "/media/cert-5.png"
-]);
-const legacyPartnerLabels = new Set(["制造企业", "集团企业", "园区平台", "咨询机构", "产业链伙伴"]);
-const defaultPageMedia: Record<string, PageMedia> = {
-  "solution-standard": { diagram: "/media/reference-diagrams/service-process.svg" },
-  "solution-practical": { diagram: "/media/reference-diagrams/carbon-data-governance.svg" },
-  "solution-consulting": { diagram: "/media/reference-diagrams/group-implementation.svg" },
-  "solution-platform": { diagram: "/media/reference-diagrams/platform-architecture.svg" },
-  "excel-accounting-tool": { screenshot: "/media/product-excel-report.webp", diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
-  "carbon-management-platform": { screenshot: "/media/product-platform-dashboard.webp", diagram: "/media/reference-diagrams/platform-architecture.svg" },
-  "customer-cases": {
-    hero: "/media/manufacturing-carbon-case-hero-warm.png",
-    accounting: "/media/manufacturing-carbon-accounting.png",
-    governance: "/media/manufacturing-carbon-governance.png",
-    analytics: "/media/manufacturing-carbon-analytics.png",
-    operations: "/media/manufacturing-carbon-operations.png"
-  }
-};
-
-const solutionDiagramMigrations = [
-  {
-    slug: "solution-standard",
-    fromImage: "/media/reference-diagrams/service-process.svg",
-    toImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    fromTitle: "企业碳管理能力建设路线图",
-    toTitle: "企业温室气体核算实战（Excel版）",
-    fromDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
-    toDescription: "围绕组织边界、排放源识别、活动数据整理、排放因子选择与Excel核算实操组织课程内容。",
-  },
-  {
-    slug: "solution-practical",
-    fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
-    toImage: "/media/reference-diagrams/excel-standard-flow.svg",
-    fromTitle: "企业碳数据治理与标准体系",
-    toTitle: "企业碳数据治理与标准体系",
-    fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-    toDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-  },
-  {
-    slug: "solution-practical",
-    fromImage: "/media/reference-diagrams/agile-implementation.svg",
-    toImage: "/media/reference-diagrams/excel-standard-flow.svg",
-    fromTitle: "企业温室气体核算敏捷实施技术路线",
-    toTitle: "企业温室气体核算敏捷实施技术路线",
-    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    toDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-  },
-  {
-    slug: "solution-platform",
-    fromImage: "/media/reference-diagrams/carbon-data-governance.svg",
-    toImage: "/media/reference-diagrams/platform-architecture.svg",
-    fromTitle: "企业碳数据治理与标准体系",
-    toTitle: "企业碳管理平台架构图",
-    fromDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-    toDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
-  },
-  {
-    slug: "solution-platform",
-    fromImage: "/media/reference-diagrams/agile-implementation.svg",
-    toImage: "/media/reference-diagrams/platform-architecture.svg",
-    fromTitle: "企业温室气体核算敏捷实施技术路线",
-    toTitle: "企业碳管理平台架构图",
-    fromDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    toDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
-  },
-] as const;
-
 const derivedDisplayMedia: Record<string, string> = {
   "/media/reference-diagrams/three-layer-implementation.svg": "/media/derived/service-diagrams/three-layer-implementation-1800.webp",
   "/media/reference-diagrams/service-process.svg": "/media/derived/service-diagrams/service-process-1800.webp",
@@ -237,130 +148,12 @@ const derivedDisplayMedia: Record<string, string> = {
   "/media/platform-advantages/traceability-module-map.png": "/media/derived/platform-advantages/traceability-module-map-gallery-1920.webp"
 };
 
-function b2bMedia(src: string) {
-  return legacyB2BMedia[src] ?? src;
-}
-
-function heroMedia(src: string) {
-  return b2bMedia(src);
-}
-
-function normalizeHomeContent(content: HomeContent): HomeContent {
-  const storedNews = content.newsItems ?? [];
-  const usesCurrentSchema = content.schemaVersion === contentSchemaVersion;
-  const storedPartners: unknown[] = Array.isArray(content.partners) ? content.partners : [];
-  const hasLegacySolutionItems = storedNews.length > 0 && storedNews.every((item) => item.href.startsWith("/solution-"));
-  const storedEditorial = content.editorial;
-  const footer = { ...standardFooter, ...(content.footer ?? {}) };
-  const storedLogo = content.brand?.logo;
-
-  return {
-    ...content,
-    site: { ...defaultHomeContent.site, ...content.site },
-    brand: {
-      ...defaultHomeContent.brand,
-      ...content.brand,
-      logo: !storedLogo || storedLogo === "/media/fengxing-logo.png"
-        ? "/media/fengxing-logo-transparent.png"
-        : storedLogo
-    },
-    navItems: usesCurrentSchema && Array.isArray(content.navItems)
-      ? content.navItems.map((item) => item.href === "/knowledge-center" && (item.label === "知识课堂" || item.label === "资料中心") ? { ...item, label: "资源中心" } : item)
-      : content.navItems?.length ? content.navItems.map((item) => item.href === "/knowledge-center" && (item.label === "知识课堂" || item.label === "资料中心") ? { ...item, label: "资源中心" } : item) : cloneDefaultNavItems(),
-    contact: {
-      ...defaultHomeContent.contact,
-      ...content.contact,
-      description: (content.contact?.description ?? defaultHomeContent.contact.description)
-        .replace(companyEmailPattern, canonicalEmail)
-    },
-    footer: {
-      ...footer,
-      ipv6Text: footer.ipv6Text.replace(companyEmailPattern, canonicalEmail),
-      wecomEmail: canonicalEmail
-    },
-    heroSlides: (usesCurrentSchema && Array.isArray(content.heroSlides)
-      ? content.heroSlides
-      : content.heroSlides?.length ? content.heroSlides : defaultHomeContent.heroSlides).map((slide) => ({
-      ...slide,
-      image: heroMedia(slide.image)
-    })),
-    aboutTabs: (usesCurrentSchema && Array.isArray(content.aboutTabs)
-      ? content.aboutTabs
-      : content.aboutTabs?.length ? content.aboutTabs : defaultHomeContent.aboutTabs).map((tab) => {
-      const fallback = defaultHomeContent.aboutTabs.find((entry) => entry.value === tab.value);
-      return {
-        ...tab,
-        image: tab.image ?? fallback?.image,
-        imageAlt: tab.imageAlt ?? fallback?.imageAlt ?? tab.title
-      };
-    }),
-    timeline: (usesCurrentSchema && Array.isArray(content.timeline)
-      ? content.timeline
-      : content.timeline?.length ? content.timeline : defaultHomeContent.timeline).map((entry) => ({ ...entry, items: [...entry.items] })),
-    timelineImage: content.timelineImage ?? defaultHomeContent.timelineImage,
-    solutionItems: (usesCurrentSchema && Array.isArray(content.solutionItems)
-      ? content.solutionItems
-      : content.solutionItems?.length ? content.solutionItems : defaultSolutionItems).map((item) => ({
-      ...item,
-      image: migrateSolutionImage(item)
-    })),
-    newsItems: (hasLegacySolutionItems || (!usesCurrentSchema && storedNews.length === 0) ? defaultLatestUpdates : storedNews).map((item) => ({
-      ...item,
-      image: b2bMedia(item.image),
-      subtitle: item.subtitle ?? item.summary ?? item.action
-    })),
-    certificateImages: (content.certificateImages ?? []).filter((src) => !legacyCertificateImages.has(src)),
-    partners: storedPartners.flatMap((partner) => {
-      if (typeof partner === "string") return legacyPartnerLabels.has(partner) ? [] : [{ name: partner }];
-      if (!partner || typeof partner !== "object") return [];
-      const item = partner as { name?: unknown; logo?: unknown };
-      if (typeof item.name !== "string" || legacyPartnerLabels.has(item.name)) return [];
-      return [{ name: item.name, ...(typeof item.logo === "string" ? { logo: item.logo } : {}) }];
-    }),
-    sectionTitles: {
-      ...content.sectionTitles,
-      solutions: content.sectionTitles?.solutions ?? "全阶段解决方案",
-      news: hasLegacySolutionItems ? "最新动态" : content.sectionTitles?.news ?? "最新动态",
-      thinkingEyebrow: !content.sectionTitles?.thinkingEyebrow || content.sectionTitles.thinkingEyebrow === "CORE CAPABILITIES"
-        ? defaultHomeContent.sectionTitles.thinkingEyebrow
-        : content.sectionTitles.thinkingEyebrow,
-      thinkingTitle: !content.sectionTitles?.thinkingTitle || ["THINKING", "从核算走向持续碳管理"].includes(content.sectionTitles.thinkingTitle)
-        ? defaultHomeContent.sectionTitles.thinkingTitle
-        : content.sectionTitles.thinkingTitle
-    },
-    editorial: {
-      path: { ...homeEditorialContent.path, ...storedEditorial?.path },
-      headings: {
-        drivers: { ...homeEditorialContent.headings.drivers, ...storedEditorial?.headings?.drivers },
-        challenges: { ...homeEditorialContent.headings.challenges, ...storedEditorial?.headings?.challenges },
-        managementPath: { ...homeEditorialContent.headings.managementPath, ...storedEditorial?.headings?.managementPath },
-        services: { ...homeEditorialContent.headings.services, ...storedEditorial?.headings?.services },
-        cases: { ...homeEditorialContent.headings.cases, ...storedEditorial?.headings?.cases }
-      },
-      drivers: usesCurrentSchema && Array.isArray(storedEditorial?.drivers) ? storedEditorial.drivers : storedEditorial?.drivers?.length ? storedEditorial.drivers : homeEditorialContent.drivers,
-      challenges: usesCurrentSchema && Array.isArray(storedEditorial?.challenges) ? storedEditorial.challenges : storedEditorial?.challenges?.length ? storedEditorial.challenges : homeEditorialContent.challenges,
-      managementPath: usesCurrentSchema && Array.isArray(storedEditorial?.managementPath) ? storedEditorial.managementPath : storedEditorial?.managementPath?.length ? storedEditorial.managementPath : homeEditorialContent.managementPath,
-      services: usesCurrentSchema && Array.isArray(storedEditorial?.services) ? storedEditorial.services : storedEditorial?.services?.length ? storedEditorial.services : homeEditorialContent.services,
-      cases: usesCurrentSchema && Array.isArray(storedEditorial?.cases) ? storedEditorial.cases : storedEditorial?.cases?.length ? storedEditorial.cases : homeEditorialContent.cases
-    }
-  };
-}
-
 const solutionImages: Record<string, string> = {
   "/solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
   "/solution-practical": "/media/product-excel-hero.webp",
   "/solution-consulting": "/media/solution-consulting-generated.png",
   "/solution-platform": "/media/reference-diagrams/platform-architecture.svg"
 };
-
-const legacySolutionImagePaths = new Set([dataImage, excelImage, platformImage, "/media/solution-training-generated.png", "/media/solution-practical-generated.png", "/media/solution-platform-generated.png"]);
-
-function migrateSolutionImage(item: NewsItem) {
-  const image = b2bMedia(item.image);
-  return legacySolutionImagePaths.has(image) && solutionImages[item.href]
-    ? solutionImages[item.href]
-    : image;
-}
 
 const defaultSolutionItems: NewsItem[] = [
   { title: "标准版", action: "核算培训", image: solutionImages["/solution-standard"], href: "/solution-standard", summary: "建立温室气体核算基础" },
@@ -473,57 +266,20 @@ const subpageLayouts: Record<string, SubpageLayout> = {
   "service-platform-delivery": "service"
 };
 
-function buildStructuredSections(page: StoredSubpage): SubpageSection[] {
-  return [
-    {
-      id: "metrics",
-      kind: "metrics",
-      title: "页面指标",
-      items: page.metrics.map((metric) => ({ title: metric.label, value: metric.value }))
-    },
-    {
-      id: "capabilities",
-      kind: "capabilities",
-      title: "核心内容",
-      items: page.features.map((feature, index) => ({ title: feature, description: page.steps[index] }))
-    },
-    {
-      id: "process",
-      kind: "process",
-      title: "实施路径",
-      items: page.steps.map((step, index) => ({ title: step, description: page.features[index] }))
-    }
-  ].filter((section) => section.items.length > 0) as SubpageSection[];
-}
-
-function normalizeSubpage(page: StoredSubpage): Subpage {
-  const preservesManagedContent = (page.schemaVersion ?? 0) >= 2;
-  const storedMedia = Object.fromEntries(
-    Object.entries(page.media ?? {}).filter(([, value]) => typeof value === "string" && value.trim().length > 0)
-  );
-  const media = Object.fromEntries(
-    Object.entries(preservesManagedContent ? storedMedia : { ...(defaultPageMedia[page.slug] ?? {}), ...storedMedia })
-      .map(([key, value]) => [key, b2bMedia(value)])
-  );
+function createCurrentSubpage({ layout, ...page }: SubpageTemplate): Subpage {
+  const currentLayout = layout ?? subpageLayouts[page.slug];
+  if (!currentLayout) throw new Error(`Missing current layout for ${page.slug}`);
   return {
     ...page,
-    layout: page.layout ?? subpageLayouts[page.slug] ?? "training",
-    sections: (preservesManagedContent && Array.isArray(page.sections)
-      ? page.sections
-      : page.sections?.length ? page.sections : buildStructuredSections(page)).map((section) => ({
+    layout: currentLayout,
+    sections: page.sections.map((section) => ({
       ...section,
-      description: section.description === legacyPlatformIsolationDescription ? platformDemoDescription : section.description,
-      items: section.items.map((item) => page.slug === "company-contact" && item.title.includes("邮箱")
-        ? { ...item, value: canonicalEmail }
-        : { ...item, image: item.image ? derivedDisplayMedia[item.image] ?? item.image : undefined })
+      items: section.items.map((item) => ({
+        ...item,
+        image: item.image ? derivedDisplayMedia[item.image] ?? item.image : undefined,
+      })),
     })),
-    image: b2bMedia(page.image),
-    media
   };
-}
-
-function normalizeSubpagesContent(content: StoredSubpage[]): Subpage[] {
-  return content.map(normalizeSubpage);
 }
 
 export const defaultHomeContent: HomeContent = {
@@ -551,7 +307,7 @@ export const defaultHomeContent: HomeContent = {
     { year: "03", items: ["咨询版", "Excel集团版"] },
     { year: "04", items: ["平台版", "数字化升级"] }
   ],
-  timelineImage: "/media/path-carbon-warm.jpg",
+  timelineImage: heroVisual,
   solutionItems: defaultSolutionItems,
   newsItems: defaultLatestUpdates,
   products: [
@@ -647,7 +403,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     outcomeLabel: "客户收益",
     diagramTitle: "企业碳管理能力建设路线图",
     diagramDescription: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
-    diagramImage: defaultPageMedia["solution-standard"].diagram
+    diagramImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg"
   }),
   "solution-practical": solutionSections({
     suitableFor: ["准备开展首次核算", "需要建立数据台账", "希望形成标准成果", "需要支撑核查与披露"],
@@ -660,9 +416,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据采集梳理", "Excel工具部署", "实操辅导", "过程校核", "成果交付"],
     outcomes: ["完成首次核算", "建立数据台账", "形成标准成果", "支撑核查与披露"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业碳数据治理与标准体系",
-    diagramDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑长期维护和持续分析。",
-    diagramImage: defaultPageMedia["solution-practical"].diagram
+    diagramTitle: "企业温室气体核算标准化流程图（Excel版）",
+    diagramDescription: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示。",
+    diagramImage: "/media/reference-diagrams/excel-standard-flow.svg"
   }),
   "solution-consulting": solutionSections({
     suitableFor: ["多法人或多层级集团", "成员企业独立核算", "需要集团统一汇总", "需要支撑ESG披露"],
@@ -677,7 +433,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     outcomeLabel: "客户收益",
     diagramTitle: "集团和分子公司实施路径",
     diagramDescription: "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
-    diagramImage: defaultPageMedia["solution-consulting"].diagram
+    diagramImage: "/media/reference-diagrams/group-implementation.svg"
   }),
   "solution-platform": solutionSections({
     suitableFor: ["已建立基础核算体系", "多组织数据集中管理", "需要持续分析决策", "计划开展数字化升级"],
@@ -692,7 +448,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     outcomeLabel: "核心价值",
     diagramTitle: "企业碳管理平台架构图",
     diagramDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
-    diagramImage: defaultPageMedia["solution-platform"].diagram
+    diagramImage: "/media/reference-diagrams/platform-architecture.svg"
   })
 };
 
@@ -799,7 +555,7 @@ const platformProductSections: SubpageSection[] = [
   { id: "product-cta", kind: "contacts", title: "了解企业碳管理数字化平台如何适配企业真实的核算与管理流程", description: "从组织边界、数据口径到核算应用，获得与当前能力阶段匹配的产品建议。", items: [{ title: "预约产品演示", value: "/#contact" }] }
 ];
 
-export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
+export const defaultSubpages: Subpage[] = ([
   { slug: "solution-standard", navLabel: "标准版（培训赋能）", eyebrow: "SOLUTION 01", title: "标准版（培训赋能）", summary: "帮助企业快速掌握温室气体核算方法。", image: solutionImages["/solution-standard"], icon: "users", metrics: [{ label: "服务形式", value: "专项培训" }, { label: "培训重点", value: "核算方法" }, { label: "适用阶段", value: "启动准备" }], features: ["GHG Protocol 核算方法", "ISO 14064-1 核算要求", "GB/T 32150 核算规范", "企业场景实操演练"], steps: ["明确培训范围与参与人员", "梳理核算对象与数据来源", "结合企业场景进行演练", "形成后续核算工作清单"], sections: solutionPageSections["solution-standard"] },
   { slug: "solution-practical", navLabel: "实战营（Excel单公司版）", eyebrow: "SOLUTION 02", title: "实战营（Excel单公司版）", summary: "帮助企业完成首次核算闭环。", image: solutionImages["/solution-practical"], icon: "chart", metrics: [{ label: "适用组织", value: "单一法人" }, { label: "交付工具", value: "Excel 模板" }, { label: "交付成果", value: "核算报告" }], features: ["活动数据台账梳理", "Excel 单公司版配置", "历史年度数据整理", "范围一、范围二及适用范围三核算"], steps: ["梳理核算边界", "收集并复核活动数据", "配置排放因子与计算规则", "交付核算报告和工作底稿"], sections: solutionPageSections["solution-practical"] },
   { slug: "solution-consulting", navLabel: "咨询版（Excel集团版）", eyebrow: "SOLUTION 03", title: "咨询版（Excel集团版）", summary: "建立集团统一核算管理体系。", image: solutionImages["/solution-consulting"], icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"], sections: solutionPageSections["solution-consulting"] },
@@ -836,71 +592,7 @@ export const defaultSubpages: Subpage[] = normalizeSubpagesContent([
   { slug: "service-capability-path", layout: "service", navLabel: "能力建设路径", eyebrow: "IMPLEMENTATION", title: "能力建设路径", summary: "从核算基础、数据治理到持续运营，结合企业实际阶段建立可持续使用的碳管理能力。", image: "/media/service-capability-path-hero.png", icon: "workflow", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-capability-path"], { id: "capability-visual", kind: "gallery", title: "能力建设", items: [{ title: "面向多层级组织的温室气体核算三层实施架构", description: "按照成员企业与集团的组织层级和管理成熟度，分别配置数字化平台、Excel 单公司版与 Excel 集团版，统一核算口径并支持集团汇总。", image: "/media/reference-diagrams/three-layer-implementation.svg" }] }] },
   { slug: "service-training-consulting", layout: "service", navLabel: "培训与咨询实施", eyebrow: "IMPLEMENTATION", title: "培训与咨询实施", summary: "围绕企业温室气体核算与碳管理需求，提供培训、数据梳理、方法辅导和过程复核支持。", image: "/media/service-training-consulting-hero.png", icon: "users", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-training-consulting"], { id: "training-visual", kind: "gallery", title: "实施流程", items: [{ title: "温室气体核算服务流程", description: "以统一方法、业务数据和过程复核为基础，将培训与咨询内容转化为企业可以延续使用的核算工作流程。", image: "/media/reference-diagrams/service-process.svg" }] }] },
   { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-platform-delivery"], { id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台功能架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/reference-diagrams/platform-function-architecture.svg" }] }] }
-]);
-
-export function normalizeStoredSubpages(content: StoredSubpage[]): Subpage[] {
-  const stored = normalizeSubpagesContent(content).map((page) => {
-    const fallback = defaultSubpages.find((entry) => entry.slug === page.slug);
-    const migrated = migrateStoredSubpage(page, fallback, subpageContentSchemaVersion);
-    const solutionImage = solutionImages[`/${migrated.slug}`];
-    const isLegacySolutionImage = legacySolutionImagePaths.has(migrated.image);
-    const withSolutionImage = solutionImage && isLegacySolutionImage ? { ...migrated, image: solutionImage } : migrated;
-    const diagramUpdates = solutionDiagramMigrations.filter((update) => update.slug === withSolutionImage.slug);
-    const withDiagramUpdates = diagramUpdates.reduce(
-      (current, update) => migrateSolutionDiagramBinding(current, update),
-      withSolutionImage
-    );
-    const withProductUpdates = withDiagramUpdates.slug === "excel-accounting-tool"
-      ? {
-          ...withDiagramUpdates,
-          media: { ...(withDiagramUpdates.media ?? {}), diagram: "/media/reference-diagrams/excel-standard-flow.svg" },
-          sections: withDiagramUpdates.sections.map((section) => {
-            if (section.id !== "product-diagram") return section;
-            const hasStandardFlow = section.items.some((item) => item.image === "/media/reference-diagrams/excel-standard-flow.svg");
-            const hasDataModelingFlow = section.items.some((item) => item.image === "/media/reference-diagrams/data-modeling-flow.svg");
-            return {
-              ...section,
-              items: [
-                ...(hasStandardFlow ? section.items : [{ title: "企业温室气体核算标准化流程图", description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。", image: "/media/reference-diagrams/excel-standard-flow.svg" }]),
-                ...(hasDataModelingFlow ? [] : [{ title: "企业温室气体核算数据建模流程图（Excel版）", description: "围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。", image: "/media/reference-diagrams/data-modeling-flow.svg" }]),
-              ],
-            };
-          })
-        }
-      : withDiagramUpdates.slug === "carbon-management-platform"
-        ? {
-            ...withDiagramUpdates,
-            product: withDiagramUpdates.product ? {
-              ...withDiagramUpdates.product,
-              screenshots: [
-                ...(withDiagramUpdates.product.screenshots ?? []),
-                ...((fallback?.product?.screenshots ?? []).filter((screenshot) => screenshot.src.startsWith("/materials/20260813/") && !(withDiagramUpdates.product?.screenshots ?? []).some((stored) => stored.src === screenshot.src)))
-              ]
-            } : fallback?.product,
-            sections: withDiagramUpdates.sections.map((section) => section.id === "platform-overview" && section.title === "三项能力，贯穿企业碳数据全流程"
-              ? { ...section, title: "平台三项核心优势" }
-              : section.id === "product-screenshots" && section.description?.startsWith("7 张平台截图")
-                ? { ...section, description: "11 张平台截图按实际使用顺序呈现；点击主图可查看原始 4K 分辨率。" }
-                : section)
-          }
-        : withDiagramUpdates;
-    const withPlatformImage = withProductUpdates.slug === "carbon-management-platform" && withProductUpdates.image === platformImage
-      ? { ...withProductUpdates, image: "/media/product-platform-hero.webp" }
-      : withProductUpdates;
-    if (withPlatformImage.slug !== "knowledge-center") return withPlatformImage;
-    const usesLegacyNavLabel = withPlatformImage.navLabel === "知识课堂" || withPlatformImage.navLabel === "资料中心";
-    const usesLegacyTitle = withPlatformImage.title === "企业碳管理知识课堂" || withPlatformImage.title === "企业碳管理资料中心";
-    return {
-      ...withPlatformImage,
-      ...(usesLegacyNavLabel ? { navLabel: "资源中心" } : {}),
-      ...(usesLegacyTitle ? { title: "企业碳管理资源中心" } : {}),
-      eyebrow: "RESOURCE CENTER",
-    };
-  });
-  const preservesManagedPages = stored.some((page) => (page.schemaVersion ?? 0) >= 2);
-  const storedSlugs = new Set(stored.map((page) => page.slug));
-  return preservesManagedPages ? stored : [...stored, ...defaultSubpages.filter((page) => !storedSlugs.has(page.slug))];
-}
+] satisfies SubpageTemplate[]).map(createCurrentSubpage);
 
 export type ContentVersions = { home: number; subpages: number; knowledge: number };
 export type SiteContentBundle = { home: HomeContent; subpages: Subpage[]; knowledge: KnowledgeEntry[]; versions: ContentVersions };
@@ -912,19 +604,12 @@ export class ContentConflictError extends Error {
   }
 }
 
-function parseConfig<T>(value: string, fallback: T): T {
-  try {
-    return JSON.parse(value) as T;
-  } catch {
-    return fallback;
-  }
-}
-
 export async function getHomeContent(): Promise<HomeContent> {
   if (isProductionBuild) return defaultHomeContent;
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "home" } });
-    return normalizeHomeContent(record ? parseConfig(record.value, defaultHomeContent) : defaultHomeContent);
+    const content = record ? parseSiteContentDocument<unknown>(record.value) : null;
+    return isCurrentHomeContent(content) ? content : defaultHomeContent;
   } catch {
     return defaultHomeContent;
   }
@@ -934,7 +619,8 @@ async function loadSubpages(): Promise<Subpage[]> {
   if (isProductionBuild) return defaultSubpages;
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "subpages" } });
-    return record ? normalizeStoredSubpages(parseConfig(record.value, defaultSubpages)) : defaultSubpages;
+    const content = record ? parseSiteContentDocument<unknown>(record.value) : null;
+    return isCurrentSubpages(content, defaultSubpages) ? content : defaultSubpages;
   } catch {
     return defaultSubpages;
   }
@@ -944,51 +630,12 @@ export function getSubpagesContent(): Promise<Subpage[]> {
   return loadSubpages();
 }
 
-function normalizeKnowledgeEntries(entries: unknown): KnowledgeEntry[] {
-  const storedBundle = entries && typeof entries === "object" && !Array.isArray(entries)
-    ? entries as { schemaVersion?: unknown; entries?: unknown }
-    : undefined;
-  const usesCurrentSchema = storedBundle?.schemaVersion === knowledgeContentSchemaVersion;
-  const source = usesCurrentSchema ? storedBundle?.entries : entries;
-  if (!Array.isArray(source)) return defaultKnowledgeEntries;
-  const valid = source.filter((entry): entry is KnowledgeEntry => Boolean(entry && typeof entry === "object" &&
-    isContentSlug((entry as KnowledgeEntry).slug) &&
-    ((entry as KnowledgeEntry).type === "article" || (entry as KnowledgeEntry).type === "course") &&
-    typeof (entry as KnowledgeEntry).category === "string" && typeof (entry as KnowledgeEntry).title === "string" &&
-    typeof (entry as KnowledgeEntry).summary === "string" && typeof (entry as KnowledgeEntry).meta === "string" &&
-    Array.isArray((entry as KnowledgeEntry).sections))).map(normalizeKnowledgeEntry);
-  if (usesCurrentSchema) return valid;
-
-  const legacyPolicySlugs = new Set([
-    "energy-saving-carbon-reduction-2024-2025",
-    "carbon-market-regulation-enterprise-compliance",
-    "carbon-emission-dual-control-system"
-  ]);
-  const articles = valid.filter((entry) => entry.type === "article");
-  if (articles.length === legacyPolicySlugs.size && articles.every((entry) => legacyPolicySlugs.has(entry.slug))) {
-    return defaultKnowledgeEntries;
-  }
-  const migrated = valid.length ? valid.map((entry) => {
-    if (entry.type !== "course") return entry;
-    const fallback = defaultKnowledgeEntries.find((item) => item.type === "course" && item.slug === entry.slug);
-    if (!fallback) return entry;
-    return {
-      ...entry,
-      ...(fallback.videoHref && entry.videoHref === undefined ? { videoHref: fallback.videoHref } : {}),
-      ...(fallback.coverImage && entry.coverImage === undefined ? { coverImage: fallback.coverImage } : {}),
-      ...(fallback.externalHref && entry.externalHref === undefined ? { externalHref: fallback.externalHref } : {}),
-      ...(fallback.externalLabel && entry.externalLabel === undefined ? { externalLabel: fallback.externalLabel } : {}),
-    };
-  }) : defaultKnowledgeEntries;
-  const slugs = new Set(migrated.map((entry) => entry.slug));
-  return [...migrated, ...defaultKnowledgeEntries.filter((entry) => !slugs.has(entry.slug))];
-}
-
 export async function getKnowledgeEntries(): Promise<KnowledgeEntry[]> {
   if (isProductionBuild) return defaultKnowledgeEntries;
   try {
     const record = await prisma.siteContent.findUnique({ where: { key: "knowledge" } });
-    return record ? normalizeKnowledgeEntries(parseConfig(record.value, defaultKnowledgeEntries)) : defaultKnowledgeEntries;
+    const content = record ? parseSiteContentDocument<unknown>(record.value) : null;
+    return isCurrentKnowledge(content) ? content : defaultKnowledgeEntries;
   } catch {
     return defaultKnowledgeEntries;
   }
@@ -1010,10 +657,13 @@ export async function getSiteContentBundle(): Promise<SiteContentBundle> {
     const homeRecord = records.find((record) => record.key === "home");
     const subpagesRecord = records.find((record) => record.key === "subpages");
     const knowledgeRecord = records.find((record) => record.key === "knowledge");
+    const storedHome = homeRecord ? parseSiteContentDocument<unknown>(homeRecord.value) : null;
+    const storedSubpages = subpagesRecord ? parseSiteContentDocument<unknown>(subpagesRecord.value) : null;
+    const storedKnowledge = knowledgeRecord ? parseSiteContentDocument<unknown>(knowledgeRecord.value) : null;
     return {
-      home: normalizeHomeContent(homeRecord ? parseConfig(homeRecord.value, defaultHomeContent) : defaultHomeContent),
-      subpages: subpagesRecord ? normalizeStoredSubpages(parseConfig(subpagesRecord.value, defaultSubpages)) : defaultSubpages,
-      knowledge: knowledgeRecord ? normalizeKnowledgeEntries(parseConfig(knowledgeRecord.value, defaultKnowledgeEntries)) : defaultKnowledgeEntries,
+      home: isCurrentHomeContent(storedHome) ? storedHome : defaultHomeContent,
+      subpages: isCurrentSubpages(storedSubpages, defaultSubpages) ? storedSubpages : defaultSubpages,
+      knowledge: isCurrentKnowledge(storedKnowledge) ? storedKnowledge : defaultKnowledgeEntries,
       versions: { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0, knowledge: knowledgeRecord?.version ?? 0 }
     };
   } catch {
@@ -1036,23 +686,20 @@ export async function saveSiteContentBundle(
       throw new ContentConflictError();
     }
 
-    const storedHome = { ...bundle.home, schemaVersion: contentSchemaVersion };
-    const storedSubpages = bundle.subpages.map((page) => ({ ...page, schemaVersion: subpageContentSchemaVersion }));
-    const storedKnowledge = { schemaVersion: knowledgeContentSchemaVersion, entries: bundle.knowledge };
     const home = await tx.siteContent.upsert({
       where: { key: "home" },
-      update: { value: JSON.stringify(storedHome, null, 2), version: { increment: 1 } },
-      create: { key: "home", value: JSON.stringify(storedHome, null, 2), version: 1 }
+      update: { value: serializeSiteContentDocument(bundle.home), version: { increment: 1 } },
+      create: { key: "home", value: serializeSiteContentDocument(bundle.home), version: 1 }
     });
     const subpages = await tx.siteContent.upsert({
       where: { key: "subpages" },
-      update: { value: JSON.stringify(storedSubpages, null, 2), version: { increment: 1 } },
-      create: { key: "subpages", value: JSON.stringify(storedSubpages, null, 2), version: 1 }
+      update: { value: serializeSiteContentDocument(bundle.subpages), version: { increment: 1 } },
+      create: { key: "subpages", value: serializeSiteContentDocument(bundle.subpages), version: 1 }
     });
     const knowledge = await tx.siteContent.upsert({
       where: { key: "knowledge" },
-      update: { value: JSON.stringify(storedKnowledge, null, 2), version: { increment: 1 } },
-      create: { key: "knowledge", value: JSON.stringify(storedKnowledge, null, 2), version: 1 }
+      update: { value: serializeSiteContentDocument(bundle.knowledge), version: { increment: 1 } },
+      create: { key: "knowledge", value: serializeSiteContentDocument(bundle.knowledge), version: 1 }
     });
 
     return { home: home.version, subpages: subpages.version, knowledge: knowledge.version };

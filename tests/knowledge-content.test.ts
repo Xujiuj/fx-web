@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, normalizeKnowledgeEntry, paginateKnowledgeEntries, type KnowledgeEntry } from "../lib/knowledge-content.ts";
+import { filterArticlesByCategory, getArticleCategories, getKnowledgeMeta, paginateKnowledgeEntries, toCurrentKnowledgeEntry, type KnowledgeEntry } from "../lib/knowledge-content.ts";
 
-test("removes course-only fields from articles", () => {
+test("builds an article with only current article fields", () => {
   const article = {
     slug: "policy-entry",
     type: "article",
@@ -12,12 +12,12 @@ test("removes course-only fields from articles", () => {
     meta: "公众号文章",
     sections: [],
     sourceHref: "https://mp.weixin.qq.com/s/example",
-    videoHref: "/media/videos/legacy.mp4",
+    videoHref: "/media/videos/course.mp4",
     externalHref: "https://www.bilibili.com/video/example",
     externalLabel: "观看课程",
   } as unknown as KnowledgeEntry;
 
-  assert.deepEqual(normalizeKnowledgeEntry(article), {
+  assert.deepEqual(toCurrentKnowledgeEntry(article), {
     slug: "policy-entry",
     type: "article",
     category: "碳政策",
@@ -29,7 +29,7 @@ test("removes course-only fields from articles", () => {
   });
 });
 
-test("removes article-only fields from courses", () => {
+test("builds a course with only current course fields", () => {
   const course = {
     slug: "course-entry",
     type: "course",
@@ -38,14 +38,14 @@ test("removes article-only fields from courses", () => {
     summary: "摘要",
     meta: "入门课程",
     sections: [],
-    sourceName: "旧政策来源",
-    sourceHref: "https://mp.weixin.qq.com/s/legacy",
+    sourceName: "政策来源",
+    sourceHref: "https://mp.weixin.qq.com/s/source",
     videoHref: "/media/videos/course.mp4",
     externalHref: "https://www.bilibili.com/video/example",
     externalLabel: "前往观看",
   } as unknown as KnowledgeEntry;
 
-  assert.deepEqual(normalizeKnowledgeEntry(course), {
+  assert.deepEqual(toCurrentKnowledgeEntry(course), {
     slug: "course-entry",
     type: "course",
     category: "视频课程",
@@ -71,7 +71,7 @@ test("keeps an explicit empty course video binding", () => {
     videoHref: "",
   };
 
-  assert.equal(normalizeKnowledgeEntry(course).videoHref, "");
+  assert.equal(toCurrentKnowledgeEntry(course).videoHref, "");
 });
 
 test("keeps course cover and external access fields", () => {
@@ -88,7 +88,7 @@ test("keeps course cover and external access fields", () => {
     sections: [],
   };
 
-  assert.deepEqual(normalizeKnowledgeEntry(course), course);
+  assert.deepEqual(toCurrentKnowledgeEntry(course), course);
 });
 
 test("builds article categories in editorial order without duplicates", () => {
@@ -114,16 +114,16 @@ test("filters only articles in the selected category", () => {
   assert.deepEqual(filterArticlesByCategory(entries, "不存在"), []);
 });
 
-test("sorts articles by publish time descending and keeps undated legacy content stable", () => {
+test("sorts articles by publish time descending and keeps undated articles stable", () => {
   const entries = [
-    { slug: "legacy-one", type: "article", category: "碳政策", title: "旧文章一", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "undated-one", type: "article", category: "碳政策", title: "未标日期文章一", summary: "摘要", meta: "文章", sections: [] },
     { slug: "older", type: "article", category: "碳政策", title: "较早文章", summary: "摘要", meta: "文章", publishedAt: "2026-08-10T08:00:00.000Z", sections: [] },
-    { slug: "legacy-two", type: "article", category: "碳政策", title: "旧文章二", summary: "摘要", meta: "文章", sections: [] },
+    { slug: "undated-two", type: "article", category: "碳政策", title: "未标日期文章二", summary: "摘要", meta: "文章", sections: [] },
     { slug: "newer", type: "article", category: "碳政策", title: "最新文章", summary: "摘要", meta: "文章", publishedAt: "2026-08-17T08:00:00.000Z", sections: [] },
     { slug: "course", type: "course", category: "碳政策", title: "课程", summary: "摘要", meta: "课程", publishedAt: "2026-08-18T08:00:00.000Z", sections: [] },
   ] satisfies KnowledgeEntry[];
 
-  assert.deepEqual(filterArticlesByCategory(entries).map((entry) => entry.slug), ["newer", "older", "legacy-one", "legacy-two"]);
+  assert.deepEqual(filterArticlesByCategory(entries).map((entry) => entry.slug), ["newer", "older", "undated-one", "undated-two"]);
 });
 
 test("paginates entries and clamps requested pages to the available range", () => {
@@ -144,7 +144,7 @@ test("paginates entries and clamps requested pages to the available range", () =
   assert.equal(paginateKnowledgeEntries(entries, 0, 10).currentPage, 1);
 });
 
-test("shows category once when legacy metadata already contains it", () => {
+test("shows category once when metadata already contains it", () => {
   const article: KnowledgeEntry = {
     slug: "policy",
     type: "article",

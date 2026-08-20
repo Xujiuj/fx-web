@@ -10,14 +10,12 @@ import {
   FileTextOutlined,
   LogoutOutlined,
   MessageOutlined,
-  MenuOutlined,
   TeamOutlined
 } from "@ant-design/icons";
 
 const menuData: MenuDataItem[] = [
-  { path: "/admin/content", name: "站点内容", icon: <FileTextOutlined /> },
-  { path: "/admin/content/pages", name: "导航与页面", icon: <MenuOutlined /> },
-  { path: "/admin/system/leads", name: "咨询记录", icon: <MessageOutlined /> },
+  { path: "/admin/content", name: "官网内容", icon: <FileTextOutlined /> },
+  { path: "/admin/system/leads", name: "咨询线索", icon: <MessageOutlined /> },
   { path: "/admin/system/users", name: "账号管理", icon: <TeamOutlined /> }
 ];
 
@@ -41,7 +39,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
 
   return (
     <ProLayout
-      title="峰行智成后台"
+      title="峰行智成运营中心"
       logo={<Image src="/media/fengxing-logo-transparent.png" alt="峰行智成" width={99} height={50} style={{ width: "auto", height: 40 }} priority />}
       location={{ pathname }}
       route={{ routes: menuData }}

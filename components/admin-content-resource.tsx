@@ -4,11 +4,9 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 import { App, Button, Card, Col, Descriptions, Image, Input, Menu, Modal, Row, Space, Spin, Tabs, Tag, Tooltip, Upload, type MenuProps, type UploadProps } from "antd";
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from "@ant-design/icons";
 import { ModalForm, PageContainer, ProFormDependency, ProFormDigit, ProFormItem, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
-import { AdminMenuPageManager } from "@/components/admin-menu-page-manager";
-import { getLinkedPageSlugs } from "@/lib/admin-page-menu";
 import { contentSlugPattern } from "@/lib/content-slug";
-import type { HomeContent, IconKey, NavItem, NewsItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
-import { normalizeKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
+import type { HomeContent, NavItem, NewsItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
+import { toCurrentKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
 import { isHttpsContentUrl, isOptionalAllowedContentHref } from "@/lib/media-url";
 
 export type AdminContentResourceName = "site" | "navigation" | "home" | "news" | "pages" | "knowledge";
@@ -17,7 +15,7 @@ type MenuRow = NavItem & RowItem;
 type NewsRow = NewsItem & RowItem;
 type HeroRow = HomeContent["heroSlides"][number] & RowItem;
 type TimelineRow = HomeContent["timeline"][number] & RowItem;
-type PageRow = Omit<Subpage, "media"> & RowItem & { exists: boolean; mediaEntries: Array<{ key: string; path: string }> };
+type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }> };
 type KnowledgeRow = KnowledgeEntry & RowItem & { exists: boolean };
 type UploadActivity = { active: number; begin: () => () => void };
 
@@ -42,11 +40,11 @@ function useUploadRequest() {
 }
 
 const copy: Record<AdminContentResourceName, { title: string; description: string }> = {
-  site: { title: "基础设置", description: "维护品牌、站点信息、联系信息与页脚。" },
-  navigation: { title: "导航与页面", description: "维护主导航、隐藏状态及按一级菜单归属的页面内容。" },
-  home: { title: "首页编排", description: "维护首页横幅、首页内容与能力路径。" },
+  site: { title: "全站设置", description: "维护当前官网使用的品牌、站点信息、联系信息与页脚。" },
+  navigation: { title: "官网导航", description: "维护当前官网固定菜单的名称、链接和显示状态。" },
+  home: { title: "官网首页", description: "维护当前首页横幅、内容栏目与能力路径。" },
   news: { title: "最新动态", description: "维护首页最新动态的标题、摘要、图片与跳转链接。" },
-  pages: { title: "页面管理", description: "以独立记录维护业务子页面内容。" },
+  pages: { title: "业务页面", description: "按当前官网固定模板维护解决方案、产品、案例、服务和企业页面。" },
   knowledge: { title: "资源中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
 };
 
@@ -190,7 +188,7 @@ function CrudTable<T extends RowItem>({ title, rows, columns, createItem, onCrea
   return <><ProTable<T> rowKey="id" headerTitle={title} dataSource={rows} loading={busy} search={false} columns={[...columns, actionColumn]} scroll={{ x: "max-content" }} options={{ density: true, fullScreen: true, reload: false, setting: true }} pagination={{ pageSize: 10, showSizeChanger: true }} toolBarRender={allowCreate ? () => [<Button key="create" type="primary" icon={<PlusOutlined />} onClick={() => { setEditing(createItem()); setIsNew(true); }}>新增</Button>] : undefined} /><ModalForm<T> key={`${isNew}-${editing?.id ?? "closed"}`} title={isNew ? `新增${title}` : `编辑${title}`} open={Boolean(editing)} initialValues={editing ?? undefined} modalProps={{ className: "admin-editor-modal", destroyOnHidden: true, closable: !uploadLocked, keyboard: !uploadLocked, maskClosable: !uploadLocked, onCancel: () => { if (!uploadLocked) setEditing(null); } }} submitter={{ searchConfig: { submitText: uploadLocked ? "文件处理中" : "保存" }, submitButtonProps: { loading: busy || uploadLocked, disabled: uploadLocked }, resetButtonProps: { disabled: uploadLocked } }} onFinish={async (values) => { if (!editing || uploadLocked) return false; const next = { ...editing, ...values } as T; const saved = isNew ? await onCreate(next) : await onUpdate(next); if (!saved) return false; setEditing(null); return true; }}>{children}</ModalForm><Modal title="确认删除" open={Boolean(deleteTarget)} okText="删除" okButtonProps={{ danger: true, loading: busy }} cancelText="取消" onCancel={() => setDeleteTarget(null)} onOk={async () => { if (!deleteTarget) return; const deleted = await onDelete(deleteTarget); if (deleted) setDeleteTarget(null); }}>删除后会立即同步到前台，此操作不可撤销。</Modal></>;
 }
 
-export function AdminContentResource({ resource, initialContent, pageSlugs, title, description }: { resource?: AdminContentResourceName; initialContent: SiteContentBundle; pageSlugs?: string[]; title?: string; description?: string }) {
+export function AdminContentResource({ resource, initialContent, title, description }: { resource?: AdminContentResourceName; initialContent: SiteContentBundle; title?: string; description?: string }) {
   const [activeResource, setActiveResource] = useState<AdminContentResourceName>(resource ?? "site");
   const [home, setHome] = useState(initialContent.home);
   const [subpages, setSubpages] = useState(initialContent.subpages);
@@ -198,7 +196,6 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   const [versions, setVersions] = useState(initialContent.versions);
   const [busy, setBusy] = useState(false);
   const [activeUploads, setActiveUploads] = useState(0);
-  const [activeMenuIndex, setActiveMenuIndex] = useState<number | null>(null);
   const { message } = App.useApp();
   const beginUpload = useCallback(() => {
     let released = false;
@@ -249,35 +246,32 @@ export function AdminContentResource({ resource, initialContent, pageSlugs, titl
   const changeKnowledge = (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => persist(home, subpages, update(knowledge));
   const selectedResource = resource ?? activeResource;
   const isStudio = resource === undefined;
-  const selectedMenu = activeMenuIndex === null ? undefined : home.navItems[activeMenuIndex];
-  const current = selectedMenu ? { title: `${selectedMenu.label}内容`, description: `维护“${selectedMenu.label}”栏目对应的首页区块与独立页面。` } : copy[selectedResource];
+  const current = copy[selectedResource];
   const studioMenuItems: MenuProps["items"] = [
-    { key: "site", label: "基础设置" },
-    { key: "navigation", label: "导航配置" },
-    { key: "home", label: "首页内容" },
+    { key: "site", label: "全站设置" },
+    { key: "home", label: "官网首页" },
+    { key: "navigation", label: "官网导航" },
+    { key: "pages", label: "业务页面" },
     { key: "news", label: "最新动态" },
     { key: "knowledge", label: "资源中心" },
-    { key: "website-menu", label: "官网栏目", children: home.navItems.map((item, index) => ({ key: `menu-${index}`, label: item.label })) },
-    { key: "pages", label: "全部页面" }
   ];
   const resourceContent = <>
-    {isStudio && selectedMenu ? <MenuContentManager menu={selectedMenu} home={home} pages={subpages} knowledge={knowledge} onHomeCommit={changeHome} onPagesCommit={changePages} onKnowledgeCommit={changeKnowledge} busy={busy} /> : null}
-    {(!isStudio || !selectedMenu) && selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
-    {selectedResource === "navigation" ? <NavigationManager home={home} pages={subpages} onHomeCommit={changeHome} busy={busy} /> : null}
+    {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
+    {selectedResource === "navigation" ? <NavigationManager home={home} onHomeCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "news" ? <LatestNewsManager home={home} onCommit={changeHome} busy={busy} /> : null}
-    {selectedResource === "pages" ? <PagesManager pages={subpages} visibleSlugs={pageSlugs} onCommit={changePages} busy={busy} /> : null}
+    {selectedResource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
     {selectedResource === "knowledge" ? <KnowledgeManager entries={knowledge} onCommit={changeKnowledge} busy={busy} /> : null}
   </>;
   return (
     <UploadActivityContext.Provider value={uploadActivity}>
     <PageContainer
-      title={title ?? (isStudio ? "内容管理" : current.title)}
-      content={description ?? (isStudio ? "所有官网展示内容均在此处维护；保存后会同步到前台。" : current.description)}
+      title={title ?? (isStudio ? "官网运营中心" : current.title)}
+      content={description ?? (isStudio ? "只维护当前官网实际使用的内容、业务页面和资源；保存后立即同步前台。" : current.description)}
       extra={[<Button key="reload" icon={<ReloadOutlined />} onClick={() => window.location.reload()} disabled={busy || activeUploads > 0}>重新载入</Button>]}
     >
       <Spin spinning={busy || activeUploads > 0} tip={activeUploads > 0 ? "正在上传并处理文件" : "正在保存内容"}>
-        {isStudio ? <Row gutter={24}><Col xs={24} lg={5} xl={4}><Menu mode="inline" defaultOpenKeys={["website-menu"]} selectedKeys={[selectedMenu ? `menu-${activeMenuIndex}` : selectedResource]} items={studioMenuItems} onClick={({ key }) => { const value = String(key); if (value.startsWith("menu-")) setActiveMenuIndex(Number(value.slice(5))); else { setActiveMenuIndex(null); setActiveResource(value as AdminContentResourceName); } }} /></Col><Col xs={24} lg={19} xl={20}>{resourceContent}</Col></Row> : <Space direction="vertical" size="large" style={{ width: "100%" }}>{resourceContent}</Space>}
+        {isStudio ? <Row gutter={[24, 24]}><Col xs={24} lg={5} xl={4}><Menu mode="inline" selectedKeys={[selectedResource]} items={studioMenuItems} onClick={({ key }) => setActiveResource(String(key) as AdminContentResourceName)} /></Col><Col xs={24} lg={19} xl={20}>{resourceContent}</Col></Row> : <Space direction="vertical" size="large" style={{ width: "100%" }}>{resourceContent}</Space>}
       </Spin>
     </PageContainer>
     </UploadActivityContext.Provider>
@@ -293,34 +287,11 @@ function BrandManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (
 
 function MenuManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
   const rows: MenuRow[] = home.navItems.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title="主导航" rows={rows} busy={busy} columns={[{ title: "菜单名称", dataIndex: "label" }, { title: "链接", dataIndex: "href" }, { title: "显示状态", dataIndex: "hidden", render: (_, item) => <Tag color={item.hidden ? "default" : "green"}>{item.hidden ? "已隐藏" : "显示中"}</Tag> }, { title: "二级菜单", dataIndex: "children", renderText: (children) => children?.length ?? 0 }]} createItem={() => ({ id: crypto.randomUUID(), label: "", href: "/", hidden: false, children: [] })} onCreate={(item) => onCommit((current) => ({ ...current, navItems: [...current.navItems, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="label" label="菜单名称" rules={[{ required: true }]} /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormSwitch name="hidden" label="前台隐藏" fieldProps={{ checkedChildren: "隐藏", unCheckedChildren: "显示" }} /><ProFormList name="children" label="二级菜单" creatorButtonProps={{ creatorButtonText: "新增二级菜单" }}><Row gutter={12}><Col xs={24} md={6}><ProFormText name="label" label="名称" rules={[{ required: true }]} /></Col><Col xs={24} md={6}><ProFormText name="href" label="链接" rules={[{ required: true }]} /></Col><Col xs={24} md={6}><ProFormSwitch name="hidden" label="前台隐藏" /></Col><Col xs={24} md={6}><ProFormText name="group" label="下拉分组" /></Col></Row></ProFormList></CrudTable>;
+  return <CrudTable title="主导航" rows={rows} busy={busy} allowCreate={false} canDelete={() => false} columns={[{ title: "菜单名称", dataIndex: "label" }, { title: "链接", dataIndex: "href" }, { title: "显示状态", dataIndex: "hidden", render: (_, item) => <Tag color={item.hidden ? "default" : "green"}>{item.hidden ? "已隐藏" : "显示中"}</Tag> }, { title: "二级菜单", dataIndex: "children", renderText: (children) => children?.length ?? 0 }]} createItem={() => rows[0]} onCreate={async () => false} onUpdate={(item) => onCommit((current) => ({ ...current, navItems: current.navItems.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={async () => false}><ProFormText name="label" label="菜单名称" rules={[{ required: true }]} /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormSwitch name="hidden" label="前台隐藏" fieldProps={{ checkedChildren: "隐藏", unCheckedChildren: "显示" }} /><ProFormList name="children" label="二级菜单" creatorButtonProps={false} actionRender={() => []}><Row gutter={12}><Col xs={24} md={6}><ProFormText name="label" label="名称" rules={[{ required: true }]} /></Col><Col xs={24} md={6}><ProFormText name="href" label="链接" rules={[{ required: true }]} /></Col><Col xs={24} md={6}><ProFormSwitch name="hidden" label="前台隐藏" /></Col><Col xs={24} md={6}><ProFormText name="group" label="下拉分组" /></Col></Row></ProFormList></CrudTable>;
 }
 
-function NavigationManager({ home, pages, onHomeCommit, busy }: { home: HomeContent; pages: Subpage[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
-  const linkedPageCounts = home.navItems.map((item) => getLinkedPageSlugs(item).filter((slug) => pages.some((page) => page.slug === slug)).length);
-  return <Tabs items={[{ key: "menu", label: "菜单配置", children: <MenuManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: <AdminMenuPageManager embedded items={home.navItems} linkedPageCounts={linkedPageCounts} /> }]} />;
-}
-
-function MenuContentManager({ menu, home, pages, knowledge, onHomeCommit, onPagesCommit, onKnowledgeCommit, busy }: { menu: NavItem; home: HomeContent; pages: Subpage[]; knowledge: KnowledgeEntry[]; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; onPagesCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; onKnowledgeCommit: (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => Promise<boolean>; busy: boolean }) {
-  const linkedSlugs = getLinkedPageSlugs(menu);
-  const pageManager = <PagesManager pages={pages} visibleSlugs={linkedSlugs} onCommit={onPagesCommit} busy={busy} />;
-
-  if (menu.href === "/#home" || menu.href === "/") {
-    return <HomeManager home={home} onCommit={onHomeCommit} busy={busy} />;
-  }
-  if (linkedSlugs.includes("solution-standard")) {
-    return <Tabs items={[{ key: "news", label: "最新动态", children: <LatestNewsManager home={home} onCommit={onHomeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
-  }
-  if (linkedSlugs.includes("excel-accounting-tool")) {
-    return pageManager;
-  }
-  if (linkedSlugs.includes("knowledge-center")) {
-    return <Tabs items={[{ key: "knowledge-content", label: "文章与课程", children: <KnowledgeManager entries={knowledge} onCommit={onKnowledgeCommit} busy={busy} /> }, { key: "pages", label: "栏目页面", children: pageManager }]} />;
-  }
-  if (linkedSlugs.includes("company-profile")) {
-    return pageManager;
-  }
-  return pageManager;
+function NavigationManager({ home, onHomeCommit, busy }: { home: HomeContent; onHomeCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
+  return <MenuManager home={home} onCommit={onHomeCommit} busy={busy} />;
 }
 
 function SiteSettingsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -333,7 +304,7 @@ function SiteMetadataManager({ home, onCommit, busy }: { home: HomeContent; onCo
 }
 
 function HomeManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
-  return <Tabs items={[{ key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "hero-actions", label: "横幅按钮与链接", children: <HeroActionTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "editorial", label: "首页内容", children: <HomeEditorialManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
+  return <Tabs items={[{ key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "editorial", label: "首页内容", children: <HomeEditorialManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
 }
 
 function HomeEditorialManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -355,17 +326,12 @@ function HomeSettings({ home, onCommit, busy }: { home: HomeContent; onCommit: (
 
 function HeroTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
   const rows: HeroRow[] = home.heroSlides.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title="轮播图" rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "按钮", dataIndex: "cta" }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || "轮播图"} /> }]} createItem={() => ({ id: crypto.randomUUID(), eyebrow: "", title: "", description: "", image: "/media/fengxing-hero-accounting.png", cta: "了解更多" })} onCreate={(item) => onCommit((current) => ({ ...current, heroSlides: [...current.heroSlides, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="eyebrow" label="副标题" /><ProFormText name="title" label="主标题" rules={[{ required: true }]} /><ProFormTextArea name="description" label="描述" rules={[{ required: true }]} /><ProFormText name="cta" label="按钮文字" /><ImageUploadField name="image" label="轮播配图" required hint="建议使用横向企业场景图，推荐比例 16:9。" /></CrudTable>;
-}
-
-function HeroActionTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
-  const rows: HeroRow[] = home.heroSlides.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title="横幅按钮与链接" rows={rows} busy={busy} columns={[{ title: "横幅标题", dataIndex: "title" }, { title: "主按钮", dataIndex: "cta" }, { title: "主链接", dataIndex: "href" }, { title: "次按钮", dataIndex: "secondaryCta" }]} createItem={() => ({ id: crypto.randomUUID(), eyebrow: "", title: "新横幅", description: "", image: "/media/fengxing-hero-accounting.png", cta: "了解更多", href: "/#contact", secondaryCta: "", secondaryHref: "/#contact" })} onCreate={(item) => onCommit((current) => ({ ...current, heroSlides: [...current.heroSlides, omitId(item)] }))} onUpdate={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="title" label="横幅标题" rules={[{ required: true }]} /><ProFormText name="cta" label="主按钮文字" rules={[{ required: true }]} /><ProFormText name="href" label="主按钮链接" rules={[{ required: true }]} /><ProFormText name="secondaryCta" label="次按钮文字（选填）" /><ProFormText name="secondaryHref" label="次按钮链接" /></CrudTable>;
+  return <CrudTable title="轮播图" rows={rows} busy={busy} allowCreate={false} canDelete={() => false} columns={[{ title: "标题", dataIndex: "title" }, { title: "按钮", dataIndex: "cta" }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || "轮播图"} /> }]} createItem={() => rows[0]} onCreate={async () => false} onUpdate={(item) => onCommit((current) => ({ ...current, heroSlides: current.heroSlides.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))} onDelete={async () => false}><ProFormText name="eyebrow" label="副标题" /><ProFormText name="title" label="主标题" rules={[{ required: true }]} /><ProFormTextArea name="description" label="描述" rules={[{ required: true }]} /><ProFormText name="cta" label="主按钮文字" /><ProFormText name="href" label="主按钮链接" /><ProFormText name="secondaryCta" label="次按钮文字" /><ProFormText name="secondaryHref" label="次按钮链接" /><ImageUploadField name="image" label="轮播配图" required hint="建议使用横向企业场景图，推荐比例 16:9。" /></CrudTable>;
 }
 
 function TimelineTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
   const rows: TimelineRow[] = home.timeline.map((item, index) => ({ ...item, id: String(index), itemsText: item.items.join("\n") } as TimelineRow & { itemsText: string }));
-  return <CrudTable title="能力阶段" rows={rows} busy={busy} columns={[{ title: "阶段", dataIndex: "year" }, { title: "内容", dataIndex: "items", renderText: (items) => items.join(" / ") }]} createItem={() => ({ id: crypto.randomUUID(), year: "", items: [], itemsText: "" } as TimelineRow & { itemsText: string })} onCreate={(item) => onCommit((current) => ({ ...current, timeline: [...current.timeline, { year: item.year, items: String((item as unknown as { itemsText: string }).itemsText).split("\n").filter(Boolean) }] }))} onUpdate={(item) => onCommit((current) => ({ ...current, timeline: current.timeline.map((entry, index) => String(index) === item.id ? { year: item.year, items: String((item as unknown as { itemsText: string }).itemsText).split("\n").filter(Boolean) } : entry) }))} onDelete={(item) => onCommit((current) => ({ ...current, timeline: current.timeline.filter((_, index) => String(index) !== item.id) }))}><ProFormText name="year" label="阶段" rules={[{ required: true }]} /><ProFormTextArea name="itemsText" label="内容（每行一项）" rules={[{ required: true }]} /></CrudTable>;
+  return <CrudTable title="能力阶段" rows={rows} busy={busy} allowCreate={false} canDelete={() => false} columns={[{ title: "阶段", dataIndex: "year" }, { title: "内容", dataIndex: "items", renderText: (items) => items.join(" / ") }]} createItem={() => rows[0]} onCreate={async () => false} onUpdate={(item) => onCommit((current) => ({ ...current, timeline: current.timeline.map((entry, index) => String(index) === item.id ? { year: item.year, items: String((item as unknown as { itemsText: string }).itemsText).split("\n").filter(Boolean) } : entry) }))} onDelete={async () => false}><ProFormText name="year" label="阶段" rules={[{ required: true }]} /><ProFormTextArea name="itemsText" label="内容（每行一项）" rules={[{ required: true }]} /></CrudTable>;
 }
 
 function LatestNewsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -378,7 +344,7 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
   const toKnowledgeEntry = (item: KnowledgeRow, slug = item.slug) => {
     const entry = omitId(item) as KnowledgeEntry & { exists?: boolean };
     delete entry.exists;
-    return normalizeKnowledgeEntry({ ...entry, slug } as KnowledgeEntry);
+    return toCurrentKnowledgeEntry({ ...entry, slug } as KnowledgeEntry);
   };
   return <CrudTable
     title="文章与课程"
@@ -388,7 +354,7 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
       { title: "类型", dataIndex: "type", render: (_, record) => <Tag color={record.type === "article" ? "blue" : "green"}>{record.type === "article" ? "双碳文章" : "视频课程"}</Tag> },
       { title: "标题", dataIndex: "title" },
       { title: "栏目", dataIndex: "category" },
-      { title: "发布时间", dataIndex: "publishedAt", renderText: (value) => value ? new Date(value).toLocaleString("zh-CN", { hour12: false }) : "旧内容" },
+      { title: "发布时间", dataIndex: "publishedAt", renderText: (value) => value ? new Date(value).toLocaleString("zh-CN", { hour12: false }) : "未设置" },
       { title: "详情地址", dataIndex: "slug", renderText: (slug) => `/knowledge-center/${slug}` }
     ]}
     createItem={() => ({ id: crypto.randomUUID(), exists: false, slug: "new-knowledge-entry", type: "article" as const, category: "双碳政策", title: "", summary: "", meta: "", publishedAt: new Date().toISOString(), sections: [] })}
@@ -428,49 +394,36 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
 
 function NewsTable({ title, items, image, onCommit, busy }: { title: string; items: NewsItem[]; image: string; onCommit: (items: NewsItem[]) => Promise<boolean>; busy: boolean }) {
   const rows: NewsRow[] = items.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title={title} rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "副标题", dataIndex: "subtitle", renderText: (_, record) => record.subtitle ?? record.summary ?? record.action }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || title} /> }, { title: "链接", dataIndex: "href" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", action: "", subtitle: "", image, href: "/", summary: "" })} onCreate={(item) => onCommit([...items, omitId(item)])} onUpdate={(item) => onCommit(items.map((entry, index) => String(index) === item.id ? omitId(item) : entry))} onDelete={(item) => onCommit(items.filter((_, index) => String(index) !== item.id))}><ProFormText name="title" label="标题" rules={[{ required: true }]} /><ProFormText name="subtitle" label="副标题" /><ProFormText name="action" label="分类（选填）" /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormTextArea name="summary" label="摘要（兼容旧内容）" /><ImageUploadField name="image" label="内容配图" required hint="建议使用清晰的横向或竖向活动照片。" /></CrudTable>;
+  return <CrudTable title={title} rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "副标题", dataIndex: "subtitle", renderText: (_, record) => record.subtitle ?? record.summary ?? record.action }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || title} /> }, { title: "链接", dataIndex: "href" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", action: "", subtitle: "", image, href: "/", summary: "" })} onCreate={(item) => onCommit([...items, omitId(item)])} onUpdate={(item) => onCommit(items.map((entry, index) => String(index) === item.id ? omitId(item) : entry))} onDelete={(item) => onCommit(items.filter((_, index) => String(index) !== item.id))}><ProFormText name="title" label="标题" rules={[{ required: true }]} /><ProFormText name="subtitle" label="副标题" /><ProFormText name="action" label="分类（选填）" /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormTextArea name="summary" label="摘要" /><ImageUploadField name="image" label="内容配图" required hint="建议使用清晰的横向或竖向活动照片。" /></CrudTable>;
 }
 
-function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[]; visibleSlugs?: string[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; busy: boolean }) {
-  const pageBySlug = new Map(pages.map((page) => [page.slug, page]));
-  const managedPages = visibleSlugs ? visibleSlugs.map((slug) => pageBySlug.get(slug)) : pages;
-  const rows: PageRow[] = managedPages.map((page, index) => page ? ({ ...page, id: page.slug, exists: true, mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }) : ({ id: visibleSlugs?.[index] ?? crypto.randomUUID(), exists: false, slug: visibleSlugs?.[index] ?? "new-page", layout: "training", navLabel: "未配置页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart", metrics: [], features: [], steps: [], sections: [], mediaEntries: [] }));
+function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; busy: boolean }) {
+  const rows: PageRow[] = pages.map((page) => ({ ...page, id: page.slug, mediaEntries: Object.entries(page.media ?? {}).map(([key, path]) => ({ key, path })) }));
   return <CrudTable
     title="业务子页面"
     rows={rows}
     busy={busy}
-    allowCreate={!visibleSlugs}
-    canDelete={(item) => item.exists}
+    allowCreate={false}
+    canDelete={() => false}
     columns={[
-      { title: "配置状态", dataIndex: "exists", render: (_, record) => <Tag color={record.exists ? "blue" : "gold"}>{record.exists ? "已配置" : "待配置"}</Tag> },
       { title: "页面名称", dataIndex: "navLabel" },
       { title: "版式", dataIndex: "layout" },
       { title: "URL 标识", dataIndex: "slug" },
       { title: "页面标题", dataIndex: "title" },
       { title: "页面配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || record.navLabel} /> }
     ]}
-    createItem={() => ({ id: crypto.randomUUID(), exists: false, slug: "new-page", layout: "training" as const, navLabel: "新页面", eyebrow: "", title: "", summary: "", image: "/media/fengxing-hero-management.png", icon: "chart" as IconKey, metrics: [], features: [], steps: [], sections: [], mediaEntries: [] })}
-    onCreate={(item) => onCommit((current) => [...current, toSubpage(item)])}
-    onUpdate={(item) => onCommit((current) => item.exists ? current.map((entry) => entry.slug === item.id ? toSubpage({ ...item, slug: item.id }) : entry) : [...current, toSubpage(item)])}
-    onDelete={(item) => onCommit((current) => current.filter((entry) => entry.slug !== item.id))}
+    createItem={() => rows[0]}
+    onCreate={async () => false}
+    onUpdate={(item) => onCommit((current) => current.map((entry) => entry.slug === item.id ? toSubpage({ ...item, slug: item.id }) : entry))}
+    onDelete={async () => false}
   >
-    <ProFormDependency name={["exists"]}>
-      {({ exists }) => <ProFormText name="slug" label="URL 标识" disabled={Boolean(visibleSlugs) || Boolean(exists)} extra={exists ? "已发布页面的 URL 标识不可修改，以免现有导航和外部链接失效。" : undefined} rules={[{ required: true, pattern: contentSlugPattern, message: "仅可使用小写字母、数字，并以单个连字符分隔" }]} />}
-    </ProFormDependency>
-    <ProFormSelect name="layout" label="页面版式" rules={[{ required: true }]} options={[
-      { label: "培训课程", value: "training" }, { label: "核算实战", value: "practical" },
-      { label: "集团咨询", value: "consulting" }, { label: "数字化方案", value: "solution-platform" },
-      { label: "Excel 产品", value: "excel" }, { label: "平台产品", value: "product-platform" },
-      { label: "客户案例", value: "cases" }, { label: "资源中心", value: "knowledge" },
-      { label: "企业介绍", value: "company" }, { label: "企业荣誉", value: "honors" },
-      { label: "合作伙伴", value: "partners" }, { label: "联系我们", value: "contact" },
-      { label: "实施服务", value: "service" }
-    ]} />
+    <ProFormText name="slug" label="URL 标识" disabled extra="URL 由当前官网路由固定管理。" />
+    <ProFormText name="layout" label="页面版式" disabled extra="版式由当前页面模板固定管理。" />
     <ProFormText name="navLabel" label="导航名称" rules={[{ required: true }]} />
     <ProFormText name="eyebrow" label="页面英文标识" />
     <ProFormText name="title" label="页面标题" rules={[{ required: true }]} />
     <ProFormTextArea name="summary" label="页面摘要" rules={[{ required: true }]} />
-    <ProFormSelect name="icon" label="页面图标" rules={[{ required: true }]} options={["chart", "building", "database", "layers", "line", "shield", "sparkles", "users", "workflow"].map((value) => ({ label: value, value }))} />
+    <ProFormText name="icon" label="页面图标" disabled extra="图标与当前页面模板绑定。" />
     <ImageUploadField name="image" label="页面配图" required hint="建议上传与该页面业务内容相符的明亮企业场景图。" />
     <ProFormList name="metrics" label="页面指标" creatorButtonProps={{ creatorButtonText: "新增指标" }}><Row gutter={12}><Col xs={24} md={12}><ProFormText name="label" label="指标名称" rules={[{ required: true }]} /></Col><Col xs={24} md={12}><ProFormText name="value" label="指标值" rules={[{ required: true }]} /></Col></Row></ProFormList>
     <ProFormDependency name={["layout"]}>
@@ -492,18 +445,18 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
         </> : null}
       </> : null}
     </ProFormDependency>
-    <ProFormList name="mediaEntries" label="模板图片" creatorButtonProps={{ creatorButtonText: "新增图片位" }}>
+    <ProFormList name="mediaEntries" label="模板图片" creatorButtonProps={false} actionRender={() => []}>
       <Row gutter={12}>
-        <Col xs={24} md={8}><ProFormText name="key" label="图片位名称" rules={[{ required: true }]} /></Col>
+        <Col xs={24} md={8}><ProFormText name="key" label="图片位名称" disabled /></Col>
         <Col xs={24} md={16}><ImageUploadField name="path" label="图片" required hint="模板图片位会在前台直接读取；保留已有名称以替换当前图片。" /></Col>
       </Row>
     </ProFormList>
     <ProFormList name="features" label="核心内容" creatorButtonProps={{ creatorButtonText: "新增内容" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
     <ProFormList name="steps" label="实施或阅读路径" creatorButtonProps={{ creatorButtonText: "新增步骤" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
-    <ProFormList name="sections" label="页面专属模块" creatorButtonProps={{ creatorButtonText: "新增模块" }}>
+    <ProFormList name="sections" label="页面专属模块" creatorButtonProps={false} actionRender={() => []}>
       <Row gutter={12}>
-        <Col xs={24} md={8}><ProFormText name="id" label="模块标识" rules={[{ required: true }]} /></Col>
-        <Col xs={24} md={8}><ProFormSelect name="kind" label="模块类型" rules={[{ required: true }]} options={["metrics", "capabilities", "process", "resources", "timeline", "gallery", "contacts"].map((value) => ({ label: value, value }))} /></Col>
+        <Col xs={24} md={8}><ProFormText name="id" label="模块标识" disabled /></Col>
+        <Col xs={24} md={8}><ProFormText name="kind" label="模块类型" disabled /></Col>
         <Col xs={24} md={8}><ProFormText name="title" label="模块标题" rules={[{ required: true }]} /></Col>
       </Row>
       <ProFormTextArea name="description" label="模块说明" />
@@ -531,7 +484,7 @@ function PagesManager({ pages, visibleSlugs, onCommit, busy }: { pages: Subpage[
   </CrudTable>;
 }
 
-function toSubpage({ id: _, exists: __, mediaEntries, ...page }: PageRow): Subpage {
+function toSubpage({ id: _, mediaEntries, ...page }: PageRow): Subpage {
   return {
     ...page,
     media: Object.fromEntries(mediaEntries.filter((entry) => entry.key && entry.path).map((entry) => [entry.key, entry.path]))

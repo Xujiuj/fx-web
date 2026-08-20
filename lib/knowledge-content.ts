@@ -33,7 +33,7 @@ export type KnowledgeEntry =
       externalLabel?: string;
     });
 
-export function normalizeKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
+export function toCurrentKnowledgeEntry(entry: KnowledgeEntry): KnowledgeEntry {
   if (entry.type === "article") {
     const article = { ...entry };
     delete article.videoHref;

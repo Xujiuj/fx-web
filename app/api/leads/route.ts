@@ -22,9 +22,25 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const page = parsePositiveInteger(searchParams.get("page"), 1, 10_000);
   const pageSize = parsePositiveInteger(searchParams.get("pageSize"), 20, 100);
+  const keyword = searchParams.get("keyword")?.trim().slice(0, 120) ?? "";
+  const requestedDeliveryStatus = searchParams.get("deliveryStatus")?.trim() ?? "";
+  const deliveryStatus = new Set(["PENDING", "SENT", "SKIPPED", "FAILED"]).has(requestedDeliveryStatus) ? requestedDeliveryStatus : "";
+  const keywordWhere = {
+    ...(keyword ? {
+      OR: ["name", "company", "contact", "email", "message"].map((field) => ({ [field]: { contains: keyword } })),
+    } : {}),
+  };
+  const matchingIds = deliveryStatus
+    ? (await prisma.contactLead.findMany({
+        where: keywordWhere,
+        select: { id: true, mailDeliveries: { orderBy: { createdAt: "desc" }, take: 1, select: { status: true } } },
+      })).filter((lead) => lead.mailDeliveries[0]?.status === deliveryStatus).map((lead) => lead.id)
+    : null;
+  const where = matchingIds ? { ...keywordWhere, id: { in: matchingIds } } : keywordWhere;
   const [total, leads] = await prisma.$transaction([
-    prisma.contactLead.count(),
+    prisma.contactLead.count({ where }),
     prisma.contactLead.findMany({
+      where,
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,
