@@ -419,7 +419,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     outcomes: ["完成首次核算", "建立数据台账", "形成标准成果", "支撑核查与披露"],
     outcomeLabel: "客户收益",
     diagramTitle: "企业温室气体核算标准化流程图（Excel版）",
-    diagramDescription: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示。",
+    diagramDescription: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
     diagramImage: "/media/reference-diagrams/excel-standard-flow.svg"
   }),
   "solution-consulting": solutionSections({
@@ -521,7 +521,7 @@ const excelProductSections: SubpageSection[] = [
     title: "Excel 工具的数据维护与核算关系",
     description: "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。",
     items: [
-      { title: "企业温室气体核算标准化流程图", description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示，作为Excel版方法论的核心逻辑图。", image: "/media/reference-diagrams/excel-standard-flow.svg" },
+      { title: "企业温室气体核算标准化流程图", description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。", image: "/media/reference-diagrams/excel-standard-flow.svg" },
       { title: "企业温室气体核算数据建模流程图（Excel版）", description: "围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。", image: "/media/reference-diagrams/data-modeling-flow.svg" }
     ]
   },
@@ -613,7 +613,7 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
   "solution-practical": {
     image: "/media/reference-diagrams/excel-standard-flow.svg",
     title: "企业温室气体核算标准化流程图（Excel版）",
-    description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示。",
+    description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
   },
   "solution-consulting": {
     image: "/media/reference-diagrams/group-implementation.svg",

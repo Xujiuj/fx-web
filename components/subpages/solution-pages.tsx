@@ -131,7 +131,7 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   "solution-practical": {
     eyebrow: "实施路径",
     title: "企业温室气体核算标准化流程图（Excel版）",
-    description: "以标准化流程串联数据准备、数据采集、数据核算、计算与分析展示。",
+    description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
     src: "/media/reference-diagrams/excel-standard-flow.svg",
     alt: "企业温室气体核算标准化流程图（Excel版）",
   },
