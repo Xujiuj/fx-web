@@ -126,7 +126,7 @@ function DocumentUploadField({ value, onChange }: { value?: string; onChange?: (
       }
     })();
   };
-  return <Space direction="vertical" size={8}><Upload accept=".pdf,.doc,.docx,.xls,.xlsx" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{value ? "替换资料" : "上传资料"}</Button></Upload>{value ? <Space size={12}><a href={value} target="_blank" rel="noreferrer">检查已绑定资料</a><Button type="link" danger icon={<DeleteOutlined />} onClick={() => { setUploadError(""); onChange?.(undefined); }}>移除资料</Button></Space> : null}{uploadError ? <span role="alert" style={{ color: "#ff4d4f" }}>{uploadError}</span> : null}</Space>;
+  return <Space direction="vertical" size={8}><Upload accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.7z,.rar" showUploadList={false} maxCount={1} customRequest={upload}><Button icon={<UploadOutlined />} loading={uploading}>{value ? "替换资料" : "上传资料"}</Button></Upload>{value ? <Space size={12}><a href={value} target="_blank" rel="noreferrer">检查已绑定资料</a><Button type="link" danger icon={<DeleteOutlined />} onClick={() => { setUploadError(""); onChange?.(undefined); }}>移除资料</Button></Space> : null}{uploadError ? <span role="alert" style={{ color: "#ff4d4f" }}>{uploadError}</span> : null}</Space>;
 }
 
 function VideoUploadControl({ value, onChange, addressLabel, addressHint }: { value?: string; onChange?: (path: string) => void; addressLabel: string; addressHint: string }) {

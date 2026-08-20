@@ -498,7 +498,7 @@ const productResourceSection: SubpageSection = {
   id: "product-resources",
   kind: "resources",
   title: "产品资料下载",
-  description: "产品手册、功能清单与部署说明由后台独立维护。",
+  description: "产品手册、功能清单与部署说明，帮助你快速了解产品与使用方式。",
   items: [{ title: "产品手册", description: "产品介绍与使用说明" }, { title: "功能与版本清单", description: "功能范围与版本说明" }, { title: "部署及试用说明", description: "部署要求与试用指引" }]
 };
 

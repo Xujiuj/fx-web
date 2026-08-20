@@ -289,12 +289,15 @@ function ProductResources({ page }: ProductPageProps) {
     { title: "功能与版本清单", description: "功能范围与版本说明" },
     { title: "部署及试用说明", description: "部署要求与试用指引" },
   ];
+  const resourceDescription = resourceSection?.description?.includes("后台")
+    ? "产品手册、功能清单与部署说明，帮助你快速了解产品与使用方式。"
+    : resourceSection?.description ?? "产品手册、功能清单与部署说明，帮助你快速了解产品与使用方式。";
   return (
     <section className={`${styles.productResources} ${styles.container}`} aria-labelledby={`${page.slug}-resources-title`}>
       <header className={styles.sectionHeading}>
         <span>RESOURCE CENTER</span>
         <h2 id={`${page.slug}-resources-title`}>{resourceSection?.title ?? "产品资料下载"}</h2>
-        <p>{resourceSection?.description ?? "产品手册、功能清单与部署说明由后台独立维护；上传新版本后，用户可直接下载。"}</p>
+        <p>{resourceDescription}</p>
       </header>
       <div className={styles.resourceRows}>
         {resources.map((resource) => {
@@ -302,7 +305,7 @@ function ProductResources({ page }: ProductPageProps) {
           const contents = <>
             <Download size={19} aria-hidden="true" />
             <strong>{resource.title}</strong>
-            <span>{href ? "立即下载" : "资料待发布"}</span>
+            <span>{href ? "立即下载" : "即将提供"}</span>
             <ArrowRight size={17} aria-hidden="true" />
           </>;
           return href ? <a href={href} key={resource.title} download={isManagedDocumentPath(href) ? "" : undefined}>{contents}</a>

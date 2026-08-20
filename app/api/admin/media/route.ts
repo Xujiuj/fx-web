@@ -29,9 +29,28 @@ const allowedTypes = new Map([
 const allowedDocumentTypes = new Map([
   ["application/pdf", ".pdf"],
   ["application/msword", ".doc"],
+  ["application/vnd.ms-powerpoint", ".ppt"],
   ["application/vnd.openxmlformats-officedocument.wordprocessingml.document", ".docx"],
+  ["application/vnd.openxmlformats-officedocument.presentationml.presentation", ".pptx"],
   ["application/vnd.ms-excel", ".xls"],
   ["application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", ".xlsx"],
+  ["application/zip", ".zip"],
+  ["application/x-7z-compressed", ".7z"],
+  ["application/vnd.rar", ".rar"],
+  ["application/x-rar-compressed", ".rar"],
+  ["application/x-zip-compressed", ".zip"],
+]);
+const documentTypesByExtension = new Map([
+  [".pdf", "application/pdf"],
+  [".doc", "application/msword"],
+  [".ppt", "application/vnd.ms-powerpoint"],
+  [".docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+  [".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+  [".xls", "application/vnd.ms-excel"],
+  [".xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"],
+  [".zip", "application/zip"],
+  [".7z", "application/x-7z-compressed"],
+  [".rar", "application/vnd.rar"],
 ]);
 const allowedVideoTypes = new Map([
   ["video/mp4", ".mp4"],
@@ -141,9 +160,14 @@ function hasAllowedDocumentSignature(bytes: Uint8Array, type: string) {
   const isPdf = bytes.length >= 5 && new TextDecoder().decode(bytes.slice(0, 5)) === "%PDF-";
   const isOle = bytes.length >= 8 && bytes.slice(0, 8).every((byte, index) => byte === [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1][index]);
   const isZip = bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && [0x03, 0x05, 0x07].includes(bytes[2]) && [0x04, 0x06, 0x08].includes(bytes[3]);
+  const isSevenZip = bytes.length >= 6 && bytes.slice(0, 6).every((byte, index) => byte === [0x37, 0x7a, 0xbc, 0xaf, 0x27, 0x1c][index]);
+  const isRar = bytes.length >= 7 && bytes.slice(0, 7).every((byte, index) => byte === [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x00][index])
+    || bytes.length >= 8 && bytes.slice(0, 8).every((byte, index) => byte === [0x52, 0x61, 0x72, 0x21, 0x1a, 0x07, 0x01, 0x00][index]);
   if (type === "application/pdf") return isPdf;
-  if (type === "application/msword" || type === "application/vnd.ms-excel") return isOle;
-  if (type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet") return isZip;
+  if (type === "application/msword" || type === "application/vnd.ms-powerpoint" || type === "application/vnd.ms-excel") return isOle;
+  if (type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" || type === "application/vnd.openxmlformats-officedocument.presentationml.presentation" || type === "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" || type === "application/zip" || type === "application/x-zip-compressed") return isZip;
+  if (type === "application/x-7z-compressed") return isSevenZip;
+  if (type === "application/vnd.rar" || type === "application/x-rar-compressed") return isRar;
   return false;
 }
 
@@ -238,11 +262,15 @@ async function handleMediaUpload(request: Request, requestId: string) {
     receivedFile = true;
 
     const imageExtension = allowedTypes.get(info.mimeType);
-    const documentExtension = allowedDocumentTypes.get(info.mimeType);
+    const filenameExtension = path.extname(info.filename).toLowerCase();
+    const detectedDocumentType = allowedDocumentTypes.has(info.mimeType)
+      ? info.mimeType
+      : (info.mimeType === "application/octet-stream" ? documentTypesByExtension.get(filenameExtension) : undefined);
+    const documentExtension = detectedDocumentType ? allowedDocumentTypes.get(detectedDocumentType) : undefined;
     const extension = imageExtension ?? documentExtension;
     if (!extension) {
       stream.resume();
-      queueMicrotask(() => rejectUpload(new MediaUploadValidationError("仅支持 JPG、PNG、WebP、GIF、PDF、Word 和 Excel 文件")));
+      queueMicrotask(() => rejectUpload(new MediaUploadValidationError("仅支持 JPG、PNG、WebP、GIF、PDF、Word、PPT、Excel 和 ZIP/7Z/RAR 压缩文件")));
       return;
     }
 
@@ -268,7 +296,7 @@ async function handleMediaUpload(request: Request, requestId: string) {
       stream.once("limit", () => rejectUpload(new MediaUploadValidationError("文件大小必须在 20MB 以内")));
       upload = pipeline(stream, currentWriter, { signal: request.signal })
         .then(() => ({
-          mimeType: info.mimeType,
+          mimeType: imageExtension ? info.mimeType : detectedDocumentType!,
           size,
           outputPath,
           publicPath: `/media/${directoryName}/${filename}`,

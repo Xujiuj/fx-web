@@ -150,6 +150,9 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
   const onlineClassroomHref = isAllowedContentHref(onlineClassroom?.value) ? onlineClassroom?.value : undefined;
   const downloadSection = page.sections.find((section) => section.id === "downloads");
   const downloads = downloadSection?.items.length ? downloadSection.items : fallbackKnowledgeResources;
+  const downloadDescription = downloadSection?.description?.includes("后台")
+    ? "获取产品手册、解决方案与Excel核算工具资料。"
+    : downloadSection?.description || "获取产品手册、解决方案与Excel核算工具资料。";
   const ctaSection = page.sections.find((section) => section.id === "knowledge-cta");
   const policyArticles = filterArticlesByCategory(knowledgeEntries);
   const articleCategories = getArticleCategories(knowledgeEntries);
@@ -234,7 +237,7 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
         <div className={styles.resourceIntro} data-motion-role="heading">
           <SectionLabel>资料下载</SectionLabel>
           <h2 id="resource-title">{downloadSection?.title || "课程、工具与方案资料"}</h2>
-          <p>{downloadSection?.description || "获取产品手册、解决方案与Excel核算工具的当前有效版本。"}</p>
+        <p>{downloadDescription}</p>
         </div>
         <div className={styles.resourceLinks}>
           {downloads.map((resource, index) => {
@@ -244,7 +247,7 @@ export function KnowledgePage({ page, knowledgeEntries = defaultKnowledgeEntries
               <Icon size={22} aria-hidden="true" />
               <div>
                 <span>{resource.title}</span>
-                <strong>{href ? "立即下载" : "资料待发布"}</strong>
+                <strong>{href ? "立即下载" : "即将提供"}</strong>
               </div>
               <ArrowRight size={17} aria-hidden="true" />
             </>;
