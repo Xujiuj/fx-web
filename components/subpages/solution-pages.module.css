@@ -1001,6 +1001,44 @@
   box-shadow: 0 18px 44px rgba(113, 40, 8, 0.18);
 }
 
+.solutionHeroSignalWithCaption img {
+  inset: 22px 22px 108px;
+  width: calc(100% - 44px);
+  height: calc(100% - 130px);
+}
+
+.solutionHeroDiagramCaption {
+  position: absolute;
+  z-index: 3;
+  right: 22px;
+  bottom: 22px;
+  left: 22px;
+  padding: 13px 16px;
+  color: #fff;
+  background: rgba(112, 38, 8, 0.86);
+}
+
+.solutionHeroDiagramCaption span {
+  display: block;
+  margin-bottom: 4px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.solutionHeroDiagramCaption h2 {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.solutionHeroDiagramCaption p {
+  margin: 5px 0 0;
+  color: rgba(255, 255, 255, 0.84);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
 
 .solutionFramework {
   width: min(calc(100% - 48px), 1140px);
