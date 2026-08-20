@@ -3498,11 +3498,12 @@ main .capability-orbit-section .timeline-description {
 }
 
 .product-center-section .home-editorial-heading p {
-  max-width: 800px;
+  max-width: none;
   margin: 0;
   color: #666;
   font-size: 18px;
   line-height: 1.8;
+  white-space: nowrap;
 }
 
 .product-center-list {
@@ -3657,6 +3658,11 @@ main .capability-orbit-section .timeline-description {
 }
 
 @media (max-width: 900px) {
+  .product-center-section .home-editorial-heading p {
+    max-width: 800px;
+    white-space: normal;
+  }
+
   .product-center-card {
     min-height: 600px;
     padding: 44px;
