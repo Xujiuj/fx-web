@@ -15,7 +15,7 @@ export type HeroSlide = { eyebrow: string; title: string; description: string; i
 export type AboutTab = { value: string; label: string; title: string; kicker: string; body: string; image?: string; imageAlt?: string };
 export type TimelineEntry = { year: string; items: string[] };
 export type NewsItem = { title: string; action: string; image: string; href: string; summary?: string; subtitle?: string };
-export type ProductItem = { name: string; summary: string; icon: IconKey; href: string };
+export type ProductItem = { name: string; summary: string; icon: IconKey; href: string; stage?: string; audience?: string[]; tags?: string[]; action?: string };
 export type CapabilityItem = { label: string; icon: IconKey };
 export type PartnerItem = { name: string; logo?: string };
 export type PageMedia = Record<string, string>;
@@ -46,6 +46,8 @@ export type HomeContent = {
   solutionItems: NewsItem[];
   newsItems: NewsItem[];
   products: ProductItem[];
+  productCenterTitle?: string;
+  productCenterDescription?: string;
   capabilities: CapabilityItem[];
   certificateImages: string[];
   partners: PartnerItem[];
@@ -82,7 +84,7 @@ export type SubpageSection = {
   kind: "metrics" | "capabilities" | "process" | "resources" | "timeline" | "gallery" | "contacts";
   title: string;
   description?: string;
-  items: Array<{ title: string; description?: string; value?: string; image?: string; details?: Record<string, string> }>;
+  items: Array<{ title: string; description?: string; value?: string; image?: string; details?: Record<string, string>; gallery?: ProductScreenshot[] }>;
 };
 
 export type ProductScreenshot = { src: string; thumbnailSrc?: string; fullSrc?: string; label: string; alt: string; width?: number; height?: number };
@@ -208,13 +210,6 @@ export const homeEditorialContent: HomeEditorialContent = {
   ]
 };
 
-const defaultLatestUpdates: NewsItem[] = [
-  { title: "温室气体核算边界如何确定？", action: "核算方法", subtitle: "从组织边界、运营边界到排放源识别，建立一致的核算口径。", image: "/media/manufacturing-carbon-accounting.png", href: "/knowledge-center", summary: "从组织边界、运营边界到排放源识别，建立一致的核算口径。" },
-  { title: "集团企业如何实现碳数据统一汇总？", action: "集团管理", subtitle: "以统一数据结构和核算规则支撑分子公司协同与集团汇总。", image: "/media/manufacturing-carbon-governance.png", href: "/knowledge-center", summary: "以统一数据结构和核算规则支撑分子公司协同与集团汇总。" },
-  { title: "从年度填报走向持续碳管理", action: "数字化实践", subtitle: "让数据采集、核算分析与管理决策形成可持续运行的闭环。", image: "/media/manufacturing-carbon-analytics.png", href: "/knowledge-center", summary: "让数据采集、核算分析与管理决策形成可持续运行的闭环。" },
-  { title: "企业碳管理如何形成持续运营机制？", action: "管理实践", subtitle: "从数据采集到分析决策，让每一项碳管理工作能够持续沉淀。", image: "/media/manufacturing-carbon-operations.png", href: "/knowledge-center", summary: "从数据采集到分析决策，让每一项碳管理工作能够持续沉淀。" }
-];
-
 const defaultNavItems: NavItem[] = [
   { label: "首页", href: "/#home" },
   { label: "解决方案", href: "/#solutions", children: [
@@ -277,6 +272,11 @@ function createCurrentSubpage({ layout, ...page }: SubpageTemplate): Subpage {
       items: section.items.map((item) => ({
         ...item,
         image: item.image ? derivedDisplayMedia[item.image] ?? item.image : undefined,
+        gallery: item.gallery?.map((galleryItem) => ({
+          ...galleryItem,
+          src: derivedDisplayMedia[galleryItem.src] ?? galleryItem.src,
+          fullSrc: galleryItem.fullSrc ?? (derivedDisplayMedia[galleryItem.src] ? galleryItem.src : undefined),
+        })),
       })),
     })),
   };
@@ -309,11 +309,13 @@ export const defaultHomeContent: HomeContent = {
   ],
   timelineImage: heroVisual,
   solutionItems: defaultSolutionItems,
-  newsItems: defaultLatestUpdates,
+  newsItems: [],
   products: [
-    { name: "Excel版温室气体核算工具", summary: "提供单公司版与集团版，支持自动汇总、多年度分析和可持续数据积累。", icon: "chart", href: "/excel-accounting-tool" },
-    { name: "企业碳管理数字化平台", summary: "统一数据体系、统一核算引擎、统一分析体系和统一管理平台。", icon: "database", href: "/carbon-management-platform" }
+    { name: "Excel版温室气体核算工具", summary: "面向首次开展温室气体核算的企业，快速建立核算台账，沉淀年度数据，支持单公司核算与集团汇总分析。", icon: "chart", href: "/excel-accounting-tool", stage: "STAGE 01", audience: ["首次开展温室气体核算", "单公司独立核算", "中小型集团企业", "希望快速落地碳管理工作"], tags: ["单公司版", "集团版", "自动汇总", "多年度分析"], action: "查看产品" },
+    { name: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系，实现数据治理、核算分析、ESG支撑与持续运营管理。", icon: "database", href: "/carbon-management-platform", stage: "STAGE 02", audience: ["集团化企业", "多组织协同管理", "ESG信息披露需求", "长期数字化运营建设"], tags: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], action: "查看平台" }
   ],
+  productCenterTitle: "选择适合企业当前阶段的碳管理方案",
+  productCenterDescription: "从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。",
   capabilities: [
     { label: "温室气体核算", icon: "chart" },
     { label: "碳管理咨询", icon: "users" },
@@ -324,7 +326,7 @@ export const defaultHomeContent: HomeContent = {
   ],
   certificateImages: [],
   partners: [],
-  sectionTitles: { timeline: "企业碳管理能力建设路径", solutions: "全阶段解决方案", news: "最新动态", products: "产品中心", certificates: "资质荣誉", partners: "合作伙伴", thinkingEyebrow: "OUR POSITIONING", thinkingTitle: "企业碳管理能力建设专家", contact: "联系峰行智成" },
+  sectionTitles: { timeline: "企业碳管理能力建设路径", solutions: "全阶段解决方案", news: "", products: "产品中心", certificates: "资质荣誉", partners: "合作伙伴", thinkingEyebrow: "OUR POSITIONING", thinkingTitle: "企业碳管理能力建设专家", contact: "联系峰行智成" },
   thinkingText: "以温室气体核算为起点，通过数据采集、数据治理、核算分析、管理决策和持续运营，推动企业沉淀可追溯、可复用的碳数据资产。",
   contact: { title: "联系峰行智成", description: "业务咨询：15099663016｜service@fengxingdata.com", namePlaceholder: "联系人", companyPlaceholder: "企业名称", contactPlaceholder: "请输入手机号或微信号", emailPlaceholder: "联系邮箱", messagePlaceholder: "企业需求", submitLabel: "提交咨询", successLabel: "咨询已提交", errorLabel: "提交失败，请稍后重试。" },
   footer: standardFooter,
@@ -544,7 +546,12 @@ const platformProductSections: SubpageSection[] = [
     description: "选择一项能力查看对应说明和真实界面。",
     items: [
       { title: "业务数据驱动", description: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。", image: "/media/platform-advantages/business-data-flow.png", details: { "要点": "数据归集\n因子匹配\n排放计算\n结果分析" } },
-      { title: "一次核算，多场景复用", description: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。", image: "/media/platform-advantages/reuse-standard-output.png", details: { "要点": "全国碳市场履约\nESG信息披露\n供应链碳管理\n企业经营分析" } },
+      { title: "一次核算，多场景复用", description: "平台基于统一碳数据模型，实现同源数据统一治理，让一次核算结果持续服务履约、披露、供应链和经营决策。", image: "/media/platform-advantages/reuse-standard-output.png", details: { "要点": "全国碳市场履约\nESG信息披露\n供应链碳管理\n企业经营分析" }, gallery: [
+        { src: "/media/platform-advantages/reuse-standard-output.png", label: "多标准输出", alt: "同一套碳数据按 GHG Protocol、ISO 14064-1 与 GB/T 32150-2025 输出核算结果", width: 5383, height: 3285 },
+        { src: "/media/platform-advantages/reuse-activity-data.png", label: "关键数据成果", alt: "排放总量、活动数据、温室气体构成与碳排放强度四类关键成果", width: 5491, height: 3367 },
+        { src: "/media/platform-advantages/reuse-trend-analysis.png", label: "多维交互分析", alt: "支持年度、月份、单位、因子与工厂切换的多维交互分析", width: 5491, height: 3379 },
+        { src: "/media/platform-advantages/reuse-baseline-analysis.png", label: "基准年分析", alt: "企业温室气体排放基准年管理与对比分析界面", width: 5491, height: 3369 }
+      ] },
       { title: "全流程可信可追溯", description: "平台建立覆盖排放源、活动数据、排放因子与核算结果的全链路管理体系，支持监管报送、第三方核查、ESG披露与内部审计。", image: "/media/platform-advantages/traceability-module-map.png", details: { "要点": "排放源到活动数据\n活动数据到排放因子\n排放因子到核算结果\n结果回溯业务数据与计算逻辑" } }
     ]
   },
@@ -561,7 +568,7 @@ export const defaultSubpages: Subpage[] = ([
   { slug: "solution-consulting", navLabel: "咨询版（Excel集团版）", eyebrow: "SOLUTION 03", title: "咨询版（Excel集团版）", summary: "建立集团统一核算管理体系。", image: solutionImages["/solution-consulting"], icon: "building", metrics: [{ label: "适用组织", value: "集团企业" }, { label: "管理方式", value: "统一口径" }, { label: "汇总方式", value: "集中复核" }], features: ["成员企业独立核算", "集团数据汇总", "统一数据模板与核算口径", "披露与供应链数据准备"], steps: ["梳理集团组织边界", "制定统一核算规则", "部署成员企业核算工具", "汇总复核并安排年度更新"], sections: solutionPageSections["solution-consulting"] },
   { slug: "solution-platform", navLabel: "平台版（数字化升级）", eyebrow: "SOLUTION 04", title: "平台版（数字化升级）", summary: "建设企业长期碳管理能力。", image: solutionImages["/solution-platform"], icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"], sections: solutionPageSections["solution-platform"] },
   { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版", "集团版", "自动汇总", "多年度分析", "可持续积累"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"], product: { screenshots: [{ src: "/materials/20260803/资料20260803/产品/单公司版产品截图-01.svg", label: "单公司版", alt: "Excel温室气体核算工具单公司版完整界面", width: 981, height: 499 }, { src: "/materials/20260803/资料20260803/产品/集团版版产品截图-01.svg", label: "集团版", alt: "Excel温室气体核算工具集团版完整界面", width: 887, height: 703 }] }, sections: excelProductSections },
-  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系。", image: "/media/product-platform-hero.webp", icon: "database", metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "统一" }, { label: "管理平台", value: "统一" }], features: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"], product: { videoUrl: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4", videoPoster: "/materials/20260803/资料20260803/产品/平台截图/2.png", enterpriseUrl: "/sample/", trialUrl: "/#contact", publicReportUrl: "https://app.powerbi.com/view?r=eyJrIjoiYjQzODVjYmEtYzFiMy00NDQ0LWIwZTAtMjM2YmVjOWNlZDAyIiwidCI6ImU2NDExZmRiLTZkNzctNGZmZC1iMDE1LTYxOWM3NWIxMzc2OCIsImMiOjEwfQ%3D%3D", screenshots: [
+  { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系。", image: "/media/product-platform-hero.webp", icon: "database", media: { diagram: "/media/reference-diagrams/platform-architecture.svg" }, metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "统一" }, { label: "管理平台", value: "统一" }], features: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"], product: { videoUrl: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4", videoPoster: "/materials/20260803/资料20260803/产品/平台截图/2.png", enterpriseUrl: "/sample/", trialUrl: "/#contact", publicReportUrl: "https://app.powerbi.com/view?r=eyJrIjoiYjQzODVjYmEtYzFiMy00NDQ0LWIwZTAtMjM2YmVjOWNlZDAyIiwidCI6ImU2NDExZmRiLTZkNzctNGZmZC1iMDE1LTYxOWM3NWIxMzc2OCIsImMiOjEwfQ%3D%3D", screenshots: [
     ...[4, 5, 6, 7, 1, 2, 3].map((number, index) => ({ src: `/materials/20260803/资料20260803/产品/平台截图/${number}.png`, alt: `企业碳管理数字化平台界面截图${number}`, label: ["排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据", "分析模块封面", "分析目录"][index], width: 3840, height: 2040 })),
     { src: "/materials/20260813/platform-ghg-protocol-view.png", alt: "企业碳管理数字化平台 GHG Protocol 核算视图", label: "GHG Protocol 视图", width: 3840, height: 2040 },
     { src: "/materials/20260813/platform-iso-14064-view.png", alt: "企业碳管理数字化平台 ISO 14064-1 核算视图", label: "ISO 14064-1 视图", width: 3840, height: 2040 },
@@ -596,6 +603,23 @@ export const defaultSubpages: Subpage[] = ([
 
 export type ContentVersions = { home: number; subpages: number; knowledge: number };
 export type SiteContentBundle = { home: HomeContent; subpages: Subpage[]; knowledge: KnowledgeEntry[]; versions: ContentVersions };
+
+function currentAdminHomeContent(home: HomeContent): HomeContent {
+  return {
+    ...home,
+    newsItems: [],
+    sectionTitles: { ...home.sectionTitles, news: "" },
+    productCenterTitle: home.productCenterTitle ?? "选择适合企业当前阶段的碳管理方案",
+    productCenterDescription: home.productCenterDescription ?? "从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。",
+    products: home.products.map((item, index) => ({
+      ...item,
+      stage: item.stage ?? `STAGE ${String(index + 1).padStart(2, "0")}`,
+      audience: item.audience ?? (index === 1 ? ["集团化企业", "多组织协同管理", "ESG信息披露需求", "长期数字化运营建设"] : ["首次开展温室气体核算", "单公司独立核算", "中小型集团企业", "希望快速落地碳管理工作"]),
+      tags: item.tags ?? (index === 1 ? ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"] : ["单公司版", "集团版", "自动汇总", "多年度分析"]),
+      action: item.action ?? (index === 1 ? "查看平台" : "查看产品"),
+    })),
+  };
+}
 
 export class ContentConflictError extends Error {
   constructor() {
@@ -651,7 +675,7 @@ export async function getSubpageContent(slug: string): Promise<Subpage | null> {
 }
 
 export async function getSiteContentBundle(): Promise<SiteContentBundle> {
-  if (isProductionBuild) return { home: defaultHomeContent, subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
+  if (isProductionBuild) return { home: currentAdminHomeContent(defaultHomeContent), subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
   try {
     const records = await prisma.siteContent.findMany({ where: { key: { in: ["home", "subpages", "knowledge"] } } });
     const homeRecord = records.find((record) => record.key === "home");
@@ -661,13 +685,13 @@ export async function getSiteContentBundle(): Promise<SiteContentBundle> {
     const storedSubpages = subpagesRecord ? parseSiteContentDocument<unknown>(subpagesRecord.value) : null;
     const storedKnowledge = knowledgeRecord ? parseSiteContentDocument<unknown>(knowledgeRecord.value) : null;
     return {
-      home: isCurrentHomeContent(storedHome) ? storedHome : defaultHomeContent,
+      home: currentAdminHomeContent(isCurrentHomeContent(storedHome) ? storedHome : defaultHomeContent),
       subpages: isCurrentSubpages(storedSubpages, defaultSubpages) ? storedSubpages : defaultSubpages,
       knowledge: isCurrentKnowledge(storedKnowledge) ? storedKnowledge : defaultKnowledgeEntries,
       versions: { home: homeRecord?.version ?? 0, subpages: subpagesRecord?.version ?? 0, knowledge: knowledgeRecord?.version ?? 0 }
     };
   } catch {
-    return { home: defaultHomeContent, subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
+    return { home: currentAdminHomeContent(defaultHomeContent), subpages: defaultSubpages, knowledge: defaultKnowledgeEntries, versions: { home: 0, subpages: 0, knowledge: 0 } };
   }
 }
 

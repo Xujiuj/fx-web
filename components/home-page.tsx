@@ -54,7 +54,7 @@ export function HomePage({ content }: { content: HomeContent }) {
       <ChallengesSection heading={editorial.headings.challenges} items={editorial.challenges} />
       <ManagementPathSection heading={editorial.headings.managementPath} items={editorial.managementPath} />
       <ServicesSection heading={editorial.headings.services} items={editorial.services} />
-      <ProductCenterSection items={content.products} />
+      <ProductCenterSection items={content.products} title={content.productCenterTitle} description={content.productCenterDescription} />
       <CasesSection heading={editorial.headings.cases} items={editorial.cases} />
       <BrandPositioningSection eyebrow={content.sectionTitles.thinkingEyebrow} title={content.sectionTitles.thinkingTitle} text={content.thinkingText} />
       <ContactSection contact={content.contact} />
@@ -277,7 +277,7 @@ const productCenterCopy: ProductCenterCard[] = [
   }
 ];
 
-function ProductCenterSection({ items }: { items: HomeContent["products"] }) {
+function ProductCenterSection({ items, title, description }: { items: HomeContent["products"]; title?: string; description?: string }) {
   const products = items.slice(0, 2);
 
   return (
@@ -285,8 +285,8 @@ function ProductCenterSection({ items }: { items: HomeContent["products"] }) {
       <div className="product-center-inner">
         <div className="home-editorial-heading">
           <span>PRODUCT CENTER</span>
-          <h2 id="product-center-title">选择适合企业当前阶段的碳管理方案</h2>
-          <p>从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。</p>
+          <h2 id="product-center-title">{title || "选择适合企业当前阶段的碳管理方案"}</h2>
+          <p>{description || "从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。"}</p>
         </div>
         <div className="product-center-list">
           {products.map((item, index) => {
@@ -295,19 +295,19 @@ function ProductCenterSection({ items }: { items: HomeContent["products"] }) {
             return (
               <Link className={`product-center-card product-center-card-${index + 1}`} href={item.href} key={item.href}>
                 <div className="product-center-copy">
-                  <span className="product-center-stage">{copy.stage}</span>
-                  <h3>{copy.title}</h3>
-                  <p className="product-center-description">{copy.description}</p>
+                  <span className="product-center-stage">{item.stage || copy.stage}</span>
+                  <h3>{item.name || copy.title}</h3>
+                  <p className="product-center-description">{item.summary || copy.description}</p>
                   <div className="product-center-audience">
                     <strong>适用企业</strong>
                     <ul>
-                      {copy.audience.map((audience) => <li key={audience}>{audience}</li>)}
+                      {(item.audience?.length ? item.audience : copy.audience).map((audience) => <li key={audience}>{audience}</li>)}
                     </ul>
                   </div>
                   <div className="product-center-tags" aria-label={`${copy.title}能力标签`}>
-                    {copy.tags.map((tag) => <span key={tag}>{tag}</span>)}
+                    {(item.tags?.length ? item.tags : copy.tags).map((tag) => <span key={tag}>{tag}</span>)}
                   </div>
-                  <span className="product-center-action">{copy.action}<ArrowRight size={16} aria-hidden="true" /></span>
+                  <span className="product-center-action">{item.action || copy.action}<ArrowRight size={16} aria-hidden="true" /></span>
                 </div>
               </Link>
             );

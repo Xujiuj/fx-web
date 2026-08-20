@@ -8,7 +8,7 @@ import {
   isOptionalAllowedContentHref,
 } from "./media-url.ts";
 
-export const siteContentContract = "fx-web/current-v1" as const;
+export const siteContentContract = "fx-web/current-v2" as const;
 
 export type SiteContentDocument<T> = {
   contract: typeof siteContentContract;
@@ -54,6 +54,7 @@ function isSectionItem(value: unknown, kind: unknown, sectionId: string) {
   if (!isRecord(value) || typeof value.title !== "string" || !isOptionalString(value.description) || !isOptionalString(value.value)) return false;
   if (value.image !== undefined && !isLocalContentPath(value.image)) return false;
   if (value.details !== undefined && (!isRecord(value.details) || !Object.values(value.details).every((detail) => typeof detail === "string"))) return false;
+  if (value.gallery !== undefined && (!Array.isArray(value.gallery) || !value.gallery.every((item) => isRecord(item) && isLocalContentPath(item.src) && (item.thumbnailSrc === undefined || isLocalContentPath(item.thumbnailSrc)) && (item.fullSrc === undefined || isLocalContentPath(item.fullSrc)) && typeof item.label === "string" && typeof item.alt === "string" && isPositiveDimension(item.width) && isPositiveDimension(item.height)))) return false;
   if ((kind === "resources" || sectionId.endsWith("-cta")) && value.value !== undefined && value.value !== "" && !isAllowedContentHref(value.value)) return false;
   return true;
 }
@@ -79,7 +80,8 @@ export function validateCurrentHomeContent(home: unknown): string | null {
   for (const key of ["solutionItems", "newsItems"] as const) {
     if (!(home[key] as unknown[]).every((item) => isRecord(item) && typeof item.title === "string" && typeof item.action === "string" && isLocalContentPath(item.image) && isAllowedContentHref(item.href) && isOptionalString(item.summary) && isOptionalString(item.subtitle))) return `${key === "solutionItems" ? "解决方案" : "最新动态"}结构无效`;
   }
-  if (!(home.products as unknown[]).every((item) => isRecord(item) && typeof item.name === "string" && typeof item.summary === "string" && iconKeys.has(String(item.icon)) && isAllowedContentHref(item.href))) return "产品入口结构无效";
+  if (!(home.products as unknown[]).every((item) => isRecord(item) && typeof item.name === "string" && typeof item.summary === "string" && iconKeys.has(String(item.icon)) && isAllowedContentHref(item.href) && isOptionalString(item.stage) && (item.audience === undefined || isStringArray(item.audience)) && (item.tags === undefined || isStringArray(item.tags)) && isOptionalString(item.action))) return "产品入口结构无效";
+  if (!isOptionalString(home.productCenterTitle) || !isOptionalString(home.productCenterDescription)) return "产品中心标题或说明无效";
   if (!(home.capabilities as unknown[]).every((item) => isRecord(item) && typeof item.label === "string" && iconKeys.has(String(item.icon)))) return "能力标签结构无效";
   if (!(home.certificateImages as unknown[]).every((item) => item === "" || isLocalContentPath(item))) return "证书图片必须使用站内路径";
   if (!(home.partners as unknown[]).every((item) => isRecord(item) && typeof item.name === "string" && (item.logo === "" || item.logo === undefined || isLocalContentPath(item.logo)))) return "伙伴结构无效";

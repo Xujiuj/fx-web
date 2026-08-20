@@ -5,14 +5,14 @@ import { App, Button, Card, Col, Descriptions, Image, Input, Menu, Modal, Row, S
 import { DeleteOutlined, EditOutlined, PictureOutlined, PlusOutlined, ReloadOutlined, UploadOutlined } from "@ant-design/icons";
 import { ModalForm, PageContainer, ProFormDependency, ProFormDigit, ProFormItem, ProFormList, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, ProTable, type ProColumns } from "@ant-design/pro-components";
 import { contentSlugPattern } from "@/lib/content-slug";
-import type { HomeContent, NavItem, NewsItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
+import type { HomeContent, NavItem, ProductItem, SiteContentBundle, Subpage } from "@/lib/cms-content";
 import { toCurrentKnowledgeEntry, type KnowledgeEntry } from "@/lib/knowledge-content";
 import { isHttpsContentUrl, isOptionalAllowedContentHref } from "@/lib/media-url";
 
-export type AdminContentResourceName = "site" | "navigation" | "home" | "news" | "pages" | "knowledge";
+export type AdminContentResourceName = "site" | "navigation" | "home" | "pages" | "knowledge";
 type RowItem = { id: string };
 type MenuRow = NavItem & RowItem;
-type NewsRow = NewsItem & RowItem;
+type ProductRow = ProductItem & RowItem;
 type HeroRow = HomeContent["heroSlides"][number] & RowItem;
 type TimelineRow = HomeContent["timeline"][number] & RowItem;
 type PageRow = Omit<Subpage, "media"> & RowItem & { mediaEntries: Array<{ key: string; path: string }> };
@@ -43,7 +43,6 @@ const copy: Record<AdminContentResourceName, { title: string; description: strin
   site: { title: "全站设置", description: "维护当前官网使用的品牌、站点信息、联系信息与页脚。" },
   navigation: { title: "官网导航", description: "维护当前官网固定菜单的名称、链接和显示状态。" },
   home: { title: "官网首页", description: "维护当前首页横幅、内容栏目与能力路径。" },
-  news: { title: "最新动态", description: "维护首页最新动态的标题、摘要、图片与跳转链接。" },
   pages: { title: "业务页面", description: "按当前官网固定模板维护解决方案、产品、案例、服务和企业页面。" },
   knowledge: { title: "资源中心", description: "管理双碳专栏文章、视频课程、多级目录与详情页正文。" }
 };
@@ -252,14 +251,12 @@ export function AdminContentResource({ resource, initialContent, title, descript
     { key: "home", label: "官网首页" },
     { key: "navigation", label: "官网导航" },
     { key: "pages", label: "业务页面" },
-    { key: "news", label: "最新动态" },
     { key: "knowledge", label: "资源中心" },
   ];
   const resourceContent = <>
     {selectedResource === "site" ? <SiteSettingsManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "navigation" ? <NavigationManager home={home} onHomeCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "home" ? <HomeManager home={home} onCommit={changeHome} busy={busy} /> : null}
-    {selectedResource === "news" ? <LatestNewsManager home={home} onCommit={changeHome} busy={busy} /> : null}
     {selectedResource === "pages" ? <PagesManager pages={subpages} onCommit={changePages} busy={busy} /> : null}
     {selectedResource === "knowledge" ? <KnowledgeManager entries={knowledge} onCommit={changeKnowledge} busy={busy} /> : null}
   </>;
@@ -304,7 +301,25 @@ function SiteMetadataManager({ home, onCommit, busy }: { home: HomeContent; onCo
 }
 
 function HomeManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
-  return <Tabs items={[{ key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "editorial", label: "首页内容", children: <HomeEditorialManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
+  return <Tabs items={[{ key: "hero", label: "首页横幅", children: <HeroTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "products", label: "产品中心", children: <ProductTable home={home} onCommit={onCommit} busy={busy} /> }, { key: "editorial", label: "首页内容", children: <HomeEditorialManager home={home} onCommit={onCommit} busy={busy} /> }, { key: "timeline", label: "能力路径", children: <TimelineTable home={home} onCommit={onCommit} busy={busy} /> }]} />;
+}
+
+function ProductTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
+  const rows: ProductRow[] = home.products.map((item, index) => ({ ...item, id: String(index) }));
+  return <><Card title="产品中心标题与说明" style={{ marginBottom: 16 }}><ModalForm trigger={<Button type="primary" icon={<EditOutlined />}>编辑产品中心标题</Button>} title="编辑产品中心标题" initialValues={home} onFinish={(values) => onCommit((current) => ({ ...current, productCenterTitle: values.productCenterTitle, productCenterDescription: values.productCenterDescription }))}><ProFormText name="productCenterTitle" label="主标题" rules={[{ required: true }]} /><ProFormTextArea name="productCenterDescription" label="副标题" rules={[{ required: true }]} /></ModalForm><Descriptions column={1} items={[{ key: "title", label: "主标题", children: home.productCenterTitle || "选择适合企业当前阶段的碳管理方案" }, { key: "description", label: "副标题", children: home.productCenterDescription || "从快速建立核算能力，到构建企业级碳数据治理体系，峰行智成提供不同发展阶段的数字化解决方案。" }]} /></Card><CrudTable title="产品中心卡片" rows={rows} busy={busy} allowCreate={false} canDelete={() => false}
+    columns={[{ title: "产品名称", dataIndex: "name" }, { title: "产品说明", dataIndex: "summary" }, { title: "前台链接", dataIndex: "href" }]}
+    createItem={() => rows[0]} onCreate={async () => false}
+    onUpdate={(item) => onCommit((current) => ({ ...current, products: current.products.map((entry, index) => String(index) === item.id ? omitId(item) : entry) }))}
+    onDelete={async () => false}>
+    <ProFormText name="name" label="产品名称" rules={[{ required: true }]} />
+    <ProFormTextArea name="summary" label="产品说明" rules={[{ required: true }]} />
+    <ProFormText name="href" label="前台链接" rules={[{ required: true }, optionalHrefRule("请输入站内路径或完整的 https:// 链接")]} />
+    <ProFormText name="stage" label="阶段标识" rules={[{ required: true }]} />
+    <ProFormText name="icon" label="产品图标标识" disabled extra="图标由当前产品中心模板固定使用。" />
+    <ProFormList name="audience" label="适用企业" creatorButtonProps={{ creatorButtonText: "新增适用企业" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
+    <ProFormList name="tags" label="能力标签" creatorButtonProps={{ creatorButtonText: "新增能力标签" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
+    <ProFormText name="action" label="按钮文字" rules={[{ required: true }]} />
+  </CrudTable></>;
 }
 
 function HomeEditorialManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -321,7 +336,7 @@ function HomeSettings({ home, onCommit, busy }: { home: HomeContent; onCommit: (
   const { active: activeUploads } = useContext(UploadActivityContext);
   const uploadLocked = activeUploads > 0;
   const [open, setOpen] = useState(false);
-  return <Card title="首页与全站文案" extra={<Tooltip title="编辑首页与全站文案"><Button type="text" icon={<EditOutlined />} aria-label="编辑首页与全站文案" onClick={() => setOpen(true)} /></Tooltip>}><ModalForm open={open} width={920} initialValues={home} modalProps={{ destroyOnHidden: true, closable: !uploadLocked, keyboard: !uploadLocked, maskClosable: !uploadLocked, onCancel: () => { if (!uploadLocked) setOpen(false); } }} submitter={{ submitButtonProps: { loading: busy || uploadLocked, disabled: uploadLocked }, resetButtonProps: { disabled: uploadLocked } }} onFinish={async (values) => { if (uploadLocked) return false; const saved = await onCommit((current) => ({ ...current, sectionTitles: { ...current.sectionTitles, ...values.sectionTitles }, thinkingText: values.thinkingText, contact: { ...current.contact, ...values.contact }, footer: { ...current.footer, ...values.footer } })); if (saved) setOpen(false); return saved; }}><ProFormText name={["sectionTitles", "news"]} label="最新动态标题" rules={[{ required: true }]} /><ProFormText name={["sectionTitles", "thinkingEyebrow"]} label="品牌定位英文标识" /><ProFormText name={["sectionTitles", "thinkingTitle"]} label="品牌定位标题" rules={[{ required: true }]} /><ProFormTextArea name="thinkingText" label="品牌定位正文" rules={[{ required: true }]} /><ProFormText name={["contact", "title"]} label="联系区标题" rules={[{ required: true }]} /><ProFormTextArea name={["contact", "description"]} label="联系区说明" rules={[{ required: true }]} /><ProFormText name={["contact", "namePlaceholder"]} label="联系人提示" rules={[{ required: true }]} /><ProFormText name={["contact", "companyPlaceholder"]} label="企业名称提示" rules={[{ required: true }]} /><ProFormText name={["contact", "contactPlaceholder"]} label="手机号/微信号提示" rules={[{ required: true }]} /><ProFormText name={["contact", "emailPlaceholder"]} label="联系邮箱提示" rules={[{ required: true }]} /><ProFormText name={["contact", "messagePlaceholder"]} label="需求说明提示" rules={[{ required: true }]} /><ProFormText name={["contact", "submitLabel"]} label="提交按钮文字" rules={[{ required: true }]} /><ProFormText name={["contact", "successLabel"]} label="提交成功提示" rules={[{ required: true }]} /><ProFormText name={["contact", "errorLabel"]} label="提交失败提示" rules={[{ required: true }]} /><ProFormText name={["footer", "copyright"]} label="页脚版权" rules={[{ required: true }]} /><ProFormText name={["footer", "icpText"]} label="备案文字" rules={[{ required: true }]} /><ProFormText name={["footer", "icpHref"]} label="备案链接" rules={[{ required: true }]} /><ProFormText name={["footer", "ipv6Text"]} label="页脚补充信息" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomTitle"]} label="企业微信浮窗标题" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomDescription"]} label="企业微信浮窗说明" rules={[{ required: true }]} /><ImageUploadField name={["footer", "wecomAvatar"]} label="企业顾问头像" required hint="建议上传清晰的正方形 JPG、PNG 或 WebP 图片。" /><ProFormText name={["footer", "customerServiceHref"]} label="微信客服链接（选填）" rules={[optionalHrefRule("请输入完整的 https:// 客服链接", (value) => value === undefined || value === "" || isHttpsContentUrl(value))]} /><ImageUploadField name={["footer", "customerServiceQr"]} label="微信客服二维码（上方）" hint="链接未配置时二维码仍展示，但不会产生跳转。" /><ImageUploadField name={["footer", "wecomQr"]} label="企业微信个人二维码（下方）" required hint="保留现有个人企业微信二维码，显示在客服二维码下方。" /><ProFormSwitch name={["footer", "wecomOpenByDefault"]} label="桌面端默认展开企业微信浮窗" /></ModalForm></Card>;
+  return <Card title="首页与全站文案" extra={<Tooltip title="编辑首页与全站文案"><Button type="text" icon={<EditOutlined />} aria-label="编辑首页与全站文案" onClick={() => setOpen(true)} /></Tooltip>}><ModalForm open={open} width={920} initialValues={home} modalProps={{ destroyOnHidden: true, closable: !uploadLocked, keyboard: !uploadLocked, maskClosable: !uploadLocked, onCancel: () => { if (!uploadLocked) setOpen(false); } }} submitter={{ submitButtonProps: { loading: busy || uploadLocked, disabled: uploadLocked }, resetButtonProps: { disabled: uploadLocked } }} onFinish={async (values) => { if (uploadLocked) return false; const saved = await onCommit((current) => ({ ...current, sectionTitles: { ...current.sectionTitles, ...values.sectionTitles }, thinkingText: values.thinkingText, contact: { ...current.contact, ...values.contact }, footer: { ...current.footer, ...values.footer } })); if (saved) setOpen(false); return saved; }}><ProFormText name={["sectionTitles", "thinkingEyebrow"]} label="品牌定位英文标识" /><ProFormText name={["sectionTitles", "thinkingTitle"]} label="品牌定位标题" rules={[{ required: true }]} /><ProFormTextArea name="thinkingText" label="品牌定位正文" rules={[{ required: true }]} /><ProFormText name={["contact", "title"]} label="联系区标题" rules={[{ required: true }]} /><ProFormTextArea name={["contact", "description"]} label="联系区说明" rules={[{ required: true }]} /><ProFormText name={["contact", "namePlaceholder"]} label="联系人提示" rules={[{ required: true }]} /><ProFormText name={["contact", "companyPlaceholder"]} label="企业名称提示" rules={[{ required: true }]} /><ProFormText name={["contact", "contactPlaceholder"]} label="手机号/微信号提示" rules={[{ required: true }]} /><ProFormText name={["contact", "emailPlaceholder"]} label="联系邮箱提示" rules={[{ required: true }]} /><ProFormText name={["contact", "messagePlaceholder"]} label="需求说明提示" rules={[{ required: true }]} /><ProFormText name={["contact", "submitLabel"]} label="提交按钮文字" rules={[{ required: true }]} /><ProFormText name={["contact", "successLabel"]} label="提交成功提示" rules={[{ required: true }]} /><ProFormText name={["contact", "errorLabel"]} label="提交失败提示" rules={[{ required: true }]} /><ProFormText name={["footer", "copyright"]} label="页脚版权" rules={[{ required: true }]} /><ProFormText name={["footer", "icpText"]} label="备案文字" rules={[{ required: true }]} /><ProFormText name={["footer", "icpHref"]} label="备案链接" rules={[{ required: true }]} /><ProFormText name={["footer", "ipv6Text"]} label="页脚补充信息" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomTitle"]} label="企业微信浮窗标题" rules={[{ required: true }]} /><ProFormText name={["footer", "wecomDescription"]} label="企业微信浮窗说明" rules={[{ required: true }]} /><ImageUploadField name={["footer", "wecomAvatar"]} label="企业顾问头像" required hint="建议上传清晰的正方形 JPG、PNG 或 WebP 图片。" /><ProFormText name={["footer", "customerServiceHref"]} label="微信客服链接（选填）" rules={[optionalHrefRule("请输入完整的 https:// 客服链接", (value) => value === undefined || value === "" || isHttpsContentUrl(value))]} /><ImageUploadField name={["footer", "customerServiceQr"]} label="微信客服二维码（上方）" hint="链接未配置时二维码仍展示，但不会产生跳转。" /><ImageUploadField name={["footer", "wecomQr"]} label="企业微信个人二维码（下方）" required hint="保留现有个人企业微信二维码，显示在客服二维码下方。" /><ProFormSwitch name={["footer", "wecomOpenByDefault"]} label="桌面端默认展开企业微信浮窗" /></ModalForm></Card>;
 }
 
 function HeroTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
@@ -332,10 +347,6 @@ function HeroTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (upd
 function TimelineTable({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
   const rows: TimelineRow[] = home.timeline.map((item, index) => ({ ...item, id: String(index), itemsText: item.items.join("\n") } as TimelineRow & { itemsText: string }));
   return <CrudTable title="能力阶段" rows={rows} busy={busy} allowCreate={false} canDelete={() => false} columns={[{ title: "阶段", dataIndex: "year" }, { title: "内容", dataIndex: "items", renderText: (items) => items.join(" / ") }]} createItem={() => rows[0]} onCreate={async () => false} onUpdate={(item) => onCommit((current) => ({ ...current, timeline: current.timeline.map((entry, index) => String(index) === item.id ? { year: item.year, items: String((item as unknown as { itemsText: string }).itemsText).split("\n").filter(Boolean) } : entry) }))} onDelete={async () => false}><ProFormText name="year" label="阶段" rules={[{ required: true }]} /><ProFormTextArea name="itemsText" label="内容（每行一项）" rules={[{ required: true }]} /></CrudTable>;
-}
-
-function LatestNewsManager({ home, onCommit, busy }: { home: HomeContent; onCommit: (update: (content: HomeContent) => HomeContent) => Promise<boolean>; busy: boolean }) {
-  return <NewsTable title="最新动态" items={home.newsItems} image="/media/fengxing-hero-management.png" busy={busy} onCommit={(items) => onCommit((current) => ({ ...current, newsItems: items }))} />;
 }
 
 function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry[]; onCommit: (update: (current: KnowledgeEntry[]) => KnowledgeEntry[]) => Promise<boolean>; busy: boolean }) {
@@ -390,11 +401,6 @@ function KnowledgeManager({ entries, onCommit, busy }: { entries: KnowledgeEntry
       <ProFormList name="bullets" label="要点" creatorButtonProps={{ creatorButtonText: "新增要点" }}><ProFormText rules={[{ required: true }]} /></ProFormList>
     </ProFormList>
   </CrudTable>;
-}
-
-function NewsTable({ title, items, image, onCommit, busy }: { title: string; items: NewsItem[]; image: string; onCommit: (items: NewsItem[]) => Promise<boolean>; busy: boolean }) {
-  const rows: NewsRow[] = items.map((item, index) => ({ ...item, id: String(index) }));
-  return <CrudTable title={title} rows={rows} busy={busy} columns={[{ title: "标题", dataIndex: "title" }, { title: "副标题", dataIndex: "subtitle", renderText: (_, record) => record.subtitle ?? record.summary ?? record.action }, { title: "配图", dataIndex: "image", render: (_, record) => <MediaPreview src={record.image} alt={record.title || title} /> }, { title: "链接", dataIndex: "href" }]} createItem={() => ({ id: crypto.randomUUID(), title: "", action: "", subtitle: "", image, href: "/", summary: "" })} onCreate={(item) => onCommit([...items, omitId(item)])} onUpdate={(item) => onCommit(items.map((entry, index) => String(index) === item.id ? omitId(item) : entry))} onDelete={(item) => onCommit(items.filter((_, index) => String(index) !== item.id))}><ProFormText name="title" label="标题" rules={[{ required: true }]} /><ProFormText name="subtitle" label="副标题" /><ProFormText name="action" label="分类（选填）" /><ProFormText name="href" label="链接" rules={[{ required: true }]} /><ProFormTextArea name="summary" label="摘要" /><ImageUploadField name="image" label="内容配图" required hint="建议使用清晰的横向或竖向活动照片。" /></CrudTable>;
 }
 
 function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (update: (current: Subpage[]) => Subpage[]) => Promise<boolean>; busy: boolean }) {
@@ -478,6 +484,15 @@ function PagesManager({ pages, onCommit, busy }: { pages: Subpage[]; onCommit: (
           <ProFormTextArea name={["details", "要点"]} label="通用要点（每行一项）" />
           {supportsDocumentUpload ? <ProFormItem label="资料文件（上传后自动写入下载地址）" name="value"><DocumentUploadField /></ProFormItem> : null}
           <ImageUploadField name="image" label="条目图片或二维码" hint="荣誉页上传证书，伙伴页上传 Logo，联系页可上传二维码。" />
+          {id === "platform-overview" ? <ProFormList name="gallery" label="按钮切换图片" creatorButtonProps={{ creatorButtonText: "新增切换图片" }}>
+            <Row gutter={12}>
+              <Col xs={24} md={10}><ImageUploadField name="src" label="图片" required hint="上传后会作为该优势项中的一张按钮切换图片。" /></Col>
+              <Col xs={24} md={7}><ProFormText name="label" label="按钮文字" rules={[{ required: true }]} /></Col>
+              <Col xs={24} md={7}><ProFormText name="alt" label="图片说明" rules={[{ required: true }]} /></Col>
+              <Col xs={12} md={6}><ProFormDigit name="width" label="原始宽度" min={1} max={100000} fieldProps={{ precision: 0 }} /></Col>
+              <Col xs={12} md={6}><ProFormDigit name="height" label="原始高度" min={1} max={100000} fieldProps={{ precision: 0 }} /></Col>
+            </Row>
+          </ProFormList> : null}
         </ProFormList>}}
       </ProFormDependency>
     </ProFormList>

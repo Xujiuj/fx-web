@@ -255,7 +255,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
     : diagram
       ? [{ title: diagram.title, description: diagram.description, image: page.media?.diagram ?? diagram.src }]
       : [];
-  const diagramImage = diagram?.src ?? diagramItems.find((item) => item.image)?.image ?? page.media?.diagram;
+  const diagramImage = diagramItems.find((item) => item.image)?.image ?? page.media?.diagram ?? diagram?.src;
   const heroImage = diagramImage || page.image;
   const heroImageAlt = `${page.title}方案主图`;
   const diagramBlocks = diagramItems.map((item, index) => {

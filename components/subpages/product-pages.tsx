@@ -255,12 +255,18 @@ function platformOverviewFor(page: Subpage) {
         label: item.title,
         summary: item.description ?? fallback.summary,
         points: itemPoints(item.details).length ? itemPoints(item.details) : fallback.points,
-        src: page.slug === "carbon-management-platform" ? fallback.src : item.image ?? fallback.src,
-        fullSrc: page.slug === "carbon-management-platform" || !item.image || item.image === fallback.src ? fallback.fullSrc : undefined,
+        src: item.image ?? fallback.src,
+        fullSrc: !item.image || item.image === fallback.src ? fallback.fullSrc : item.image,
         alt: item.title,
         width: fallback.width,
         height: fallback.height,
-        gallery: page.slug === "carbon-management-platform" && index === 1 ? fallback.gallery : undefined,
+        gallery: item.gallery?.length
+          ? item.gallery.map((galleryItem, galleryIndex) => ({
+            ...galleryItem,
+            width: galleryItem.width ?? fallback.gallery?.[galleryIndex]?.width ?? fallback.width,
+            height: galleryItem.height ?? fallback.gallery?.[galleryIndex]?.height ?? fallback.height,
+          }))
+          : page.slug === "carbon-management-platform" && index === 1 ? fallback.gallery : undefined,
       };
     })
   };
@@ -316,6 +322,12 @@ function ProductResources({ page }: ProductPageProps) {
   );
 }
 
+function configuredDiagram(page: Subpage, sectionId: string, fallback: string) {
+  return page.sections.find((section) => section.id === sectionId)?.items.find((item) => item.image)?.image
+    ?? page.media?.diagram
+    ?? fallback;
+}
+
 export function ExcelProductPage({ page }: ProductPageProps) {
   const editionSection = page.sections.find((section) => section.id === "product-editions");
   const screenshotSection = page.sections.find((section) => section.id === "product-screenshots");
@@ -325,8 +337,9 @@ export function ExcelProductPage({ page }: ProductPageProps) {
     { title: "集团版", description: "面向多法人、多层级组织，支持分子公司独立维护、集团自动汇总与统一复核。", details: { "要点": "组织数据分级维护\n集团结果自动汇总" } }
   ];
   const editions = [editionSection?.items[0] ?? defaultEditions[0], editionSection?.items[1] ?? defaultEditions[1]];
-  const excelDiagramSrc = "/media/reference-diagrams/excel-standard-flow.svg";
-  const excelDataModelingDiagramSrc = "/media/reference-diagrams/data-modeling-flow.svg";
+  const excelDiagramSrc = configuredDiagram(page, "product-diagram", "/media/reference-diagrams/excel-standard-flow.svg");
+  const excelDataModelingDiagramSrc = page.sections.find((section) => section.id === "product-diagram")?.items[1]?.image
+    ?? "/media/reference-diagrams/data-modeling-flow.svg";
 
   return (
     <>
@@ -624,7 +637,7 @@ export function LegacyPlatformProductPage({ page }: ProductPageProps) {
         eyebrow="平台架构"
         title="企业碳管理平台功能架构"
         description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
-        src={page.media?.diagram ?? "/media/reference-diagrams/platform-architecture.svg"}
+        src={configuredDiagram(page, "platform-overview", "/media/reference-diagrams/platform-architecture.svg")}
         alt="企业碳管理平台功能架构图"
       />
 
@@ -668,6 +681,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
   const enterpriseUrl = isAllowedContentHref(page.product?.enterpriseUrl) ? page.product?.enterpriseUrl : undefined;
   const trialUrl = isAllowedContentHref(page.product?.trialUrl) ? page.product?.trialUrl : undefined;
   const platformScreenshotItems = screenshotsFor(page, platformScreenshots);
+  const platformArchitectureSrc = page.media?.diagram ?? "/media/reference-diagrams/platform-architecture.svg";
 
   return (
     <div className={styles.platformProductPage}>
@@ -683,9 +697,9 @@ export function PlatformProductPage({ page }: ProductPageProps) {
             </div>
             <p className={styles.demoSafety}>企业端演示从官网跳转至专用入口；试用账号与数据权限将在申请审核后开通。</p>
           </div>
-          <a className={styles.heroDiagram} href="/media/reference-diagrams/platform-architecture.svg" target="_blank" rel="noreferrer" aria-label="查看平台架构图原图">
+          <a className={styles.heroDiagram} href={platformArchitectureSrc} target="_blank" rel="noreferrer" aria-label="查看平台架构图原图">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/media/reference-diagrams/platform-architecture.svg" alt="企业碳管理数字化平台架构图" width={1200} height={800} />
+            <img src={platformArchitectureSrc} alt="企业碳管理数字化平台架构图" width={1200} height={800} />
           </a>
         </div>
       </section>
