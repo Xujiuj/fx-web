@@ -542,7 +542,7 @@ const platformProductSections: SubpageSection[] = [
   {
     id: "platform-overview",
     kind: "gallery",
-    title: "平台三项核心优势",
+    title: "平台三大核心优势",
     description: "选择一项能力查看对应说明和真实界面。",
     items: [
       { title: "业务数据驱动", description: "企业无需反复填写核算报表，仅需维护业务明细数据，系统自动完成数据归集、因子匹配、排放计算与结果分析。", image: "/media/platform-advantages/business-data-flow.png", details: { "要点": "数据归集\n因子匹配\n排放计算\n结果分析" } },
@@ -569,7 +569,7 @@ export const defaultSubpages: Subpage[] = ([
   { slug: "solution-platform", navLabel: "平台版（数字化升级）", eyebrow: "SOLUTION 04", title: "平台版（数字化升级）", summary: "建设企业长期碳管理能力。", image: solutionImages["/solution-platform"], icon: "sparkles", metrics: [{ label: "数据范围", value: "统一管理" }, { label: "组织范围", value: "多层级" }, { label: "使用方式", value: "持续维护" }], features: ["多标准温室气体核算", "核算数据与结果统一管理", "基准年和排放趋势分析", "数据来源与计算过程可追溯"], steps: ["梳理业务需求和管理范围", "确认核算边界与数据标准", "建立数据模型和因子规则", "上线运行并安排日常维护"], sections: solutionPageSections["solution-platform"] },
   { slug: "excel-accounting-tool", navLabel: "Excel版温室气体核算工具", eyebrow: "PRODUCT", title: "Excel版温室气体核算工具", summary: "帮助企业快速建立温室气体核算能力。", image: excelImage, icon: "chart", metrics: [{ label: "产品版本", value: "2类" }, { label: "年度分析", value: "支持" }, { label: "集团汇总", value: "自动" }], features: ["单公司版", "集团版", "自动汇总", "多年度分析", "可持续积累"], steps: ["选择组织版本", "配置核算边界", "维护活动数据", "生成核算与分析结果"], product: { screenshots: [{ src: "/materials/20260803/资料20260803/产品/单公司版产品截图-01.svg", label: "单公司版", alt: "Excel温室气体核算工具单公司版完整界面", width: 981, height: 499 }, { src: "/materials/20260803/资料20260803/产品/集团版版产品截图-01.svg", label: "集团版", alt: "Excel温室气体核算工具集团版完整界面", width: 887, height: 703 }] }, sections: excelProductSections },
   { slug: "carbon-management-platform", navLabel: "企业碳管理数字化平台", eyebrow: "PRODUCT", title: "企业碳管理数字化平台", summary: "构建企业统一碳数据体系。", image: "/media/product-platform-hero.webp", icon: "database", media: { diagram: "/media/reference-diagrams/platform-architecture.svg" }, metrics: [{ label: "数据体系", value: "统一" }, { label: "核算引擎", value: "统一" }, { label: "管理平台", value: "统一" }], features: ["统一数据体系", "统一核算引擎", "统一分析体系", "统一管理平台"], steps: ["建立统一数据模型", "配置标准与排放因子", "接入并维护活动数据", "自动核算、分析与管理决策"], product: { videoUrl: "/materials/20260803/资料20260803/产品/企业碳管理数字化平台简介.mp4", videoPoster: "/materials/20260803/资料20260803/产品/平台截图/2.png", enterpriseUrl: "/sample/", trialUrl: "/#contact", publicReportUrl: "https://app.powerbi.com/view?r=eyJrIjoiYjQzODVjYmEtYzFiMy00NDQ0LWIwZTAtMjM2YmVjOWNlZDAyIiwidCI6ImU2NDExZmRiLTZkNzctNGZmZC1iMDE1LTYxOWM3NWIxMzc2OCIsImMiOjEwfQ%3D%3D", screenshots: [
-    ...[4, 5, 6, 7, 1, 2, 3].map((number, index) => ({ src: `/materials/20260803/资料20260803/产品/平台截图/${number}.png`, alt: `企业碳管理数字化平台界面截图${number}`, label: ["排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据", "分析模块封面", "分析目录"][index], width: 3840, height: 2040 })),
+    ...[1, 2, 3, 4, 5, 6, 7].map((number) => ({ src: `/materials/20260803/资料20260803/产品/平台截图/${number}.png`, alt: `企业碳管理数字化平台界面截图${number}`, label: ["排放活动数据", "分析模块封面", "分析目录", "排放总览", "多标准排放总表", "基准年对比", "强度分析"][number - 1], width: 3840, height: 2040 })),
     { src: "/materials/20260813/platform-ghg-protocol-view.png", alt: "企业碳管理数字化平台 GHG Protocol 核算视图", label: "GHG Protocol 视图", width: 3840, height: 2040 },
     { src: "/materials/20260813/platform-iso-14064-view.png", alt: "企业碳管理数字化平台 ISO 14064-1 核算视图", label: "ISO 14064-1 视图", width: 3840, height: 2040 },
     { src: "/materials/20260813/platform-gbt-32150-view.png", alt: "企业碳管理数字化平台 GB/T 32150-2025 核算视图", label: "GB/T 32150-2025 视图", width: 3840, height: 2040 },

@@ -75,7 +75,7 @@ export function ProductMediaGallery({
   );
 }
 
-export function PlatformOverview({ items, title = "平台三项核心优势", description = "选择一项能力查看对应说明和真实界面，避免在长页面中重复铺陈同类内容。" }: { items: PlatformOverviewItem[]; title?: string; description?: string }) {
+export function PlatformOverview({ items, title = "平台三大核心优势", description = "选择一项能力查看对应说明和真实界面，避免在长页面中重复铺陈同类内容。" }: { items: PlatformOverviewItem[]; title?: string; description?: string }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [gallerySelections, setGallerySelections] = useState<Record<number, number>>({});
   const generatedId = useId();

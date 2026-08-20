@@ -61,13 +61,22 @@ const excelScreenshots: ProductScreenshot[] = [
   },
 ];
 
-const platformScreenshotSequence = [2, 3, 4, 5, 6, 7, 1] as const;
-const platformScreenshots: ProductScreenshot[] = platformScreenshotSequence.map((number, index) => ({
+const platformScreenshotSequence = [1, 2, 3, 4, 5, 6, 7] as const;
+const platformScreenshotLabels: Record<(typeof platformScreenshotSequence)[number], string> = {
+  1: "排放活动数据",
+  2: "分析模块封面",
+  3: "分析目录",
+  4: "排放总览",
+  5: "多标准排放总表",
+  6: "基准年对比",
+  7: "强度分析",
+};
+const platformScreenshots: ProductScreenshot[] = platformScreenshotSequence.map((number) => ({
   src: `/media/derived/platform-screenshots/platform-${String(number).padStart(2, "0")}-gallery-1920.webp`,
   thumbnailSrc: `/media/derived/platform-screenshots/platform-${String(number).padStart(2, "0")}-thumb-640.webp`,
   fullSrc: `${materialRoot}/产品/平台截图/${number}.png`,
   alt: `企业碳管理数字化平台界面截图${number}`,
-  label: ["分析模块封面", "分析目录", "排放总览", "多标准排放总表", "基准年对比", "强度分析", "排放活动数据"][index],
+  label: platformScreenshotLabels[number],
   width: 1920,
   height: 1020,
 }));
@@ -104,13 +113,11 @@ function platformScreenshotOrder(items: ProductScreenshot[]) {
     else unnumbered.push(item);
   }
 
-  const orderedNumbers = [2, 3, 4, 5, 6, 7, 1];
+  const orderedNumbers = platformScreenshotSequence;
   const ordered = orderedNumbers
     .map((number) => numbered.get(number))
     .filter((item): item is ProductScreenshot => Boolean(item))
-    .slice(0, 5)
-    .concat(unnumbered)
-    .concat(orderedNumbers.slice(5).map((number) => numbered.get(number)).filter((item): item is ProductScreenshot => Boolean(item)));
+    .concat(unnumbered);
   return ordered;
 }
 
@@ -247,7 +254,7 @@ function platformOverviewFor(page: Subpage) {
   const section = page.sections.find((item) => item.id === "platform-overview");
   if (!section?.items.length) return { items: platformOverviewItems, title: undefined, description: undefined };
   return {
-    title: page.slug === "carbon-management-platform" ? "平台三项核心优势" : section.title,
+    title: page.slug === "carbon-management-platform" ? "平台三大核心优势" : section.title,
     description: section.description,
     items: section.items.map((item, index): PlatformOverviewItem => {
       const fallback = platformOverviewItems[index % platformOverviewItems.length];
@@ -490,13 +497,13 @@ export function LegacyPlatformProductPage({ page }: ProductPageProps) {
         </div>
       </section>
 
-      <PlatformOverview items={overview.items} title="平台三项核心优势" description={overview.description ?? "选择一项能力查看对应说明和真实界面。"} />
+      <PlatformOverview items={overview.items} title="平台三大核心优势" description={overview.description ?? "选择一项能力查看对应说明和真实界面。"} />
 
       {page.slug !== "solution-platform" ? <section className={`${styles.platformAdvantages} ${styles.container} page-reveal`} aria-labelledby="platform-advantages-title">
         <header className={styles.advantageIntro} data-motion-group="section-heading" data-motion-role="heading">
           <div>
             <span>CORE ADVANTAGES</span>
-            <h2 id="platform-advantages-title">平台三项核心优势</h2>
+            <h2 id="platform-advantages-title">平台三大核心优势</h2>
           </div>
           <p>从业务数据驱动核算，到一次治理、多场景复用，再到全流程可信追溯，平台让碳数据成为可持续运营的业务资产。</p>
         </header>
