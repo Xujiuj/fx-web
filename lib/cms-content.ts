@@ -154,7 +154,7 @@ const solutionImages: Record<string, string> = {
   "/solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
   "/solution-practical": "/media/product-excel-hero.webp",
   "/solution-consulting": "/media/solution-consulting-generated.png",
-  "/solution-platform": "/media/reference-diagrams/platform-architecture.svg"
+  "/solution-platform": "/media/reference-diagrams/agile-implementation.svg"
 };
 
 const defaultSolutionItems: NewsItem[] = [
@@ -448,9 +448,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业碳管理平台架构图",
-    diagramDescription: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
-    diagramImage: "/media/reference-diagrams/platform-architecture.svg"
+    diagramTitle: "企业温室气体核算敏捷实施技术路线",
+    diagramDescription: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+    diagramImage: "/media/reference-diagrams/agile-implementation.svg"
   })
 };
 
@@ -621,9 +621,9 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
     description: "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
   },
   "solution-platform": {
-    image: "/media/reference-diagrams/platform-architecture.svg",
-    title: "企业碳管理平台架构图",
-    description: "以统一数据体系、核算引擎和分析应用为主线，展示企业碳管理平台的技术路线与功能协同关系。",
+    image: "/media/reference-diagrams/agile-implementation.svg",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
   },
 };
 
@@ -663,6 +663,7 @@ const legacySolutionDiagramPaths: Record<string, ReadonlySet<string>> = {
     "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "/media/product-excel-hero.webp",
     "/media/solution-consulting-generated.png",
+    "/media/reference-diagrams/platform-architecture.svg",
     "/media/reference-diagrams/platform-function-architecture.svg",
     "/media/derived/service-diagrams/platform-function-architecture-1800.webp",
   ]),
