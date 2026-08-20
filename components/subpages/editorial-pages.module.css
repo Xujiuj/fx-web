@@ -21,12 +21,12 @@
 }
 
 .breadcrumb a:hover {
-  color: #b7551b;
+  color: var(--eyebrow-color);
 }
 
 .sectionLabel {
   margin: 0 0 14px;
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
   line-height: 1.4;
@@ -294,7 +294,7 @@
   display: grid;
   justify-items: start;
   gap: 16px;
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 15px;
   font-weight: 800;
 }
@@ -384,7 +384,7 @@
 }
 
 .caseDecisionSteps span {
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
 }
@@ -512,7 +512,7 @@
 
 .industryGrid dt {
   margin-bottom: 12px;
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -728,7 +728,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
 }
@@ -745,7 +745,7 @@
 }
 
 .topicIndex > a > span {
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
 }
@@ -1238,7 +1238,7 @@
 }
 
 .companyTimeline li > span {
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
 }
@@ -1860,7 +1860,7 @@
 }
 
 .serviceBandHeading .sectionLabel {
-  color: #bf3f08;
+  color: var(--eyebrow-color);
 }
 
 .serviceBandHeading h2 {
@@ -1889,7 +1889,7 @@
 }
 
 .serviceList span {
-  color: #e95513;
+  color: var(--eyebrow-color);
 }
 
 .serviceList h3 {
@@ -1924,7 +1924,7 @@
 
 .caseScope .sectionLabel,
 .caseScope li > span {
-  color: #e95513;
+  color: var(--eyebrow-color);
 }
 
 .caseScopeHeading h2 {

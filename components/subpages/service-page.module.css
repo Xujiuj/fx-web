@@ -70,7 +70,7 @@
 .taskBand header > span,
 .deliveryFlow header > span,
 .deliverableHeading > span {
-  color: #b7551b;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -133,7 +133,7 @@
 
 .deliveryFlow ol { display: grid; margin: 0; padding: 0; border-top: 1px solid #eadbca; list-style: none; }
 .deliveryFlow li { display: grid; grid-template-columns: 54px 1fr auto; gap: 18px; align-items: center; min-height: 116px; border-bottom: 1px solid #eadbca; }
-.deliveryFlow li > span { color: #b7551b; font-size: 12px; font-weight: 800; }
+.deliveryFlow li > span { color: var(--eyebrow-color); font-size: 12px; font-weight: 800; }
 .deliveryFlow li h3 { margin: 0; color: #4d4d4d; font-size: 19px; }
 .deliveryFlow li p { margin: 8px 0 0; color: #6e655a; font-size: 14px; line-height: 1.7; }
 .deliveryFlow li > svg { color: #6e655a; }
@@ -146,7 +146,7 @@
   border-top: 1px solid #eadbca;
 }
 
-.deliverableHeading > svg { margin-bottom: 24px; color: #b7551b; }
+.deliverableHeading > svg { margin-bottom: 24px; color: var(--eyebrow-color); }
 .deliverables ol { display: grid; grid-template-columns: 1fr 1fr; margin: 0; padding: 0; border-top: 1px solid #eadbca; border-left: 1px solid #eadbca; list-style: none; }
 .deliverables li { display: grid; min-height: 125px; grid-template-columns: auto 1fr auto; gap: 13px; align-items: center; padding: 22px; border-right: 1px solid #eadbca; border-bottom: 1px solid #eadbca; }
 .deliverables li > span { color: #6e655a; font-size: 11px; font-weight: 800; }

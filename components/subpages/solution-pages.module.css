@@ -39,7 +39,7 @@
 .organization header > span,
 .responsibilityHeading > span,
 .platformLayersIntro > span {
-  color: #bf5a1e;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
@@ -174,7 +174,7 @@
 }
 
 .curriculumList article span {
-  color: #bf5a1e;
+  color: var(--eyebrow-color);
   font-size: 11px;
   font-weight: 800;
 }
@@ -260,7 +260,7 @@
 }
 
 .inventoryFlow li > span {
-  color: #c65c20;
+  color: var(--eyebrow-color);
   font-size: 13px;
   font-weight: 800;
 }
@@ -423,7 +423,7 @@
 }
 
 .organizationBranches article > span {
-  color: #c25c22;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -467,7 +467,7 @@
 }
 
 .responsibilityMatrix article > span {
-  color: #bd5a22;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -520,7 +520,7 @@
 .consultingStages li span {
   display: block;
   margin-bottom: 31px;
-  color: #c15b21;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -633,7 +633,7 @@
   position: absolute;
   top: -24px;
   left: 0;
-  color: #be5b22;
+  color: var(--eyebrow-color);
   font-size: 11px;
   font-weight: 800;
 }
@@ -1029,7 +1029,7 @@
 
 .solutionFramework header > span,
 .serviceContents header span {
-  color: var(--primary);
+  color: var(--eyebrow-color);
 }
 
 .solutionFramework h2,
@@ -1144,7 +1144,7 @@
 }
 
 .solutionPresentation header > span {
-  color: var(--primary-strong);
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -1294,7 +1294,7 @@
 }
 
 .serviceContents li > span {
-  color: var(--primary);
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }
@@ -1332,7 +1332,7 @@
 }
 
 .solutionOutcomes > div > span {
-  color: var(--primary-strong);
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
 }

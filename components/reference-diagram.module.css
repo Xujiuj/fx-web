@@ -19,7 +19,7 @@
 }
 
 .caption > span {
-  color: #b45b24;
+  color: var(--eyebrow-color);
   font-size: 12px;
   font-weight: 800;
   line-height: 1.5;
@@ -77,7 +77,7 @@
   padding: 0 12px;
   border: 1px solid rgba(180, 91, 36, 0.32);
   border-radius: 4px;
-  color: #934318;
+  color: var(--eyebrow-color);
   background: rgba(255, 255, 255, 0.94);
   font-size: 12px;
   font-weight: 750;
@@ -86,12 +86,12 @@
 
 .canvas:hover .openOriginal,
 .canvas:focus-visible .openOriginal {
-  border-color: #b45b24;
+  border-color: var(--eyebrow-color);
   background: #fff;
 }
 
 .canvas:focus-visible {
-  outline: 2px solid #b45b24;
+  outline: 2px solid var(--eyebrow-color);
   outline-offset: 3px;
 }
 

@@ -456,7 +456,7 @@ main .home-challenges::before {
 
 .home-driver-grid article:nth-child(2) { margin-top: 54px; background: var(--surface); }
 .home-driver-grid article > div { display: flex; align-items: center; justify-content: space-between; color: var(--primary); }
-.home-driver-grid article > div span { color: #a99a89; font-size: 12px; font-weight: 800; }
+.home-driver-grid article > div span { color: var(--eyebrow-color); font-size: 12px; font-weight: 800; }
 .home-driver-grid h3 { margin: 80px 0 20px; font-size: 24px; }
 .home-driver-grid p { margin: 0; color: var(--muted); line-height: 1.85; }
 
@@ -487,7 +487,7 @@ main .home-challenges::before {
 .home-management-flow { display: grid; grid-template-columns: repeat(5, 1fr); margin: 56px 0 0; padding: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); list-style: none; }
 .home-management-flow li { position: relative; min-height: 270px; padding: 28px 26px; border-right: 1px solid var(--line); }
 .home-management-flow li:last-child { border-right: 0; background: var(--surface); }
-.home-management-flow li > span { color: #a99a89; font-size: 11px; font-weight: 800; }
+.home-management-flow li > span { color: var(--eyebrow-color); font-size: 11px; font-weight: 800; }
 .home-management-flow li > svg:not(.flow-arrow) { display: block; margin-top: 42px; color: var(--primary); }
 .home-management-flow h3 { margin: 18px 0 11px; font-size: 21px; }
 .home-management-flow p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
@@ -513,7 +513,7 @@ main .home-challenges::before {
 .home-case-grid > a { display: grid; grid-template-columns: 1fr auto; align-content: start; padding: 32px; border: 1px solid #e8cfb3; background: rgba(255,255,255,.72); transition: transform .35s ease, background-color .35s ease; }
 .home-case-grid > a:nth-child(1) { grid-row: 1 / span 2; padding-top: 44px; }
 .home-case-grid > a:hover { transform: translateY(-5px); background: #fff; }
-.home-case-grid > a > span { color: #a99a89; font-size: 11px; font-weight: 800; }
+.home-case-grid > a > span { color: var(--eyebrow-color); font-size: 11px; font-weight: 800; }
 .home-case-grid > a > svg { color: var(--primary); }
 .home-case-grid h3 { grid-column: 1 / -1; margin: 50px 0 13px; font-size: 24px; }
 .home-case-grid > a:nth-child(1) h3 { margin-top: 140px; font-size: 32px; }
