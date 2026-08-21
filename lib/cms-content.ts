@@ -152,9 +152,9 @@ const derivedDisplayMedia: Record<string, string> = {
 
 const solutionImages: Record<string, string> = {
   "/solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-  "/solution-practical": "/media/reference-diagrams/agile-implementation.svg",
+  "/solution-practical": "/media/reference-diagrams/excel-standard-flow.svg",
   "/solution-consulting": "/media/reference-diagrams/group-implementation.svg",
-  "/solution-platform": "/media/reference-diagrams/platform-architecture.svg"
+  "/solution-platform": "/media/reference-diagrams/carbon-data-governance.svg"
 };
 
 const defaultSolutionItems: NewsItem[] = [
@@ -418,9 +418,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据采集梳理", "Excel工具部署", "实操辅导", "过程校核", "成果交付"],
     outcomes: ["完成首次核算", "建立数据台账", "形成标准成果", "支撑核查与披露"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业温室气体核算敏捷实施技术路线",
-    diagramDescription: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
-    diagramImage: "/media/reference-diagrams/agile-implementation.svg"
+    diagramTitle: "企业温室气体核算标准化流程图（Excel版）",
+    diagramDescription: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
+    diagramImage: "/media/reference-diagrams/excel-standard-flow.svg"
   }),
   "solution-consulting": solutionSections({
     suitableFor: ["多法人或多层级集团", "成员企业独立核算", "需要集团统一汇总", "需要支撑ESG披露"],
@@ -448,9 +448,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业碳管理平台功能架构",
-    diagramDescription: "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。",
-    diagramImage: "/media/reference-diagrams/platform-architecture.svg"
+    diagramTitle: "企业碳数据治理与标准体系",
+    diagramDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
+    diagramImage: "/media/reference-diagrams/carbon-data-governance.svg"
   })
 };
 
@@ -611,9 +611,9 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
     description: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
   },
   "solution-practical": {
-    image: "/media/reference-diagrams/agile-implementation.svg",
-    title: "企业温室气体核算敏捷实施技术路线",
-    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
+    image: "/media/reference-diagrams/excel-standard-flow.svg",
+    title: "企业温室气体核算标准化流程图（Excel版）",
+    description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
   },
   "solution-consulting": {
     image: "/media/reference-diagrams/group-implementation.svg",
@@ -621,9 +621,9 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
     description: "适用于多业态、多层级集团企业，通过统一模板和标准化流程，实现碳核算数据的高效协同与集中管控。",
   },
   "solution-platform": {
-    image: "/media/reference-diagrams/platform-architecture.svg",
-    title: "企业碳管理平台功能架构",
-    description: "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。",
+    image: "/media/reference-diagrams/carbon-data-governance.svg",
+    title: "企业碳数据治理与标准体系",
+    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
   },
 };
 
@@ -635,15 +635,16 @@ const legacySolutionDiagramPaths: Record<string, ReadonlySet<string>> = {
     "/media/reference-diagrams/carbon-data-governance.svg",
     "/media/product-excel-hero.webp",
     "/media/solution-consulting-generated.png",
-    "/media/reference-diagrams/platform-architecture.svg",
   ]),
   "solution-practical": new Set([
     "/media/reference-diagrams/service-process.svg",
     "/media/derived/service-diagrams/service-process-1800.webp",
     "/media/reference-diagrams/excel-standard-flow.svg",
+    "/media/reference-diagrams/agile-implementation.svg",
     "/media/reference-diagrams/carbon-data-governance.svg",
     "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "/media/product-excel-hero.webp",
+    "/media/solution-practical-generated.png",
     "/media/solution-platform-generated.png",
   ]),
   "solution-consulting": new Set([
@@ -658,10 +659,11 @@ const legacySolutionDiagramPaths: Record<string, ReadonlySet<string>> = {
     "/media/reference-diagrams/service-process.svg",
     "/media/derived/service-diagrams/service-process-1800.webp",
     "/media/reference-diagrams/agile-implementation.svg",
-    "/media/reference-diagrams/carbon-data-governance.svg",
     "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "/media/product-excel-hero.webp",
     "/media/solution-consulting-generated.png",
+    "/media/solution-platform-generated.png",
+    "/media/reference-diagrams/platform-architecture.svg",
     "/media/reference-diagrams/platform-function-architecture.svg",
     "/media/derived/service-diagrams/platform-function-architecture-1800.webp",
   ]),
@@ -676,9 +678,16 @@ const legacySolutionDiagramContents: Record<string, ReadonlySet<string>> = {
   "solution-consulting": new Set([
     "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
   ]),
+  "solution-practical": new Set([
+    "企业温室气体核算敏捷实施技术路线",
+    "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
+    "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
+  ]),
   "solution-platform": new Set([
     "企业碳管理平台架构图",
+    "企业碳管理平台功能架构",
     "企业碳管理平台的技术路线与功能协同关系。",
+    "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。",
   ]),
 };
 

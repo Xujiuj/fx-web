@@ -131,10 +131,10 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   },
   "solution-practical": {
     eyebrow: "实施路径",
-    title: "企业温室气体核算敏捷实施技术路线",
-    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
-    src: "/media/reference-diagrams/agile-implementation.svg",
-    alt: "企业温室气体核算敏捷实施技术路线",
+    title: "企业温室气体核算标准化流程图（Excel版）",
+    description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
+    src: "/media/reference-diagrams/excel-standard-flow.svg",
+    alt: "企业温室气体核算标准化流程图（Excel版）",
   },
   "solution-consulting": {
     eyebrow: "集团协同",
@@ -145,10 +145,10 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   },
   "solution-platform": {
     eyebrow: "实施流程",
-    title: "企业碳管理平台功能架构",
-    description: "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。",
-    src: "/media/reference-diagrams/platform-architecture.svg",
-    alt: "企业碳管理平台功能架构",
+    title: "企业碳数据治理与标准体系",
+    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
+    src: "/media/reference-diagrams/carbon-data-governance.svg",
+    alt: "企业碳数据治理与标准体系图",
   },
 };
 
