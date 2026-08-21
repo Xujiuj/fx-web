@@ -124,7 +124,7 @@ const solutionFrameworks: Record<string, SolutionFramework> = {
 const solutionDiagrams: Record<string, SolutionDiagram> = {
   "solution-standard": {
     eyebrow: "CAPABILITY ROADMAP",
-    title: "企业温室气体核算实战（Excel版）",
+    title: "企业碳管理能力建设路线图",
     description: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
     src: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     alt: "企业温室气体核算实战（Excel版）",
@@ -145,8 +145,8 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   },
   "solution-platform": {
     eyebrow: "实施流程",
-    title: "企业碳数据治理与标准体系",
-    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
     src: "/media/reference-diagrams/carbon-data-governance.svg",
     alt: "企业碳数据治理与标准体系图",
   },

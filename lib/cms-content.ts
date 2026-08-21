@@ -403,7 +403,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["温室气体核算方法培训", "GHG Protocol培训", "ISO14064培训", "国标培训", "Excel实战演练", "企业案例解析"],
     outcomes: ["建立统一认知", "掌握核算方法", "培养内部人才", "具备独立核算能力"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业温室气体核算实战（Excel版）",
+    diagramTitle: "企业碳管理能力建设路线图",
     diagramDescription: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
     diagramImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg"
   }),
@@ -448,8 +448,8 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业碳数据治理与标准体系",
-    diagramDescription: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
+    diagramTitle: "企业温室气体核算敏捷实施技术路线",
+    diagramDescription: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
     diagramImage: "/media/reference-diagrams/carbon-data-governance.svg"
   })
 };
@@ -598,7 +598,7 @@ export const defaultSubpages: Subpage[] = ([
   { slug: "company-contact", layout: "contact", navLabel: "联系我们", eyebrow: "CONTACT", title: "联系我们", summary: "围绕温室气体核算、碳管理咨询和数字化建设，欢迎与我们沟通您的业务需求。", image: heroVisual, icon: "users", metrics: [], features: [], steps: [], sections: [{ id: "contact", kind: "contacts", title: "联系方式", description: "可通过电话、邮箱或页面右下角企业微信与我们联系。", items: [{ title: "联系电话", value: "15099663016", description: "工作日可通过电话联系" }, { title: "联系邮箱", value: "service@fengxingdata.com", description: "可发送项目资料或合作需求" }, { title: "企业微信", description: "扫描页面右下角二维码添加企业顾问" }, { title: "微信公众号", description: "内容持续更新中" }, { title: "公司地址", description: "项目沟通时提供" }] }] },
   { slug: "service-capability-path", layout: "service", navLabel: "能力建设路径", eyebrow: "IMPLEMENTATION", title: "能力建设路径", summary: "从核算基础、数据治理到持续运营，结合企业实际阶段建立可持续使用的碳管理能力。", image: "/media/service-capability-path-hero.png", icon: "workflow", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-capability-path"], { id: "capability-visual", kind: "gallery", title: "能力建设", items: [{ title: "面向多层级组织的温室气体核算三层实施架构", description: "按照成员企业与集团的组织层级和管理成熟度，分别配置数字化平台、Excel 单公司版与 Excel 集团版，统一核算口径并支持集团汇总。", image: "/media/reference-diagrams/three-layer-implementation.svg" }] }] },
   { slug: "service-training-consulting", layout: "service", navLabel: "培训与咨询实施", eyebrow: "IMPLEMENTATION", title: "培训与咨询实施", summary: "围绕企业温室气体核算与碳管理需求，提供培训、数据梳理、方法辅导和过程复核支持。", image: "/media/service-training-consulting-hero.png", icon: "users", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-training-consulting"], { id: "training-visual", kind: "gallery", title: "实施流程", items: [{ title: "温室气体核算服务流程", description: "以统一方法、业务数据和过程复核为基础，将培训与咨询内容转化为企业可以延续使用的核算工作流程。", image: "/media/reference-diagrams/service-process.svg" }] }] },
-  { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-platform-delivery"], { id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台功能架构", description: "以数据模型、核算规则和分析应用为主线，支持多组织、多年度的持续维护与管理使用。", image: "/media/reference-diagrams/platform-function-architecture.svg" }] }] }
+  { slug: "service-platform-delivery", layout: "service", navLabel: "数字化平台实施", eyebrow: "IMPLEMENTATION", title: "数字化平台实施", summary: "以统一数据体系和核算规则为基础，实施企业碳管理数字化平台，支持长期维护与持续分析。", image: "/media/service-platform-delivery-hero.png", icon: "database", metrics: [], features: [], steps: [], sections: [...servicePageSections["service-platform-delivery"], { id: "platform-visual", kind: "gallery", title: "平台建设", items: [{ title: "企业碳管理平台功能架构", description: "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。", image: "/media/reference-diagrams/platform-function-architecture.svg" }] }] }
 ] satisfies SubpageTemplate[]).map(createCurrentSubpage);
 
 // Stored CMS data can outlive the media configuration that created it. These
@@ -607,7 +607,7 @@ export const defaultSubpages: Subpage[] = ([
 const currentSolutionDiagramBindings: Record<string, { image: string; title: string; description: string }> = {
   "solution-standard": {
     image: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    title: "企业温室气体核算实战（Excel版）",
+    title: "企业碳管理能力建设路线图",
     description: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
   },
   "solution-practical": {
@@ -622,8 +622,8 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
   },
   "solution-platform": {
     image: "/media/reference-diagrams/carbon-data-governance.svg",
-    title: "企业碳数据治理与标准体系",
-    description: "将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
   },
 };
 
@@ -659,6 +659,7 @@ const legacySolutionDiagramPaths: Record<string, ReadonlySet<string>> = {
     "/media/reference-diagrams/service-process.svg",
     "/media/derived/service-diagrams/service-process-1800.webp",
     "/media/reference-diagrams/agile-implementation.svg",
+    "/media/reference-diagrams/carbon-data-governance.svg",
     "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "/media/product-excel-hero.webp",
     "/media/solution-consulting-generated.png",

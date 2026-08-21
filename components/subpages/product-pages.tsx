@@ -646,7 +646,7 @@ export function LegacyPlatformProductPage({ page }: ProductPageProps) {
       <ReferenceDiagram
         eyebrow="平台架构"
         title="企业碳管理平台功能架构"
-        description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
+        description="构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。"
         src={configuredDiagram(page, "platform-overview", "/media/reference-diagrams/platform-architecture.svg")}
         alt="企业碳管理平台功能架构图"
       />
@@ -739,7 +739,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       <ReferenceDiagram
         eyebrow="PLATFORM ARCHITECTURE"
         title="企业碳管理平台功能架构"
-        description="展示数据基础、核算分析和管理应用之间的功能层级与数据关系。"
+        description="构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。"
         src={platformArchitectureSrc}
         alt="企业碳管理平台功能架构图"
       />
@@ -747,7 +747,7 @@ export function PlatformProductPage({ page }: ProductPageProps) {
       <ReferenceDiagram
         eyebrow="PLATFORM STANDARD SYSTEM"
         title="企业碳数据治理与标准体系"
-        description="将数据标准、核算规则和管理应用纳入统一体系，支撑平台长期维护与持续分析。"
+        description="将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。"
         src={platformGovernanceDiagramSrc}
         alt="企业碳数据治理与标准体系图"
       />
