@@ -403,7 +403,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["温室气体核算方法培训", "GHG Protocol培训", "ISO14064培训", "国标培训", "Excel实战演练", "企业案例解析"],
     outcomes: ["建立统一认知", "掌握核算方法", "培养内部人才", "具备独立核算能力"],
     outcomeLabel: "客户收益",
-    diagramTitle: "企业碳管理能力建设路线图",
+    diagramTitle: "企业温室气体核算实战（Excel版）",
     diagramDescription: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
     diagramImage: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg"
   }),
@@ -448,7 +448,7 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业温室气体核算敏捷实施技术路线",
+    diagramTitle: "企业碳数据治理与标准体系",
     diagramDescription: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
     diagramImage: "/media/reference-diagrams/carbon-data-governance.svg"
   })
@@ -607,7 +607,7 @@ export const defaultSubpages: Subpage[] = ([
 const currentSolutionDiagramBindings: Record<string, { image: string; title: string; description: string }> = {
   "solution-standard": {
     image: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
-    title: "企业碳管理能力建设路线图",
+    title: "企业温室气体核算实战（Excel版）",
     description: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
   },
   "solution-practical": {
@@ -622,7 +622,7 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
   },
   "solution-platform": {
     image: "/media/reference-diagrams/carbon-data-governance.svg",
-    title: "企业温室气体核算敏捷实施技术路线",
+    title: "企业碳数据治理与标准体系",
     description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
   },
 };
