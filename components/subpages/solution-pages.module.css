@@ -1001,6 +1001,36 @@
   box-shadow: 0 18px 44px rgba(113, 40, 8, 0.18);
 }
 
+.solutionHeroSignal03 {
+  --signal-image-inset: 14px;
+  --signal-image-gutter: 28px;
+}
+
+.solutionHeroOpenOriginal {
+  position: absolute;
+  z-index: 3;
+  right: 30px;
+  bottom: 30px;
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 6px;
+  padding: 0 10px;
+  border: 1px solid rgba(180, 91, 36, 0.28);
+  border-radius: 4px;
+  color: #a94416;
+  background: rgba(255, 255, 255, 0.94);
+  font-size: 12px;
+  font-weight: 750;
+  box-shadow: 0 5px 18px rgba(47, 42, 36, 0.12);
+}
+
+.solutionHeroSignal:hover .solutionHeroOpenOriginal,
+.solutionHeroSignal:focus-visible .solutionHeroOpenOriginal {
+  border-color: #a94416;
+  background: #fff;
+}
+
 .solutionHeroSignalWithCaption img {
   inset: 22px 22px 108px;
   width: calc(100% - 44px);
@@ -1653,6 +1683,8 @@
 
   .solutionHeroSignal strong { top: 28px; right: 18px; font-size: 84px; }
   .solutionHeroSignal img { padding: 8px; }
+  .solutionHeroSignal03 { --signal-image-inset: 8px; --signal-image-gutter: 16px; }
+  .solutionHeroOpenOriginal { right: 18px; bottom: 18px; }
 
   .solutionStageNavInner > p {
     font-size: 14px;

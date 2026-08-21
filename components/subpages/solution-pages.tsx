@@ -4,6 +4,7 @@ import {
   Check,
   ChevronRight,
   FileCheck2,
+  Maximize2,
   Target,
   UsersRound,
   Wrench,
@@ -288,7 +289,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
             <p>{page.summary}</p>
           </div>
           <a
-            className={styles.solutionHeroSignal}
+            className={`${styles.solutionHeroSignal} ${styles[`solutionHeroSignal${framework.sequence}`] ?? ""}`}
             data-motion="hero-support"
             href={heroImage}
             target="_blank"
@@ -297,6 +298,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           >
             <strong>{framework.sequence}</strong>
             <Image src={heroImage} alt={heroImageAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 1140px" unoptimized={isRuntimeManagedImage(heroImage)} />
+            <span className={styles.solutionHeroOpenOriginal}><Maximize2 size={14} aria-hidden="true" />查看原图</span>
           </a>
         </div>
       </section>
