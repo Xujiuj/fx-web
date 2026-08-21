@@ -123,31 +123,31 @@ const solutionFrameworks: Record<string, SolutionFramework> = {
 const solutionDiagrams: Record<string, SolutionDiagram> = {
   "solution-standard": {
     eyebrow: "CAPABILITY ROADMAP",
-    title: "企业碳管理能力建设路线图",
-    description: "从启动准备、培训赋能到实际应用，明确企业建立温室气体核算能力的推进路径。",
+    title: "企业温室气体核算实战（Excel版）",
+    description: "围绕方法认知、标准流程、核算实践与成果应用，构建可落地、可复制的温室气体核算能力体系。",
     src: "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     alt: "企业温室气体核算实战（Excel版）",
   },
   "solution-practical": {
     eyebrow: "实施路径",
-    title: "企业温室气体核算标准化流程图（Excel版）",
-    description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。",
-    src: "/media/reference-diagrams/excel-standard-flow.svg",
-    alt: "企业温室气体核算标准化流程图（Excel版）",
+    title: "企业温室气体核算敏捷实施技术路线",
+    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
+    src: "/media/reference-diagrams/agile-implementation.svg",
+    alt: "企业温室气体核算敏捷实施技术路线",
   },
   "solution-consulting": {
     eyebrow: "集团协同",
     title: "集团和分子公司实施路径",
-    description: "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
+    description: "适用于多业态、多层级集团企业，通过统一模板和标准化流程，实现碳核算数据的高效协同与集中管控。",
     src: "/media/reference-diagrams/group-implementation.svg",
     alt: "集团和分子公司温室气体核算实施路径图",
   },
   "solution-platform": {
     eyebrow: "实施流程",
-    title: "企业温室气体核算敏捷实施技术路线",
-    description: "从项目准备、数据建模到成果交付，明确首次核算闭环各阶段的工作事项与交付结果。",
-    src: "/media/reference-diagrams/agile-implementation.svg",
-    alt: "企业温室气体核算敏捷实施技术路线",
+    title: "企业碳管理平台功能架构",
+    description: "构建从核算基础数据管理、排放分析到经营决策应用的完整能力体系，实现碳数据向管理价值的持续转化。",
+    src: "/media/reference-diagrams/platform-architecture.svg",
+    alt: "企业碳管理平台功能架构",
   },
 };
 
