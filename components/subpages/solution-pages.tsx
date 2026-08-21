@@ -266,8 +266,6 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
   const diagramImage = diagramItems.find((item) => item.image)?.image ?? page.media?.diagram ?? diagram?.src;
   const heroImage = diagramImage || page.image;
   const heroImageAlt = `${page.title}方案主图`;
-  const heroDiagram = diagramItems[0];
-  const showHeroDiagramCaption = framework.sequence === "04" && Boolean(heroDiagram);
   const diagramBlocks = diagramItems.map((item, index) => {
     const src = index === 0 ? diagramImage : item.image;
     if (!src) return null;
@@ -289,14 +287,9 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
             <SolutionHeroTitle title={page.title} />
             <p>{page.summary}</p>
           </div>
-          <div className={`${styles.solutionHeroSignal} ${showHeroDiagramCaption ? styles.solutionHeroSignalWithCaption : ""}`} data-motion="hero-support">
+          <div className={styles.solutionHeroSignal} data-motion="hero-support">
             <strong>{framework.sequence}</strong>
             <Image src={heroImage} alt={heroImageAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 1140px" unoptimized={isRuntimeManagedImage(heroImage)} />
-            {showHeroDiagramCaption && heroDiagram ? <div className={styles.solutionHeroDiagramCaption}>
-              <span>{diagram?.eyebrow ?? page.eyebrow}</span>
-              <h2>{heroDiagram.title}</h2>
-              {heroDiagram.description ? <p>{heroDiagram.description}</p> : null}
-            </div> : null}
           </div>
         </div>
       </section>
@@ -374,7 +367,7 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
-      {framework.sequence !== "01" && framework.sequence !== "04" ? diagramBlocks : null}
+      {framework.sequence !== "01" ? diagramBlocks : null}
 
       <section className={`${styles.solutionOutcomes} ${styles[`outcomes${framework.sequence}`] ?? ""}`} aria-labelledby="solution-outcomes-title" data-motion-group={`solution-outcomes-${framework.sequence}`}>
         <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{outcomesSection?.title ?? framework.outcomeLabel}</h2>{outcomesSection?.description ? <p>{outcomesSection.description}</p> : null}</div>

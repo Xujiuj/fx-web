@@ -1341,11 +1341,11 @@
 
 .presentation03 { padding: 58px; color: #fff; background: #e95513; border: 0; }
 .presentation03 header h2 { color: #fff; }
-.presentation03 header p, .presentation03 li p { color: #cec7bf; }
+.presentation03 header p, .presentation03 li p { color: #fff; }
 .presentation03 ol { border-color: rgba(255,255,255,.24); }
 .presentation03 li { border-color: rgba(255,255,255,.24); }
 .presentation03 li h3 { color: #fff; }
-.presentation03 li > span, .presentation03 header > span { color: #f8a968; }
+.presentation03 li > span, .presentation03 header > span { color: #fff; }
 
 .presentation04 { align-items: center; }
 .presentation04 ol { display: flex; flex-direction: column; gap: 8px; padding: 30px; border: 0; background: #e95513; }

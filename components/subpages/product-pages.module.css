@@ -1771,6 +1771,10 @@
   background: #f5f7f4;
 }
 
+.platformProductPage .mediaGallery .sectionHeading > span {
+  color: var(--primary);
+}
+
 .overviewWorkspace {
   display: grid;
   grid-template-columns: minmax(280px, 0.72fr) minmax(0, 1.28fr);
