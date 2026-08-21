@@ -676,6 +676,10 @@ const legacySolutionDiagramContents: Record<string, ReadonlySet<string>> = {
   "solution-consulting": new Set([
     "呈现集团与分子公司在口径制定、数据报送、汇总复核中的协同关系。",
   ]),
+  "solution-platform": new Set([
+    "企业碳管理平台架构图",
+    "企业碳管理平台的技术路线与功能协同关系。",
+  ]),
 };
 
 function normalizeStoredSubpages(subpages: Subpage[]): Subpage[] {
