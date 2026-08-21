@@ -350,6 +350,8 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
         </div>
       </section>
 
+      {framework.sequence !== "01" ? diagramBlocks : null}
+
       {presentationContent ? <section className={`${styles.solutionPresentation} ${presentationClass}`} aria-labelledby="solution-presentation-title" data-motion-group={`solution-presentation-${framework.sequence}`}>
         <header data-motion-role="heading"><span>{presentationContent.eyebrow}</span><h2 id="solution-presentation-title">{presentationContent.title}</h2>{presentationContent.description ? <p>{presentationContent.description}</p> : null}</header>
         <ol>{presentationContent.items.map((item, index) => <li key={`${item.title}-${index}`} data-motion-role="item"><span>{String(index + 1).padStart(2, "0")}</span><h3>{item.title}</h3>{item.description ? <p>{item.description}</p> : null}<ItemDetails item={item} /></li>)}</ol>
@@ -375,8 +377,6 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
           </ol>
         </div>
       </section>
-
-      {framework.sequence !== "01" ? diagramBlocks : null}
 
       <section className={`${styles.solutionOutcomes} ${styles[`outcomes${framework.sequence}`] ?? ""}`} aria-labelledby="solution-outcomes-title" data-motion-group={`solution-outcomes-${framework.sequence}`}>
         <div data-motion-role="heading"><span>OUTCOMES</span><h2 id="solution-outcomes-title">{outcomesSection?.title ?? framework.outcomeLabel}</h2>{outcomesSection?.description ? <p>{outcomesSection.description}</p> : null}</div>
