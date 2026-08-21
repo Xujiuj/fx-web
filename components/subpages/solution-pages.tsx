@@ -287,10 +287,17 @@ function SolutionDetailPage({ page }: SolutionPageProps) {
             <SolutionHeroTitle title={page.title} />
             <p>{page.summary}</p>
           </div>
-          <div className={styles.solutionHeroSignal} data-motion="hero-support">
+          <a
+            className={styles.solutionHeroSignal}
+            data-motion="hero-support"
+            href={heroImage}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`查看${page.title}方案主图原图`}
+          >
             <strong>{framework.sequence}</strong>
             <Image src={heroImage} alt={heroImageAlt} width={1200} height={800} priority sizes="(max-width: 760px) calc(100vw - 36px), 1140px" unoptimized={isRuntimeManagedImage(heroImage)} />
-          </div>
+          </a>
         </div>
       </section>
 
