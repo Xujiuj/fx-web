@@ -522,7 +522,7 @@ const excelProductSections: SubpageSection[] = [
     description: "说明活动数据、排放因子、计算规则和核算结果在工具中的对应关系。",
     items: [
       { title: "企业温室气体核算标准化流程图", description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。", image: "/media/reference-diagrams/excel-standard-flow.svg" },
-      { title: "企业温室气体核算数据建模流程图（Excel版）", description: "围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。", image: "/media/reference-diagrams/data-modeling-flow.svg" }
+      { title: "企业温室气体核算数据建模流程图（Excel版）", description: "通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。", image: "/media/reference-diagrams/data-modeling-flow.svg" }
     ]
   },
   { id: "product-screenshots", kind: "gallery", title: "查看两个版本的完整产品界面", description: "切换单公司版与集团版，点击大图可在新窗口查看原始分辨率。", items: [] },

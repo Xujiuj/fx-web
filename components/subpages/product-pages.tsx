@@ -379,7 +379,7 @@ export function ExcelProductPage({ page }: ProductPageProps) {
         <ReferenceDiagram
           eyebrow="SINGLE-COMPANY MODEL"
           title="企业温室气体核算数据建模流程图（Excel版）"
-          description="围绕单公司版的组织边界、活动数据、排放因子与分析结果，展示Excel工具中的数据建模关系。"
+          description="通过标准化采集企业活动数据，建立排放源、活动数据与排放因子之间的关系，实现温室气体排放量的自动计算、统一管理与多维分析。"
           src={excelDataModelingDiagramSrc}
           alt="企业温室气体核算数据建模流程图（Excel版）"
           wide
