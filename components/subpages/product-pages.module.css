@@ -1767,6 +1767,13 @@
 }
 
 .platformProductPage .mediaGallery {
+  width: 100%;
+  max-width: none;
+  box-sizing: border-box;
+  margin-inline: 0;
+  padding-right: max(24px, calc((100% - 1180px) / 2));
+  padding-left: max(24px, calc((100% - 1180px) / 2));
+  padding-block: 112px 96px;
   border-block: 1px solid #dfe5e1;
   background: #f5f7f4;
 }
@@ -2082,6 +2089,12 @@
   .platformVideo .sectionHeading h2,
   .productResources .sectionHeading h2 {
     font-size: 30px;
+  }
+
+  .platformProductPage .mediaGallery {
+    padding-right: 18px;
+    padding-left: 18px;
+    padding-block: 78px 64px;
   }
 
   .mediaStage {

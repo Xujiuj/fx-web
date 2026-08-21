@@ -977,13 +977,22 @@
 
 .solutionHeroSignal strong {
   position: absolute;
-  z-index: 2;
-  top: 38px;
-  right: 30px;
-  color: rgba(255, 255, 255, 0.36);
-  font-size: clamp(84px, 10vw, 144px);
+  z-index: 3;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  width: 34px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 3px;
+  color: #fff;
+  background: rgba(120, 42, 10, 0.86);
+  font-size: 16px;
   font-weight: 800;
-  line-height: 0.8;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  text-shadow: 0 1px 2px rgba(47, 20, 5, 0.38);
 }
 
 .solutionHeroSignal img {
@@ -1681,7 +1690,7 @@
     min-height: 220px;
   }
 
-  .solutionHeroSignal strong { top: 28px; right: 18px; font-size: 84px; }
+  .solutionHeroSignal strong { top: 8px; right: 10px; width: 32px; height: 26px; font-size: 14px; }
   .solutionHeroSignal img { padding: 8px; }
   .solutionHeroSignal03 { --signal-image-inset: 8px; --signal-image-gutter: 16px; }
   .solutionHeroOpenOriginal { right: 18px; bottom: 18px; }
