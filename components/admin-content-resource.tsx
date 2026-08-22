@@ -413,7 +413,7 @@ function frontendImageForPage(page: Subpage) {
     "solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
     "solution-practical": "/media/reference-diagrams/excel-standard-flow.svg",
     "solution-consulting": "/media/reference-diagrams/group-implementation.svg",
-    "solution-platform": "/media/reference-diagrams/carbon-data-governance.svg",
+    "solution-platform": "/media/reference-diagrams/agile-implementation.svg",
   };
   if (page.slug.startsWith("solution-")) return sectionImage("solution-diagram") ?? page.media?.diagram ?? currentSolutionImages[page.slug] ?? page.image;
   if (page.slug === "excel-accounting-tool") return sectionImage("product-diagram") ?? page.media?.diagram ?? page.image;

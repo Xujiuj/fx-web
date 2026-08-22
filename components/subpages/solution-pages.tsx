@@ -145,10 +145,10 @@ const solutionDiagrams: Record<string, SolutionDiagram> = {
   },
   "solution-platform": {
     eyebrow: "实施流程",
-    title: "企业碳数据治理与标准体系",
-    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
-    src: "/media/reference-diagrams/carbon-data-governance.svg",
-    alt: "企业碳数据治理与标准体系图",
+    title: "平台版敏捷化实施路线图",
+    description: "从项目准备、数据建模到成果交付，明确平台版数字化升级各阶段的实施路径与交付结果。",
+    src: "/media/reference-diagrams/agile-implementation.svg",
+    alt: "平台版敏捷化实施路线图",
   },
 };
 

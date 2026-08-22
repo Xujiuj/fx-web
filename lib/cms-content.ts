@@ -154,7 +154,7 @@ const solutionImages: Record<string, string> = {
   "/solution-standard": "/materials/20260803/资料20260803/解决方案/课程宣传图制作_企业温室气体核算实战（Excel版）_扩展版.svg",
   "/solution-practical": "/media/reference-diagrams/excel-standard-flow.svg",
   "/solution-consulting": "/media/reference-diagrams/group-implementation.svg",
-  "/solution-platform": "/media/reference-diagrams/carbon-data-governance.svg"
+  "/solution-platform": "/media/reference-diagrams/agile-implementation.svg"
 };
 
 const defaultSolutionItems: NewsItem[] = [
@@ -448,9 +448,9 @@ const solutionPageSections: Record<string, SubpageSection[]> = {
     services: ["数据模型架构搭建", "平台系统部署", "自动化数据采集", "自动化核算", "分析洞察与管理模块", "持续运营支持"],
     outcomes: ["数据集中管理", "自动化核算", "多维分析决策", "数据持续沉淀", "多场景价值释放"],
     outcomeLabel: "核心价值",
-    diagramTitle: "企业碳数据治理与标准体系",
-    diagramDescription: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
-    diagramImage: "/media/reference-diagrams/carbon-data-governance.svg"
+    diagramTitle: "平台版敏捷化实施路线图",
+    diagramDescription: "从项目准备、数据建模到成果交付，明确平台版数字化升级各阶段的实施路径与交付结果。",
+    diagramImage: "/media/reference-diagrams/agile-implementation.svg"
   })
 };
 
@@ -621,9 +621,9 @@ const currentSolutionDiagramBindings: Record<string, { image: string; title: str
     description: "适用于多业态、多层级集团企业，通过统一模板和标准化流程，实现碳核算数据的高效协同与集中管控。",
   },
   "solution-platform": {
-    image: "/media/reference-diagrams/carbon-data-governance.svg",
-    title: "企业碳数据治理与标准体系",
-    description: "将温室气体核算方法、数据模型与分析应用逐步落地，构建可配置、可复用、可持续演进的数字化核算能力。",
+    image: "/media/reference-diagrams/agile-implementation.svg",
+    title: "平台版敏捷化实施路线图",
+    description: "从项目准备、数据建模到成果交付，明确平台版数字化升级各阶段的实施路径与交付结果。",
   },
 };
 
